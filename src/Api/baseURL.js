@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseUrl = axios.create({
-  baseURL: "http://www.zuhall.com/",
+  baseURL: "https://www.zuhall.com/",
 });
 
 export default baseUrl;

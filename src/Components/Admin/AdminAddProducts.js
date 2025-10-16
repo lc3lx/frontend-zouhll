@@ -37,6 +37,14 @@ const AdminAddProducts = () => {
     prodDescription,
     prodName,
     productUrl,
+    // variants controls
+    variants,
+    addVariant,
+    removeVariant,
+    setVariantField,
+    setVariantImages,
+    addVariantSize,
+    removeVariantSize,
   ] = AdminAddProductsHook();
 
   return (
@@ -167,6 +175,106 @@ const AdminAddProducts = () => {
             {showColor === true ? (
               <CompactPicker onChangeComplete={handelChangeComplete} />
             ) : null}
+          </div>
+
+          {/* Variants Builder */}
+          <div className="text-form mt-4"> متغيرات المنتج (ألوان/صور/قياسات)</div>
+          <div className="mt-2">
+            <button type="button" onClick={addVariant} className="btn btn-outline-primary">
+              إضافة لون/متغير
+            </button>
+            {Array.isArray(variants) && variants.length > 0 && (
+              <div className="mt-3">
+                {variants.map((v, i) => (
+                  <div key={i} className="border rounded p-3 my-3">
+                    <div className="d-flex flex-wrap gap-2 align-items-center">
+                      <input
+                        type="text"
+                        className="input-form d-block px-3"
+                        placeholder="اسم اللون"
+                        value={v.colorName || ""}
+                        onChange={(e) => setVariantField(i, "colorName", e.target.value)}
+                      />
+                      <input
+                        type="color"
+                        className="ms-2"
+                        value={v.colorHex || "#000000"}
+                        onChange={(e) => setVariantField(i, "colorHex", e.target.value)}
+                      />
+                      <input
+                        type="number"
+                        className="input-form d-block px-3"
+                        placeholder="سعر هذا المتغير (اختياري)"
+                        value={v.price || ""}
+                        onChange={(e) => setVariantField(i, "price", e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        className="input-form d-block px-3"
+                        placeholder="SKU (اختياري)"
+                        value={v.sku || ""}
+                        onChange={(e) => setVariantField(i, "sku", e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeVariant(i)}
+                        className="btn btn-sm btn-outline-danger"
+                      >
+                        حذف
+                      </button>
+                    </div>
+
+                    <div className="text-form pb-2 mt-3"> صور هذا اللون</div>
+                    <MultiImageInput
+                      images={v.images || {}}
+                      setImages={(imgs) => setVariantImages(i, imgs)}
+                      theme={"light"}
+                      allowCrop={false}
+                      max={5}
+                    />
+
+                    <div className="mt-3">
+                      <div className="d-flex flex-wrap gap-2 align-items-center">
+                        <input
+                          type="text"
+                          className="input-form d-block px-3"
+                          placeholder="قياس (مثل S أو 38)"
+                          value={v.newSizeLabel || ""}
+                          onChange={(e) => setVariantField(i, "newSizeLabel", e.target.value)}
+                        />
+                        <input
+                          type="number"
+                          className="input-form d-block px-3"
+                          placeholder="المخزون"
+                          value={v.newSizeStock || ""}
+                          onChange={(e) => setVariantField(i, "newSizeStock", e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-success"
+                          onClick={() => {
+                            addVariantSize(i, v.newSizeLabel, v.newSizeStock);
+                            setVariantField(i, "newSizeLabel", "");
+                            setVariantField(i, "newSizeStock", "");
+                          }}
+                        >
+                          إضافة قياس
+                        </button>
+                      </div>
+                      {v.sizes && v.sizes.length > 0 && (
+                        <div className="mt-2 d-flex flex-wrap gap-2">
+                          {v.sizes.map((s, si) => (
+                            <span key={si} className="badge bg-light text-dark border">
+                              {s.label} - {Number(s.stock) || 0}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </Col>
       </Row>

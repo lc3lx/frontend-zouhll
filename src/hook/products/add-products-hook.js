@@ -44,6 +44,46 @@ const AdminAddProductsHook = () => {
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Variant builder state
+  const [variants, setVariants] = useState([]);
+  // helpers to manage variants
+  const addVariant = () => {
+    setVariants((prev) => [
+      ...prev,
+      {
+        colorName: "",
+        colorHex: "#000000",
+        price: "",
+        sku: "",
+        images: {}, // MultiImageInput-like structure
+        sizes: [], // [{label, stock}]
+      },
+    ]);
+  };
+  const removeVariant = (index) => {
+    setVariants((prev) => prev.filter((_, i) => i !== index));
+  };
+  const setVariantField = (index, field, value) => {
+    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+  };
+  const setVariantImages = (index, imagesObj) => {
+    setVariantField(index, "images", imagesObj);
+  };
+  const addVariantSize = (index, label, stock) => {
+    if (!label) return;
+    const s = { label, stock: Number(stock || 0) };
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v))
+    );
+  };
+  const removeVariantSize = (vIndex, sIndex) => {
+    setVariants((prev) =>
+      prev.map((v, i) =>
+        i === vIndex ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) } : v
+      )
+    );
+  };
+
   //to change name state
   const onChangeProdName = (event) => {
     event.persist();
@@ -144,9 +184,7 @@ const AdminAddProductsHook = () => {
     const imgCover = dataURLtoFile(images[0], Math.random() + ".png");
     //convert array of base 64 image to file
     const itemImages = Array.from(Array(Object.keys(images).length).keys()).map(
-      (item, index) => {
-        return dataURLtoFile(images[index], Math.random() + ".png");
-      }
+      (item, index) => dataURLtoFile(images[index], Math.random() + ".png")
     );
 
     const formData = new FormData();
@@ -154,27 +192,56 @@ const AdminAddProductsHook = () => {
     formData.append("description", prodDescription);
     formData.append("quantity", qty);
     formData.append("price", priceBefore);
-    formData.append("priceAfterDiscount", priceAftr);
+    if (priceAftr && Number(priceAftr) > 0) {
+      formData.append("priceAfterDiscount", Number(priceAftr));
+    }
     formData.append("category", CatID);
     formData.append("brand", BrandID);
     if (productUrl) formData.append("productUrl", productUrl);
 
-    setTimeout(() => {
-      formData.append("imageCover", imgCover);
-      itemImages.map((item) => formData.append("images", item));
-    }, 1000);
+    // append images synchronously
+    formData.append("imageCover", imgCover);
+    itemImages.forEach((item) => formData.append("images", item));
+    colors.map((color) => formData.append("colors", color));
+    seletedSubID.map((item) => formData.append("subcategories", item._id));
 
-    setTimeout(() => {
-      console.log(imgCover);
-      console.log(itemImages);
-    }, 1000);
-    colors.map((color) => formData.append("availableColors", color));
-    seletedSubID.map((item) => formData.append("subcategory", item._id));
-    setTimeout(async () => {
-      setLoading(true);
-      await dispatch(createProduct(formData));
-      setLoading(false);
-    }, 1000);
+    // Build variants payload if any
+    try {
+      if (Array.isArray(variants) && variants.length > 0) {
+        const variantImageMap = [];
+        let variantImageCount = 0; // backend limit: 30
+        const variantPayload = variants.map((v) => {
+          // convert MultiImageInput object to File list
+          const keys = Object.keys(v.images || {});
+          const files = keys.map((_, idx) => dataURLtoFile(v.images[idx], Math.random() + ".png"));
+          let pushed = 0;
+          files.forEach((f) => {
+            if (variantImageCount < 30) {
+              formData.append("variantImages", f);
+              variantImageCount++;
+              pushed++;
+            }
+          });
+          variantImageMap.push(pushed);
+          const cleanSizes = (v.sizes || []).map((s) => ({ label: s.label, stock: Number(s.stock || 0) }));
+          const payload = {
+            color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
+            sizes: cleanSizes,
+          };
+          if (v.sku) payload.sku = v.sku;
+          if (v.price) payload.price = Number(v.price);
+          return payload;
+        });
+        formData.append("variants", JSON.stringify(variantPayload));
+        formData.append("variantImageMap", JSON.stringify(variantImageMap));
+      }
+    } catch (err) {
+      console.warn("Variant build error", err);
+    }
+
+    setLoading(true);
+    await dispatch(createProduct(formData));
+    setLoading(false);
   };
 
   //get create meesage
@@ -233,6 +300,14 @@ const AdminAddProductsHook = () => {
     prodDescription,
     prodName,
     productUrl,
+    // variants exports
+    variants,
+    addVariant,
+    removeVariant,
+    setVariantField,
+    setVariantImages,
+    addVariantSize,
+    removeVariantSize,
   ];
 };
 

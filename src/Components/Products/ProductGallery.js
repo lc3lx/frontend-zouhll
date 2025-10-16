@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import LeftButton from "./LeftButton";
 import RightButton from "./RightButton";
 import { useParams } from "react-router-dom";
 import ViewProductsDetalisHook from "./../../hook/products/view-products-detalis-hook";
-const ProductGallery = () => {
+const ProductGallery = ({ selectedVariantIndex }) => {
   const { id } = useParams();
   const [item, images, cat, brand] = ViewProductsDetalisHook(id);
+
+  const galleryItems = useMemo(() => {
+    const variants = Array.isArray(item?.variants) ? item.variants : [];
+    if (
+      variants.length > 0 &&
+      selectedVariantIndex !== null &&
+      variants[selectedVariantIndex] &&
+      Array.isArray(variants[selectedVariantIndex].images) &&
+      variants[selectedVariantIndex].images.length > 0
+    ) {
+      return variants[selectedVariantIndex].images.map((img) => ({ original: img }));
+    }
+    return images;
+  }, [item, images, selectedVariantIndex]);
 
   return (
     <div
@@ -44,13 +58,14 @@ const ProductGallery = () => {
         }}
       >
         <ImageGallery
-          items={images}
+          items={galleryItems}
           showFullscreenButton={false}
           isRTL={true}
           showPlayButton={false}
-          showThumbnails={false}
+          showThumbnails={galleryItems.length > 1}
           renderRightNav={RightButton}
           renderLeftNav={LeftButton}
+          lazyLoad={true}
         />
       </div>
     </div>

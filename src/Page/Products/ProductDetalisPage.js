@@ -7,6 +7,7 @@ import ProductDetalis from '../../Components/Products/ProductDetalis'
 import RateContainer from '../../Components/Rate/RateContainer'
 import ViewHomeProductsHook from './../../hook/products/view-home-products-hook';
 import ViewProductsDetalisHook from './../../hook/products/view-products-detalis-hook';
+
 const ProductDetalisPage = () => {
     const { id } = useParams();
     const [item, images, cat, brand, prod] = ViewProductsDetalisHook(id);
@@ -20,13 +21,64 @@ const ProductDetalisPage = () => {
             var rateQty = item.ratingsQuantity
         }
     } catch (e) { }
+    
     return (
-        <div style={{ minHeight: '670px' }}>
+        <div style={{ 
+            minHeight: '670px', 
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            paddingTop: '20px',
+            paddingBottom: '40px'
+        }}>
             <CategoryHeader />
             <Container>
-                <ProductDetalis />
-                <RateContainer rateAvg={rateAvg} rateQty={rateQty} />
-                <CardProductsContainer products={items} title="منتجات قد تعجبك" />
+                {/* Product Details */}
+                <div
+                    style={{
+                        background: "rgba(255, 255, 255, 0.95)",
+                        backdropFilter: "blur(10px)",
+                        borderRadius: "25px",
+                        padding: "30px",
+                        boxShadow: "0 8px 32px rgba(102, 126, 234, 0.15)",
+                        border: "2px solid rgba(102, 126, 234, 0.1)",
+                        marginBottom: "30px",
+                    }}
+                >
+                    <ProductDetalis />
+                </div>
+
+                {/* Reviews */}
+                <div
+                    style={{
+                        background: "rgba(255, 255, 255, 0.95)",
+                        backdropFilter: "blur(10px)",
+                        borderRadius: "25px",
+                        padding: "30px",
+                        boxShadow: "0 8px 32px rgba(102, 126, 234, 0.15)",
+                        border: "2px solid rgba(102, 126, 234, 0.1)",
+                        marginBottom: "30px",
+                    }}
+                >
+                    <RateContainer rateAvg={rateAvg} rateQty={rateQty} />
+                </div>
+
+                {/* Related Products */}
+                <div
+                    style={{
+                        background: "rgba(255, 255, 255, 0.95)",
+                        backdropFilter: "blur(10px)",
+                        borderRadius: "25px",
+                        padding: "30px",
+                        boxShadow: "0 8px 32px rgba(102, 126, 234, 0.15)",
+                        border: "2px solid rgba(102, 126, 234, 0.1)",
+                    }}
+                >
+                    <CardProductsContainer 
+                        products={items} 
+                        title="منتجات قد تعجبك" 
+                        btntitle="المزيد"
+                        pathText="/products"
+                    />
+                </div>
             </Container>
         </div>
     )

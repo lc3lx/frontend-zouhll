@@ -96,6 +96,9 @@ const BrandCard = ({ img, id }) => {
 
           <Card.Img
             src={brandImage}
+            alt="ماركة"
+            loading="lazy"
+            decoding="async"
             style={{
               width: "100%",
               height: "130px",

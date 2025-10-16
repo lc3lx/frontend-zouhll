@@ -1,13 +1,24 @@
 import React, { useState } from "react";
 import { Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { getImageUrl } from "../../utils/imageHelper";
 
 const CategoryCard = ({ background, img, title, id }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // الحصول على رابط الصورة الصحيح
-  const categoryImage = getImageUrl(img);
+  // دالة بسيطة للحصول على رابط الصورة
+  const getImageSrc = (imagePath) => {
+    if (!imagePath) return "/images/placeholder.png";
+    
+    // إذا كان الرابط كامل، استخدمه كما هو
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    
+    // إذا كان مسار نسبي، أضف الباك إند
+    return `https://www.zuhall.com/${imagePath}`;
+  };
+
+  const categoryImage = getImageSrc(img);
 
   return (
     <Col
@@ -75,19 +86,18 @@ const CategoryCard = ({ background, img, title, id }) => {
                 width: "100px",
                 height: "100px",
                 margin: "0 auto 15px",
-                background: `linear-gradient(135deg, ${background}ee, ${background})`,
+                background: `linear-gradient(135deg, ${background || "#e2e8f0"}ee, ${background || "#e2e8f0"})`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: isHovered
-                  ? `0 10px 30px ${background}66`
-                  : `0 5px 20px ${background}44`,
+                  ? `0 10px 30px ${(background || "#e2e8f0")}66`
+                  : `0 5px 20px ${(background || "#e2e8f0")}44`,
                 transition: "all 0.4s ease",
                 transform: isHovered
                   ? "scale(1.15) rotate(10deg)"
                   : "scale(1) rotate(0deg)",
                 position: "relative",
-                overflow: "hidden",
               }}
             >
               {/* Shine effect */}
@@ -104,24 +114,27 @@ const CategoryCard = ({ background, img, title, id }) => {
                     ? "translate(50%, 50%)"
                     : "translate(-50%, -50%)",
                   transition: "transform 0.6s ease",
+                  pointerEvents: "none",
                 }}
               />
 
               <img
                 alt={title}
                 src={categoryImage}
+                loading="lazy"
+                decoding="async"
                 style={{
                   width: "55px",
                   height: "55px",
                   objectFit: "contain",
-                  filter:
-                    "brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
+                  filter: "none",
                   transition: "all 0.4s ease",
                   transform: isHovered
                     ? "scale(1.1) rotate(-10deg)"
                     : "scale(1) rotate(0deg)",
                   position: "relative",
                   zIndex: 2,
+                  display: "block",
                 }}
               />
             </div>
@@ -131,12 +144,7 @@ const CategoryCard = ({ background, img, title, id }) => {
                 margin: "0",
                 fontSize: "17px",
                 fontWeight: "700",
-                background: isHovered
-                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                  : "#2d3748",
-                WebkitBackgroundClip: isHovered ? "text" : "unset",
-                WebkitTextFillColor: isHovered ? "transparent" : "unset",
-                color: isHovered ? "transparent" : "#2d3748",
+                color: isHovered ? "#4f46e5" : "#2d3748",
                 transition: "all 0.3s ease",
                 lineHeight: "1.4",
               }}

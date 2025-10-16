@@ -1,27 +1,26 @@
 import React from 'react'
 import BrandCard from './BrandCard'
-import brand1 from "../../images/brand1.png";
-import brand2 from "../../images/brand2.png";
-import brand3 from "../../images/brand3.png";
-import { Container, Row, Spinner } from 'react-bootstrap';
+import BrandCardSkeleton from '../Uitily/BrandCardSkeleton';
+import { Container, Row } from 'react-bootstrap';
 
-const BrandContainer = ({ data,loading }) => {
-   
+const BrandContainer = ({ data, loading }) => {
     return (
         <Container>
-            <div className="admin-content-text mt-2 ">كل الماركات</div>
             <Row className='my-1 d-flex justify-content-between'>
-
-                {
-                    loading === false ? (
-                        data ? (
-                            data.map((item, index) => {
-                                return (<BrandCard id={item._id} key={index} img={item.image} />)
-                            })
-                        ) : <h4>لا يوجد ماركات</h4>
-                    ) : <Spinner animation="border" variant="primary" />
-                }
-
+                {loading ? (
+                    // Show skeleton loaders while loading
+                    Array.from({ length: 12 }).map((_, index) => (
+                        <BrandCardSkeleton key={index} />
+                    ))
+                ) : data && data.length > 0 ? (
+                    data.map((item, index) => (
+                        <BrandCard id={item._id} key={index} img={item.image} />
+                    ))
+                ) : (
+                    <div className="col-12 text-center py-5">
+                        <p style={{ color: "#888", fontWeight: 600 }}>لا يوجد ماركات</p>
+                    </div>
+                )}
             </Row>
         </Container>
     )

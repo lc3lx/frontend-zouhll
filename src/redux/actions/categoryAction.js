@@ -3,9 +3,11 @@ import {
   GET_ERROR,
   GET_ONE_CATEGORY,
   CREATE_CATEGORY,
+  UPDATE_CATEGORY,
 } from "../type";
 import { useGetData } from "../../hooks/useGetData";
 import { useInsertDataWithImage } from "../../hooks/useInsertData";
+import { useInUpdateDataWithImage } from "../../hooks/useUpdateData";
 //get all category
 export const getAllCategory = (limit) => async (dispatch) => {
   try {
@@ -67,6 +69,26 @@ export const createCategory = (formData) => async (dispatch) => {
     );
     dispatch({
       type: CREATE_CATEGORY,
+      payload: response,
+      loading: true,
+    });
+  } catch (e) {
+    dispatch({
+      type: GET_ERROR,
+      payload: "Error " + e,
+    });
+  }
+};
+
+//update category
+export const updateCategory = (id, formData) => async (dispatch) => {
+  try {
+    const response = await useInUpdateDataWithImage(
+      `/api/v1/categories/${id}`,
+      formData
+    );
+    dispatch({
+      type: UPDATE_CATEGORY,
       payload: response,
       loading: true,
     });

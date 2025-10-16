@@ -3,6 +3,7 @@ import {
   GET_ONE_CATEGORY,
   GET_ERROR,
   CREATE_CATEGORY,
+  UPDATE_CATEGORY,
 } from "../type";
 
 const inital = {
@@ -25,6 +26,12 @@ const categoryReducer = (state = inital, action) => {
         loading: false,
       };
     case CREATE_CATEGORY:
+      return {
+        ...state,
+        category: action.payload,
+        loading: false,
+      };
+    case UPDATE_CATEGORY:
       return {
         ...state,
         category: action.payload,

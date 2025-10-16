@@ -15,12 +15,22 @@ const AdminSideBar = () => {
             اداره المنتجات
           </div>
         </Link>
+        <Link to="/admin/allbrands" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة الماركات
+          </div>
+        </Link>
         <Link to="/admin/addbrand" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             اضف ماركه
           </div>
         </Link>
 
+        <Link to="/admin/allcategories" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة التصنيفات
+          </div>
+        </Link>
         <Link to="/admin/addcategory" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             اضف تصنيف
@@ -30,6 +40,11 @@ const AdminSideBar = () => {
         <Link to="/admin/addsubcategory" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             اضف تصنيف فرعي
+          </div>
+        </Link>
+        <Link to="/admin/allsubcategories" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة التصنيفات الفرعية
           </div>
         </Link>
         <Link to="/admin/addproduct" style={{ textDecoration: "none" }}>

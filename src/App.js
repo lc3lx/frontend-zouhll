@@ -25,7 +25,12 @@ import UserEditAddressPage from "./Page/User/UserEditAddressPage";
 import UserProfilePage from "./Page/User/UserProfilePage";
 import UserWallet from "./Page/User/UserWallet";
 import AdminEditProductsPage from "./Page/Admin/AdminEditProductsPage";
+import AdminEditCategoryPage from "./Page/Admin/AdminEditCategoryPage";
+import AdminEditBrandPage from "./Page/Admin/AdminEditBrandPage";
+import AdminAllCategoriesPage from "./Page/Admin/AdminAllCategoriesPage";
+import AdminAllBrandsPage from "./Page/Admin/AdminAllBrandsPage";
 import AdminRechargeCodes from "./Page/Admin/AdminRechargeCodes";
+import AdminAllSubcategoriesPage from "./Page/Admin/AdminAllSubcategoriesPage";
 import ForgetPasswordPage from "./Page/Auth/ForgetPasswordPage";
 import VerifyPasswordPage from "./Page/Auth/VerifyPasswordPage";
 import RsetPasswordPage from "./Page/Auth/ResetPasswordPage";
@@ -34,11 +39,12 @@ import AdminEditCouponPage from "./Page/Admin/AdminEditCouponPage";
 import ProtectedRouteHook from "./hook/auth/protected-route-hook";
 import ProtectedRoute from "./Components/Uitily/ProtectedRoute";
 import ScrollToTop from "./Components/Uitily/ScrollToTop";
-import { useEffect, useState } from "react";
 import ProductsByCategory from "./Page/Products/ProductsByCategory";
 import ProductsByBrand from "./Page/Products/ProductsByBrand";
+import ProductsBySubcategory from "./Page/Products/ProductsBySubcategory";
+import ModernAllCategoryPage from "./Page/Category/ModernAllCategoryPage";
 function App() {
-  const [isUser, isAdmin, userData] = ProtectedRouteHook();
+  const [isUser, isAdmin] = ProtectedRouteHook();
 
   return (
     <div className="font">
@@ -49,6 +55,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/allcategory" element={<AllCategoryPage />} />
+          <Route path="/categories" element={<ModernAllCategoryPage />} />
           <Route path="/allbrand" element={<AllBrandPage />} />
           <Route path="/products" element={<ShopProductsPage />} />
           <Route path="/products/:id" element={<ProductDetalisPage />} />
@@ -64,6 +71,7 @@ function App() {
             element={<ProductsByCategory />}
           />
           <Route path="/products/brand/:id" element={<ProductsByBrand />} />
+          <Route path="/products/subcategory/:id" element={<ProductsBySubcategory />} />
 
           <Route element={<ProtectedRoute auth={isAdmin} />}>
             <Route path="/admin/allorders" element={<AdminAllOrdersPage />} />
@@ -80,14 +88,14 @@ function App() {
               path="/admin/addcategory"
               element={<AdminAddCategoryPage />}
             />
+            <Route path="/admin/allcategories" element={<AdminAllCategoriesPage />} />
+            <Route path="/admin/allbrands" element={<AdminAllBrandsPage />} />
             <Route
               path="/admin/addsubcategory"
               element={<AdminAddSubCategoryPage />}
             />
-            <Route
-              path="/admin/addproduct"
-              element={<AdminAddProductsPage />}
-            />
+            <Route path="/admin/allsubcategories" element={<AdminAllSubcategoriesPage />} />
+            <Route path="/admin/addproduct" element={<AdminAddProductsPage />} />
             <Route path="/admin/addcoupon" element={<AdminAddCouponPage />} />
             <Route
               path="/admin/editcoupon/:id"
@@ -96,6 +104,14 @@ function App() {
             <Route
               path="/admin/editproduct/:id"
               element={<AdminEditProductsPage />}
+            />
+            <Route
+              path="/admin/editcategory/:id"
+              element={<AdminEditCategoryPage />}
+            />
+            <Route
+              path="/admin/editbrand/:id"
+              element={<AdminEditBrandPage />}
             />
             <Route
               path="/admin/recharge-codes"

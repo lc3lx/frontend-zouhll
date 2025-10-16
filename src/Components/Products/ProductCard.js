@@ -72,6 +72,11 @@ const ProductCard = ({ item, favProd }) => {
                 transform: isHovered ? "scale(1.1)" : "scale(1)",
               }}
               src={productImage}
+              alt={item?.title || "منتج"}
+              loading="lazy"
+              decoding="async"
+              width={400}
+              height={240}
             />
             {/* Dark overlay on hover */}
             <div
@@ -87,31 +92,52 @@ const ProductCard = ({ item, favProd }) => {
               }}
             />
 
-            {item.priceAfterDiscount && (
-              <div
-                className="discount-badge"
-                style={{
-                  position: "absolute",
-                  top: "15px",
-                  left: "15px",
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: "25px",
-                  fontSize: "13px",
-                  fontWeight: "800",
-                  boxShadow: "0 4px 15px rgba(245, 87, 108, 0.4)",
-                  animation: "pulse 2s infinite",
-                }}
-              >
-                خصم{" "}
-                {Math.round(
-                  ((item.price - item.priceAfterDiscount) / item.price) * 100
-                )}
-                %
-              </div>
-            )}
+            {/* Badges */}
+            <div style={{ position: "absolute", top: "15px", left: "15px", display: "flex", flexDirection: "column", gap: "8px" }}>
+              {item.priceAfterDiscount && (
+                <div
+                  className="discount-badge"
+                  style={{
+                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "25px",
+                    fontSize: "13px",
+                    fontWeight: "800",
+                    boxShadow: "0 4px 15px rgba(245, 87, 108, 0.4)",
+                    animation: "pulse 2s infinite",
+                  }}
+                >
+                  خصم{" "}
+                  {Math.round(
+                    ((item.price - item.priceAfterDiscount) / item.price) * 100
+                  )}
+                  %
+                </div>
+              )}
+              
+              {/* New badge - show if product is less than 14 days old */}
+              {(() => {
+                const createdDate = new Date(item.createdAt);
+                const now = new Date();
+                const daysDiff = (now - createdDate) / (1000 * 60 * 60 * 24);
+                return daysDiff <= 14;
+              })() && (
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #00b894 0%, #00cec9 100%)",
+                    color: "white",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    fontSize: "12px",
+                    fontWeight: "800",
+                    boxShadow: "0 3px 10px rgba(0, 184, 148, 0.4)",
+                  }}
+                >
+                  جديد
+                </div>
+              )}
+            </div>
           </div>
         </Link>
 

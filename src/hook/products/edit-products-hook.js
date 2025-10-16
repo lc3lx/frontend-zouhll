@@ -56,6 +56,28 @@ const AdminEditProductsHook = (id) => {
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Variant builder state (for edit)
+  const [variants, setVariants] = useState([]);
+  const addVariant = () => {
+    setVariants((prev) => [
+      ...prev,
+      { colorName: "", colorHex: "#000000", price: "", sku: "", images: {}, sizes: [] },
+    ]);
+  };
+  const removeVariant = (index) => setVariants((prev) => prev.filter((_, i) => i !== index));
+  const setVariantField = (index, field, value) =>
+    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+  const setVariantImages = (index, imagesObj) => setVariantField(index, "images", imagesObj);
+  const addVariantSize = (index, label, stock) => {
+    if (!label) return;
+    const s = { label, stock: Number(stock || 0) };
+    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v)));
+  };
+  const removeVariantSize = (vIndex, sIndex) =>
+    setVariants((prev) =>
+      prev.map((v, i) => (i === vIndex ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) } : v))
+    );
+
   useEffect(() => {
     if (item.data) {
       console.log(item.data.images);
@@ -68,6 +90,18 @@ const AdminEditProductsHook = (id) => {
       setCatID(item.data.category);
       SetBrandID(item.data.brand);
       setColors(item.data.availableColors);
+      if (Array.isArray(item.data.variants)) {
+        // initialize variants without pre-filling images (admin can re-upload per color)
+        const init = item.data.variants.map((v) => ({
+          colorName: v?.color?.name || "",
+          colorHex: v?.color?.hex || "#000000",
+          price: v?.price || "",
+          sku: v?.sku || "",
+          images: {},
+          sizes: Array.isArray(v?.sizes) ? v.sizes.map((s) => ({ label: s.label, stock: s.stock })) : [],
+        }));
+        setVariants(init);
+      }
     }
   }, [item]);
 
@@ -203,6 +237,7 @@ const AdminEditProductsHook = (id) => {
     formData.append("description", prodDescription);
     formData.append("quantity", qty);
     formData.append("price", priceBefore);
+    if (priceAftr && Number(priceAftr) > 0) formData.append("priceAfterDiscount", priceAftr);
     if (productUrl) formData.append("productUrl", productUrl);
     formData.append("category", CatID);
     formData.append("brand", BrandID);
@@ -217,12 +252,38 @@ const AdminEditProductsHook = (id) => {
       console.log(itemImages);
     }, 1000);
 
-    colors.map((color) => formData.append("availableColors", color));
-    seletedSubID.map((item) => formData.append("subcategory", item._id));
+    colors.map((color) => formData.append("colors", color));
+    seletedSubID.map((item) => formData.append("subcategories", item._id));
+
+    // Build variants payload if any
+    try {
+      if (Array.isArray(variants) && variants.length > 0) {
+        const variantImageMap = [];
+        const variantPayload = variants.map((v) => {
+          const keys = Object.keys(v.images || {});
+          const files = keys.map((_, idx) => dataURLtoFile(v.images[idx], Math.random() + ".png"));
+          files.forEach((f) => formData.append("variantImages", f));
+          variantImageMap.push(files.length);
+          const cleanSizes = (v.sizes || []).map((s) => ({ label: s.label, stock: Number(s.stock || 0) }));
+          const payload = {
+            color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
+            sizes: cleanSizes,
+          };
+          if (v.sku) payload.sku = v.sku;
+          if (v.price) payload.price = Number(v.price);
+          return payload;
+        });
+        formData.append("variants", JSON.stringify(variantPayload));
+        formData.append("variantImageMap", JSON.stringify(variantImageMap));
+      }
+    } catch (err) {
+      console.warn("Variant build error", err);
+    }
+
     setTimeout(async () => {
-      // setLoading(true)
-      //   await dispatch(updateProducts(id, formData))
-      //  setLoading(false)
+      setLoading(true)
+      await dispatch(updateProducts(id, formData))
+      setLoading(false)
     }, 1000);
   };
 
@@ -284,6 +345,14 @@ const AdminEditProductsHook = (id) => {
     prodDescription,
     prodName,
     productUrl,
+    // variants export
+    variants,
+    addVariant,
+    removeVariant,
+    setVariantField,
+    setVariantImages,
+    addVariantSize,
+    removeVariantSize,
   ];
 };
 

@@ -4,20 +4,18 @@ import logo from '../../images/logo.png'
 import login from '../../images/login.png'
 import cart from '../../images/cart.png'
 import NavbarSearchHook from './../../hook/search/navbar-search-hook';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLoggedUser } from './../../redux/actions/authAction';
 import GetAllUserCartHook from './../../hook/cart/get-all-user-cart-hook';
 const NavBarLogin = () => {
     //const dispatch = useDispatch()
 
-    const [OnChangeSearch, searchWord] = NavbarSearchHook()
+    const [OnChangeSearch] = NavbarSearchHook()
     let word = "";
-    if (localStorage.getItem("searchWord") != null)
+    if (localStorage.getItem("searchWord") !== null)
         word = localStorage.getItem("searchWord")
 
     const [user, setUser] = useState('');
     useEffect(() => {
-        if (localStorage.getItem("user") != null)
+        if (localStorage.getItem("user") !== null)
             setUser(JSON.parse(localStorage.getItem("user")))
     }, [])
 
@@ -34,7 +32,7 @@ const NavBarLogin = () => {
             <Container>
                 <Navbar.Brand>
                     <a href='/'>
-                        <img src={logo} className='logo' />
+                        <img src={logo} className='logo' alt="زوحل" />
                     </a>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -48,8 +46,17 @@ const NavBarLogin = () => {
                         aria-label="Search"
                     />
                     <Nav className="me-auto">
+                        <Nav.Link href="/categories" className="nav-text" style={{ color: "white" }}>
+                            التصنيفات
+                        </Nav.Link>
+                        <Nav.Link href="/allbrand" className="nav-text" style={{ color: "white" }}>
+                            الماركات
+                        </Nav.Link>
+                        <Nav.Link href="/products" className="nav-text" style={{ color: "white" }}>
+                            المنتجات
+                        </Nav.Link>
                         {
-                            user != '' ? (
+                            user !== '' ? (
                                 <NavDropdown title={user.name} id="basic-nav-dropdown">
 
 

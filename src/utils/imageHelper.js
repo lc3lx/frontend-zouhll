@@ -1,7 +1,7 @@
 // Image Helper Utility
 // مساعد لعرض الصور من الـ Backend
 
-const BACKEND_URL = "https://backend-zouhal.onrender.com";
+const BACKEND_URL = "https://www.zuhall.com";
 
 /**
  * تحويل مسار الصورة النسبي إلى مسار كامل
@@ -13,18 +13,21 @@ export const getImageUrl = (imagePath) => {
     return "/images/placeholder.png"; // صورة افتراضية
   }
 
+  // تنظيف المسار من المسافات الزائدة
+  const cleanPath = imagePath.toString().trim();
+
   // إذا كانت الصورة تبدأ بـ http أو https (رابط كامل)
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    return imagePath;
+  if (cleanPath.startsWith("http://") || cleanPath.startsWith("https://")) {
+    return cleanPath;
   }
 
   // إذا كانت الصورة تبدأ بـ /
-  if (imagePath.startsWith("/")) {
-    return `${BACKEND_URL}${imagePath}`;
+  if (cleanPath.startsWith("/")) {
+    return `${BACKEND_URL}${cleanPath}`;
   }
 
   // إذا كانت الصورة مسار نسبي
-  return `${BACKEND_URL}/${imagePath}`;
+  return `${BACKEND_URL}/${cleanPath}`;
 };
 
 /**
@@ -94,10 +97,12 @@ export const getProductGalleryImages = (product) => {
   ];
 };
 
-export default {
+const imageHelper = {
   getImageUrl,
   getProductImage,
   getCategoryImage,
   getBrandImage,
   getProductGalleryImages,
 };
+
+export default imageHelper;

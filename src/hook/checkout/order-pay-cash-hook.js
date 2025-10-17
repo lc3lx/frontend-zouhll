@@ -29,13 +29,16 @@ const OrderPayCashHook = () => {
     //get address detalis for user
     const resAddress = useSelector(state => state.userAddressesReducer.oneAddress)
     useEffect(() => {
-        if (loading === false) {
-            if (resAddress && resAddress.status === "success") {
+        if (resAddress) {
+            if (resAddress.status === "success" && resAddress.data) {
                 setAddressDetalis(resAddress.data)
-            } else
+            } else if (resAddress.data) {
+                setAddressDetalis(resAddress.data)
+            } else {
                 setAddressDetalis([])
+            }
         }
-    }, [loading])
+    }, [resAddress])
 
 
 
@@ -45,7 +48,7 @@ const OrderPayCashHook = () => {
             notify("من فضلك اضف منتجات الى العربه اولا", "warn")
             return
         }
-        if (addressDetalis.length <= 0) {
+        if (!addressDetalis || !addressDetalis._id) {
             notify("من فضلك اختر عنوان اولا", "warn")
             return
         }

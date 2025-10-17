@@ -15,6 +15,7 @@ const inital = {
   updateSubcategory: {},
   deleteSubcategory: {},
   loading: true,
+  error: null,
 };
 const subcategoryReducer = (state = inital, action) => {
   switch (action.type) {
@@ -57,8 +58,8 @@ const subcategoryReducer = (state = inital, action) => {
     case GET_ERROR:
       return {
         ...state,
-        loading: true,
-        subcategory: action.payload,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;

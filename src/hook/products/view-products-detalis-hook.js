@@ -46,18 +46,34 @@ const ViewProductsDetalisHook = (prodID) => {
 
   //to show category item
   let cat = [];
-  if (oneCategory.data) cat = oneCategory.data;
-  else cat = [];
+  if (item.category) {
+    cat = item.category;
+  } else if (oneCategory.data) {
+    cat = oneCategory.data;
+  } else {
+    cat = [];
+  }
 
   //to show brand item
   let brand = [];
-  if (oneBrand.data) brand = oneBrand.data;
-  else brand = [];
+  if (item.brand) {
+    brand = item.brand;
+  } else if (oneBrand && oneBrand.data) {
+    brand = oneBrand.data;
+  } else {
+    brand = [];
+  }
 
   let prod = [];
-  if (productLike) prod = productLike.data;
+  if (productLike && productLike.data) prod = productLike.data;
   else prod = [];
-  return [item, images, cat, brand, prod];
+
+  // Debug logs
+  console.log('Product item:', item);
+  console.log('Category:', cat);
+  console.log('Brand:', brand);
+
+  return [item, images, cat, brand];
 };
 
 export default ViewProductsDetalisHook;

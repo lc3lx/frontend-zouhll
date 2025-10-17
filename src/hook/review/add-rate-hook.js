@@ -12,7 +12,7 @@ const AddRateHook = (id) => {
     const [rateText, setRateText] = useState('')
     const [rateValue, setRateValue] = useState(0)
 
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
 
 
     const OnChangeRateText = (e) => {
@@ -32,10 +32,19 @@ const AddRateHook = (id) => {
             notify("من فضلك اكتب تعليق", "error")
             return
         }
+        if (rateValue === 0) {
+            notify("من فضلك اختر تقييم", "error")
+            return
+        }
+        if (!user) {
+            notify("يجب تسجيل الدخول أولاً", "error")
+            return
+        }
+        
         setLoading(true)
         await dispatch(createReview(id, {
-            review: rateText,
-            rating: rateValue
+            title: rateText,
+            ratings: rateValue
         }))
         setLoading(false)
     }
@@ -43,22 +52,30 @@ const AddRateHook = (id) => {
     const res = useSelector(state => state.reviewReducer.createView)
 
     useEffect(() => {
-        if (loading === false) {
-            if (res) {
-                console.log(res)
-                if (res.status && res.status === 403) {
-                    notify("غير مسموح للادمن بالتقييم", "error")
-                } else if (res.data.errors && res.data.errors[0].msg === "You already added review on this product") {
+        if (loading === false && res) {
+            console.log('Review response:', res)
+            
+            if (res.status === 403) {
+                notify("غير مسموح للادمن بالتقييم", "error")
+            } else if (res.status === 400 && res.data?.errors) {
+                const errorMsg = res.data.errors[0]?.msg || "خطأ في البيانات"
+                if (errorMsg.includes("already created a review")) {
                     notify("لقد قمت باضافة تقييم لهذا المنتج مسبقا", "error")
-                } else if (res.status && res.status === 201) {
-                    notify("تمت اضافة التقييم بنجاح", "success")
-                    setTimeout(() => {
-                        window.location.reload(false)
-                    }, 1000);
+                } else {
+                    notify(errorMsg, "error")
                 }
+            } else if (res.status === 201 && res.data) {
+                notify("تمت اضافة التقييم بنجاح", "success")
+                setRateText('')
+                setRateValue(0)
+                setTimeout(() => {
+                    window.location.reload(false)
+                }, 1000);
+            } else if (res.status >= 400) {
+                notify("حدث خطأ أثناء إضافة التقييم", "error")
             }
         }
-    }, [loading])
+    }, [loading, res])
 
     return [OnChangeRateText, OnChangeRateValue, rateText, rateValue, user, onSubmit]
 }

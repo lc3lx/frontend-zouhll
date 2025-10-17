@@ -8,6 +8,7 @@ import {
 import { useGetData } from "../../hooks/useGetData";
 import { useInsertDataWithImage } from "../../hooks/useInsertData";
 import { useInUpdateDataWithImage } from "../../hooks/useUpdateData";
+import useDeleteData from "../../hooks/useDeleteData";
 //get all category
 export const getAllCategory = (limit) => async (dispatch) => {
   try {
@@ -91,6 +92,22 @@ export const updateCategory = (id, formData) => async (dispatch) => {
       type: UPDATE_CATEGORY,
       payload: response,
       loading: true,
+    });
+  } catch (e) {
+    dispatch({
+      type: GET_ERROR,
+      payload: "Error " + e,
+    });
+  }
+};
+
+//delete category
+export const deleteCategory = (id) => async (dispatch) => {
+  try {
+    const response = await useDeleteData(`/api/v1/categories/${id}`);
+    dispatch({
+      type: GET_ALL_CATEGORY,
+      payload: response,
     });
   } catch (e) {
     dispatch({

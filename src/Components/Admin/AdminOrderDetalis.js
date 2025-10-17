@@ -9,9 +9,37 @@ import { ToastContainer } from 'react-toastify';
 
 const AdminOrderDetalis = () => {
     const { id } = useParams()
-    const [orderData, cartItems] = GetOrderDetalisHook(id)
+    const [orderData, cartItems, loading] = GetOrderDetalisHook(id)
 
     const [formatDate, onChangePaid, changePayOrder, onChangeDeliver, changeDeliverOrder] = ChangeOrderStatusHook(id)
+
+    // إذا كان هناك تحميل
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+                <div className="text-center">
+                    <div className="spinner-border text-primary mb-3" role="status">
+                        <span className="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p>جاري تحميل تفاصيل الطلب...</p>
+                </div>
+            </div>
+        )
+    }
+    
+    // إذا لم يتم العثور على بيانات الطلب
+    if (!orderData || Object.keys(orderData).length === 0) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+                <div className="text-center">
+                    <div className="alert alert-warning" role="alert">
+                        <h4>لم يتم العثور على الطلب</h4>
+                        <p>الطلب الذي تبحث عنه غير موجود أو تم حذفه</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div>

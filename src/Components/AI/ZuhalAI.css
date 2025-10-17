@@ -1,0 +1,634 @@
+/* زحل AI - تصميم واجهة الدردشة */
+
+/* الزر العائم */
+.zuhal-ai-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 9998;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.zuhal-ai-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+}
+
+.zuhal-ai-button.hidden {
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.zuhal-ai-button-icon {
+  color: white;
+  z-index: 2;
+}
+
+.zuhal-ai-button-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.zuhal-ai-button-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ff4757;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: badge-bounce 2s ease-in-out infinite;
+}
+
+@keyframes badge-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* نافذة الدردشة */
+.zuhal-ai-chat {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 380px;
+  height: 600px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  transform: scale(0);
+  opacity: 0;
+  transform-origin: bottom right;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  overflow: hidden;
+}
+
+.zuhal-ai-chat.open {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* رأس الدردشة */
+.zuhal-ai-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.zuhal-ai-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zuhal-ai-avatar {
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.zuhal-ai-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.zuhal-ai-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.zuhal-ai-status-dot {
+  width: 8px;
+  height: 8px;
+  background: #4cd137;
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.zuhal-ai-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.zuhal-ai-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* منطقة الرسائل */
+.zuhal-ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f8f9fa;
+  scroll-behavior: smooth;
+}
+
+.zuhal-ai-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.zuhal-ai-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.zuhal-ai-messages::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.zuhal-ai-messages::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* الرسائل */
+.zuhal-ai-message {
+  margin-bottom: 16px;
+  display: flex;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zuhal-ai-message.user {
+  justify-content: flex-end;
+}
+
+.zuhal-ai-message.bot {
+  justify-content: flex-start;
+}
+
+.zuhal-ai-message-content {
+  max-width: 75%;
+}
+
+.zuhal-ai-message-text {
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-line;
+}
+
+.zuhal-ai-message.user .zuhal-ai-message-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.zuhal-ai-message.bot .zuhal-ai-message-text {
+  background: white;
+  color: #2c3e50;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.zuhal-ai-message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  padding: 0 8px;
+}
+
+/* مؤشر الكتابة */
+.zuhal-ai-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.zuhal-ai-typing span {
+  width: 8px;
+  height: 8px;
+  background: #999;
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+.zuhal-ai-typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.zuhal-ai-typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+/* المنتجات المقترحة */
+.zuhal-ai-products {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.zuhal-ai-products-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.zuhal-ai-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.zuhal-ai-product-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.zuhal-ai-product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.zuhal-ai-product-card img {
+  width: 100%;
+  height: 60px;
+  object-fit: cover;
+}
+
+.zuhal-ai-product-info {
+  padding: 6px;
+}
+
+.zuhal-ai-product-title {
+  font-size: 11px;
+  color: #2c3e50;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+.zuhal-ai-product-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* التصنيفات */
+.zuhal-ai-categories {
+  margin-top: 12px;
+}
+
+.zuhal-ai-categories-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.zuhal-ai-categories-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.zuhal-ai-category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 16px;
+  font-size: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.zuhal-ai-category-chip:hover {
+  background: #1976d2;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* الماركات */
+.zuhal-ai-brands {
+  margin-top: 12px;
+}
+
+.zuhal-ai-brands-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.zuhal-ai-brands-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.zuhal-ai-brand-chip {
+  padding: 6px 12px;
+  background: #fff3e0;
+  color: #f57c00;
+  border-radius: 16px;
+  font-size: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.zuhal-ai-brand-chip:hover {
+  background: #f57c00;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* الأزرار السريعة */
+.zuhal-ai-quick-actions {
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.zuhal-ai-quick-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.zuhal-ai-quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.zuhal-ai-quick-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zuhal-ai-quick-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* منطقة الإدخال */
+.zuhal-ai-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  border-radius: 0 0 20px 20px;
+}
+
+.zuhal-ai-input input {
+  flex: 1;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.zuhal-ai-input input:focus {
+  background: white;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.zuhal-ai-send {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zuhal-ai-send:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.zuhal-ai-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* استجابة للموبايل */
+@media (max-width: 480px) {
+  .zuhal-ai-chat {
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+
+  .zuhal-ai-header {
+    border-radius: 0;
+  }
+
+  .zuhal-ai-input {
+    border-radius: 0;
+  }
+
+  .zuhal-ai-button {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .zuhal-ai-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .zuhal-ai-quick-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* تأثيرات إضافية */
+.zuhal-ai-chat * {
+  box-sizing: border-box;
+}
+
+.zuhal-ai-chat {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* الاقتراحات الديناميكية */
+.zuhal-ai-dynamic-suggestions {
+  margin-top: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  animation: slideIn 0.3s ease;
+}
+
+.zuhal-ai-suggestions-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.zuhal-ai-suggestions-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.zuhal-ai-suggestion-chip {
+  padding: 8px 14px;
+  background: white;
+  color: #667eea;
+  border: 1px solid #667eea;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.zuhal-ai-suggestion-chip:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* دعم اللغة العربية */
+.zuhal-ai-chat[dir="rtl"] {
+  direction: rtl;
+}
+
+.zuhal-ai-chat[dir="rtl"] .zuhal-ai-message.user {
+  justify-content: flex-start;
+}
+
+.zuhal-ai-chat[dir="rtl"] .zuhal-ai-message.bot {
+  justify-content: flex-end;
+}
+
+.zuhal-ai-chat[dir="rtl"] .zuhal-ai-message.user .zuhal-ai-message-text {
+  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: 4px;
+}
+
+.zuhal-ai-chat[dir="rtl"] .zuhal-ai-message.bot .zuhal-ai-message-text {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 4px;
+}

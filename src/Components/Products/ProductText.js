@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ViewProductsDetalisHook from "./../../hook/products/view-products-detalis-hook";
 import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -10,6 +10,7 @@ import notify from "../../hook/useNotifaction";
 
 const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSize, setSelectedSize }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [item, images, cat, brand] = ViewProductsDetalisHook(id);
   const dispatch = useDispatch();
   const [indexColor, setIndexColor] = useState(null);
@@ -78,420 +79,332 @@ const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSi
     notify("تمت إضافة المنتج للعربة", "success");
   };
 
+  const onBuyNow = async () => {
+    // Validate product selection first (same validation as add to cart)
+    if (variants.length > 0) {
+      if (selectedVariantIndex === null) {
+        notify("من فضلك اختر لون اولا للمنتج", "warn");
+        return;
+      }
+      const v = currentVariant;
+      if (v?.sizes && v.sizes.length > 0) {
+        if (!selectedSize) {
+          notify("من فضلك اختر القياس", "warn");
+          return;
+        }
+        if (typeof selectedSize.stock === "number" && selectedSize.stock <= 0) {
+          notify("القياس غير متوفر حالياً", "warn");
+          return;
+        }
+      }
+      const colorValue = v?.color?.name || v?.color?.hex || "";
+      const body = { productId: id, color: colorValue };
+      if (selectedSize?.label) body.size = selectedSize.label;
+      await dispatch(addProductToCart(body));
+      notify("تم إضافة المنتج للسلة، جاري التوجه للدفع...", "success");
+      // Navigate to cart page after adding to cart
+      setTimeout(() => {
+        navigate("/cart");
+      }, 1000);
+      return;
+    }
+
+    // Fallback: old behavior based on colors (new) or availableColors (legacy) without size
+    const flatColors = Array.isArray(item?.colors) ? item.colors : (Array.isArray(item?.availableColors) ? item.availableColors : []);
+    if (flatColors.length > 0) {
+      if (indexColor === null) {
+        notify("من فضلك اختر لون اولا للمنتج", "warn");
+        return;
+      }
+      const colorValue = flatColors[indexColor];
+      await dispatch(addProductToCart({ productId: id, color: colorValue }));
+    } else {
+      await dispatch(addProductToCart({ productId: id }));
+    }
+    notify("تم إضافة المنتج للسلة، جاري التوجه للدفع...", "success");
+    // Navigate to cart page after adding to cart
+    setTimeout(() => {
+      navigate("/cart");
+    }, 1000);
+  };
+
   return (
-    <div
-      style={{
-        background: "rgba(255, 255, 255, 0.95)",
-        backdropFilter: "blur(10px)",
-        borderRadius: "25px",
-        padding: "30px",
-        boxShadow: "0 8px 32px rgba(102, 126, 234, 0.15)",
-        border: "2px solid rgba(102, 126, 234, 0.1)",
-      }}
-    >
-      {/* Category Badge */}
-      <Row className="mb-3">
-        <Col>
-          <span
-            style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              color: "white",
-              padding: "8px 20px",
-              borderRadius: "20px",
-              fontSize: "14px",
-              fontWeight: "700",
-              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-              display: "inline-block",
-            }}
-          >
-            {cat.name}
-          </span>
-        </Col>
-      </Row>
+    <div style={{ padding: '0' }}>
+      {/* Stock Status */}
+      <div style={{ marginBottom: '8px' }}>
+        <span style={{
+          fontSize: '14px',
+          color: (selectedSize?.stock ?? item.quantity) > 0 ? '#007600' : '#B12704',
+          fontWeight: '500'
+        }}>
+          {(selectedSize?.stock ?? item.quantity) > 0 ? 'متوفر في المخزون' : 'غير متوفر حالياً'}
+        </span>
+      </div>
 
       {/* Product Title & Rating */}
-      <Row className="mb-3">
-        <Col>
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "800",
-              color: "#2d3748",
-              marginBottom: "15px",
-              lineHeight: "1.4",
-            }}
-          >
-            {item.title}
-          </h2>
-          <div
-            style={{
-              background: "linear-gradient(135deg, #ffeaa7, #fdcb6e)",
-              padding: "8px 16px",
-              borderRadius: "20px",
-              display: "inline-flex",
-              alignItems: "center",
-              boxShadow: "0 2px 8px rgba(253, 203, 110, 0.3)",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "20px",
-                marginLeft: "5px",
-              }}
-            >
-              ⭐
-            </span>
-            <span
-              style={{
-                color: "#d63031",
-                fontWeight: "800",
-                fontSize: "16px",
-              }}
-            >
-              {item.ratingsAverage || 0}
-            </span>
+      <div style={{ marginBottom: '16px' }}>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: '400',
+          color: '#0f1111',
+          marginBottom: '8px',
+          lineHeight: '1.3'
+        }}>
+          {item.title}
+        </h1>
+        
+        {/* Rating */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+            {[...Array(5)].map((_, i) => (
+              <span key={i} style={{
+                color: i < Math.floor(item.ratingsAverage || 0) ? '#ff9900' : '#ddd',
+                fontSize: '14px'
+              }}>★</span>
+            ))}
           </div>
-        </Col>
-      </Row>
+          <span style={{
+            fontSize: '14px',
+            color: '#007185',
+            textDecoration: 'none',
+            cursor: 'pointer'
+          }}>
+            {item.ratingsQuantity || 0} تقييم
+          </span>
+        </div>
+        
+        {/* Brand */}
+        <div style={{ fontSize: '14px', color: '#565959', marginBottom: '8px' }}>
+          الماركة: <span style={{ color: '#007185', cursor: 'pointer' }}>{brand?.name || 'غير محدد'}</span>
+        </div>
+      </div>
 
-      {/* Brand */}
-      <Row className="mb-4">
-        <Col>
-          <div
-            style={{
-              background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-              padding: "15px 20px",
-              borderRadius: "15px",
-              display: "inline-block",
-            }}
-          >
-            <span
-              style={{
-                color: "#4a5568",
-                fontSize: "15px",
-                fontWeight: "600",
-                marginLeft: "8px",
-              }}
-            >
-              الماركة:
-            </span>
-            <span
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: "17px",
-                fontWeight: "800",
-              }}
-            >
-              {brand.name}
-            </span>
-          </div>
-        </Col>
-      </Row>
 
-      {/* Colors & Quantity */}
-      <Row className="mb-4">
-        <Col>
-          {(variants.length > 0 || (item.availableColors && item.availableColors.length > 0)) && (
-            <div className="mb-3">
-              <div
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "700",
-                  color: "#2d3748",
-                  marginBottom: "12px",
-                }}
-              >
-                الألوان المتاحة:
-              </div>
-              <div className="d-flex flex-wrap gap-2">
-                {variants.length > 0
-                  ? variants.map((v, index) => (
-                      <div
-                        key={index}
-                        title={v?.color?.name || ""}
-                        onClick={() => onSelectVariant(index)}
-                        style={{
-                          width: "45px",
-                          height: "45px",
-                          borderRadius: "50%",
-                          backgroundColor: v?.color?.hex || "#e2e8f0",
-                          border:
-                            selectedVariantIndex === index
-                              ? "4px solid #667eea"
-                              : "2px solid rgba(0,0,0,0.1)",
-                          cursor: "pointer",
-                          transition: "all 0.3s ease",
-                          boxShadow:
-                            selectedVariantIndex === index
-                              ? "0 4px 15px rgba(102, 126, 234, 0.4)"
-                              : "0 2px 8px rgba(0,0,0,0.1)",
-                          transform:
-                            selectedVariantIndex === index ? "scale(1.1)" : "scale(1)",
-                        }}
-                      />
-                    ))
-                  : (Array.isArray(item?.colors) ? item.colors : (item.availableColors || [])).map((color, index) => (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          setIndexColor(index);
-                        }}
-                        style={{
-                          width: "45px",
-                          height: "45px",
-                          borderRadius: "50%",
-                          backgroundColor: color,
-                          border:
-                            indexColor === index
-                              ? "4px solid #667eea"
-                              : "2px solid rgba(0,0,0,0.1)",
-                          cursor: "pointer",
-                          transition: "all 0.3s ease",
-                          boxShadow:
-                            indexColor === index
-                              ? "0 4px 15px rgba(102, 126, 234, 0.4)"
-                              : "0 2px 8px rgba(0,0,0,0.1)",
-                          transform:
-                            indexColor === index ? "scale(1.1)" : "scale(1)",
-                        }}
-                      />
-                    ))}
-              </div>
+      {/* Colors & Sizes */}
+      <div style={{ marginBottom: '20px' }}>
+        {(variants.length > 0 || (item.availableColors && item.availableColors.length > 0)) && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#0f1111',
+              marginBottom: '8px'
+            }}>
+              اللون:
             </div>
-          )}
-
-          {/* Sizes for selected variant */}
-          {currentVariant?.sizes && currentVariant.sizes.length > 0 && (
-            <div className="mb-3">
-              <div
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "700",
-                  color: "#2d3748",
-                  marginBottom: "12px",
-                }}
-              >
-                القياسات المتاحة:
-              </div>
-              <div className="d-flex flex-wrap gap-2">
-                {currentVariant.sizes.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => onSelectSize(s)}
-                    disabled={typeof s.stock === "number" && s.stock <= 0}
-                    className="btn"
-                    style={{
-                      borderRadius: "10px",
-                      padding: "8px 14px",
-                      background:
-                        selectedSize?.label === s.label ? "#667eea" : "#f1f5f9",
-                      color: selectedSize?.label === s.label ? "white" : "#334155",
-                      border: "1px solid #e2e8f0",
-                      opacity: typeof s.stock === "number" && s.stock <= 0 ? 0.5 : 1,
-                    }}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {variants.length > 0
+                ? variants.map((v, index) => (
+                    <div
+                      key={index}
+                      title={v?.color?.name || ""}
+                      onClick={() => onSelectVariant(index)}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '4px',
+                        backgroundColor: v?.color?.hex || '#e2e8f0',
+                        border: selectedVariantIndex === index
+                          ? '2px solid #ff9900'
+                          : '1px solid #ddd',
+                        cursor: 'pointer',
+                        position: 'relative'
+                      }}
+                      className={`color-option ${selectedVariantIndex === index ? 'selected' : ''}`}
+                    >
+                      {selectedVariantIndex === index && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          color: '#fff',
+                          fontSize: '12px'
+                        }}>✓</div>
+                      )}
+                    </div>
+                  ))
+                : (Array.isArray(item?.colors) ? item.colors : (item.availableColors || [])).map((color, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setIndexColor(index)}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '4px',
+                        backgroundColor: color,
+                        border: indexColor === index
+                          ? '2px solid #ff9900'
+                          : '1px solid #ddd',
+                        cursor: 'pointer',
+                        position: 'relative'
+                      }}
+                      className={`color-option ${indexColor === index ? 'selected' : ''}`}
+                    >
+                      {indexColor === index && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          color: '#fff',
+                          fontSize: '12px'
+                        }}>✓</div>
+                      )}
+                    </div>
+                  ))}
             </div>
-          )}
-
-          <div
-            style={{
-              background: "linear-gradient(135deg, #d4fc79, #96e6a1)",
-              padding: "12px 20px",
-              borderRadius: "15px",
-              display: "inline-block",
-              boxShadow: "0 2px 8px rgba(150, 230, 161, 0.3)",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "15px",
-                fontWeight: "700",
-                color: "#2d3748",
-              }}
-            >
-              الكمية المتاحة:
-            </span>
-            <span
-              style={{
-                fontSize: "18px",
-                fontWeight: "900",
-                color: "#27ae60",
-                marginRight: "8px",
-              }}
-            >
-              {selectedSize?.stock ?? item.quantity}
-            </span>
           </div>
-        </Col>
-      </Row>
+        )}
 
-      {/* Description */}
-      <Row className="mb-4">
-        <Col>
-          <div
-            style={{
-              fontSize: "18px",
-              fontWeight: "700",
-              color: "#2d3748",
-              marginBottom: "12px",
-            }}
-          >
-            المواصفات:
-          </div>
-          <div
-            style={{
-              fontSize: "15px",
-              color: "#4a5568",
-              lineHeight: "1.8",
-              padding: "20px",
-              background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
-              borderRadius: "15px",
-              borderRight: "4px solid #667eea",
-            }}
-          >
-            {item.description}
-          </div>
-        </Col>
-      </Row>
-
-      {/* Price & Add to Cart */}
-      <Row className="mt-4">
-        <Col md="12" className="d-flex flex-wrap align-items-center gap-3">
-          {currentVariant?.price ? (
-            <div
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                padding: "15px 30px",
-                borderRadius: "20px",
-                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-              }}
-            >
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "24px",
-                  fontWeight: "900",
-                }}
-              >
-                {currentPrice}
-              </span>
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  marginRight: "5px",
-                }}
-              >
-                usd
-              </span>
+        {/* Sizes for selected variant */}
+        {currentVariant?.sizes && currentVariant.sizes.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#0f1111',
+              marginBottom: '8px'
+            }}>
+              المقاس:
             </div>
-          ) : item.priceAfterDiscount >= 1 ? (
-            <div
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                padding: "15px 30px",
-                borderRadius: "20px",
-                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-              }}
-            >
-              <span
-                style={{
-                  textDecoration: "line-through",
-                  color: "rgba(255,255,255,0.7)",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  marginLeft: "10px",
-                }}
-              >
-                {item.price}
-              </span>
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "24px",
-                  fontWeight: "900",
-                }}
-              >
-                {currentPrice}
-              </span>
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  marginRight: "5px",
-                }}
-              >
-                usd
-              </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {currentVariant.sizes.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => onSelectSize(s)}
+                  disabled={typeof s.stock === 'number' && s.stock <= 0}
+                  className="size-option"
+                  style={{
+                    padding: '8px 12px',
+                    border: selectedSize?.label === s.label ? '2px solid #ff9900' : '1px solid #ddd',
+                    background: selectedSize?.label === s.label ? '#fff3cd' : '#fff',
+                    color: '#0f1111',
+                    borderRadius: '4px',
+                    cursor: typeof s.stock === 'number' && s.stock <= 0 ? 'not-allowed' : 'pointer',
+                    opacity: typeof s.stock === 'number' && s.stock <= 0 ? 0.5 : 1,
+                    fontSize: '14px'
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
+          </div>
+        )}
+
+        <div style={{ fontSize: '14px', color: '#565959', marginBottom: '16px' }}>
+          الكمية المتاحة: <span style={{ color: '#007600', fontWeight: '500' }}>{selectedSize?.stock ?? item.quantity}</span>
+        </div>
+      </div>
+
+
+      {/* Price */}
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          {item.priceAfterDiscount >= 1 ? (
+            <>
+              <span style={{
+                fontSize: '24px',
+                fontWeight: '400',
+                color: '#B12704'
+              }}>
+                ${currentPrice}
+              </span>
+              <span style={{
+                fontSize: '14px',
+                color: '#565959',
+                textDecoration: 'line-through'
+              }}>
+                ${item.price}
+              </span>
+            </>
           ) : (
-            <div
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                padding: "15px 30px",
-                borderRadius: "20px",
-                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-              }}
-            >
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "24px",
-                  fontWeight: "900",
-                }}
-              >
-                {currentPrice}
-              </span>
-              <span
-                style={{
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  marginRight: "5px",
-                }}
-              >
-                usd
-              </span>
-            </div>
+            <span style={{
+              fontSize: '24px',
+              fontWeight: '400',
+              color: '#B12704'
+            }}>
+              ${currentPrice}
+            </span>
           )}
-
-          <button
-            onClick={onAddToCart}
-            style={{
-              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-              border: "none",
-              padding: "15px 40px",
-              borderRadius: "20px",
-              color: "white",
-              fontSize: "16px",
-              fontWeight: "800",
-              cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(245, 87, 108, 0.4)",
-              transition: "all 0.3s ease",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-3px) scale(1.05)";
-              e.target.style.boxShadow = "0 8px 25px rgba(245, 87, 108, 0.6)";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(0) scale(1)";
-              e.target.style.boxShadow = "0 4px 15px rgba(245, 87, 108, 0.4)";
-            }}
-          >
-            🛒 أضف للعربة
-          </button>
-        </Col>
-      </Row>
+        </div>
+        
+        {/* Free shipping notice */}
+        <div style={{ fontSize: '14px', color: '#007185', marginTop: '4px' }}>
+          شحن مجاني للطلبات أكثر من $50
+        </div>
+      </div>
+      {/* Add to Cart */}
+      <div style={{ marginBottom: '20px' }}>
+        <button
+          onClick={onAddToCart}
+          className="add-to-cart-btn"
+          style={{
+            background: '#ff9900',
+            border: '1px solid #e47911',
+            borderRadius: '8px',
+            padding: '10px 20px',
+            color: '#0f1111',
+            fontSize: '14px',
+            fontWeight: '400',
+            cursor: 'pointer',
+            width: '100%',
+            marginBottom: '8px'
+          }}
+        >
+          أضف إلى السلة
+        </button>
+        
+        <button 
+          onClick={onBuyNow}
+          className="buy-now-btn"
+          style={{
+            background: '#ffa41c',
+            border: '1px solid #ff8f00',
+            borderRadius: '8px',
+            padding: '10px 20px',
+            color: '#0f1111',
+            fontSize: '14px',
+            fontWeight: '400',
+            cursor: 'pointer',
+            width: '100%'
+          }}>
+          اشتر الآن
+        </button>
+      </div>
+      
+      {/* Additional Actions */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        <button 
+          className="action-btn"
+          style={{
+            background: 'transparent',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            color: '#0f1111',
+            fontSize: '14px',
+            cursor: 'pointer',
+            flex: 1
+          }}>
+          ❤️ المفضلة
+        </button>
+        <button 
+          className="action-btn"
+          style={{
+            background: 'transparent',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            color: '#0f1111',
+            fontSize: '14px',
+            cursor: 'pointer',
+            flex: 1
+          }}>
+          📤 مشاركة
+        </button>
+      </div>
       <ToastContainer />
     </div>
   );

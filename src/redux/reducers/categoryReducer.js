@@ -10,6 +10,7 @@ const inital = {
   category: [],
   oneCategory: [],
   loading: true,
+  error: null,
 };
 const categoryReducer = (state = inital, action) => {
   switch (action.type) {
@@ -40,8 +41,8 @@ const categoryReducer = (state = inital, action) => {
     case GET_ERROR:
       return {
         ...state,
-        loading: true,
-        category: action.payload,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;

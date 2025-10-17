@@ -19,100 +19,69 @@ const ProductCard = ({ item, favProd }) => {
   return (
     <Col xs="6" sm="6" md="4" lg="3" className="d-flex fade-in">
       <Card
-        className="product-card-modern my-2"
+        className="product-card-amazon my-2"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{
           width: "100%",
-          height: "380px",
-          borderRadius: "25px",
-          border: "2px solid rgba(102, 126, 234, 0.1)",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(10px)",
+          height: "400px",
+          borderRadius: "8px",
+          border: "1px solid #ddd",
+          backgroundColor: "#fff",
           boxShadow: isHovered
-            ? "0 20px 60px rgba(102, 126, 234, 0.3)"
-            : "0 8px 32px rgba(102, 126, 234, 0.15)",
-          transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            ? "0 4px 8px rgba(0,0,0,0.1)"
+            : "0 2px 4px rgba(0,0,0,0.05)",
+          transition: "all 0.2s ease",
           transform: isHovered
-            ? "translateY(-15px) scale(1.02)"
-            : "translateY(0) scale(1)",
+            ? "translateY(-2px)"
+            : "translateY(0)",
           position: "relative",
           overflow: "hidden",
+          cursor: "pointer"
         }}
       >
-        {/* Gradient overlay on top */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "4px",
-            background: "linear-gradient(90deg, #667eea, #764ba2)",
-            transform: isHovered ? "scaleX(1)" : "scaleX(0)",
-            transition: "transform 0.4s ease",
-            transformOrigin: "left",
-          }}
-        />
-
         <Link to={`/products/${item._id}`} style={{ textDecoration: "none" }}>
           <div
             style={{
               position: "relative",
               overflow: "hidden",
-              borderRadius: "25px 25px 0 0",
+              borderRadius: "8px 8px 0 0",
+              background: "#f8f8f8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "200px"
             }}
           >
             <Card.Img
               style={{
-                height: "240px",
-                width: "100%",
-                objectFit: "cover",
-                transition: "transform 0.5s ease",
-                transform: isHovered ? "scale(1.1)" : "scale(1)",
+                height: "180px",
+                width: "auto",
+                maxWidth: "100%",
+                objectFit: "contain",
+                transition: "transform 0.2s ease",
+                transform: isHovered ? "scale(1.05)" : "scale(1)",
               }}
               src={productImage}
               alt={item?.title || "منتج"}
               loading="lazy"
               decoding="async"
-              width={400}
-              height={240}
-            />
-            {/* Dark overlay on hover */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: "rgba(102, 126, 234, 0.1)",
-                opacity: isHovered ? 1 : 0,
-                transition: "opacity 0.3s ease",
-              }}
             />
 
             {/* Badges */}
-            <div style={{ position: "absolute", top: "15px", left: "15px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
               {item.priceAfterDiscount && (
                 <div
-                  className="discount-badge"
                   style={{
-                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                    background: "#B12704",
                     color: "white",
-                    padding: "8px 16px",
-                    borderRadius: "25px",
-                    fontSize: "13px",
-                    fontWeight: "800",
-                    boxShadow: "0 4px 15px rgba(245, 87, 108, 0.4)",
-                    animation: "pulse 2s infinite",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: "700",
                   }}
                 >
-                  خصم{" "}
-                  {Math.round(
-                    ((item.price - item.priceAfterDiscount) / item.price) * 100
-                  )}
-                  %
+                  -{Math.round(((item.price - item.priceAfterDiscount) / item.price) * 100)}%
                 </div>
               )}
               
@@ -125,160 +94,127 @@ const ProductCard = ({ item, favProd }) => {
               })() && (
                 <div
                   style={{
-                    background: "linear-gradient(135deg, #00b894 0%, #00cec9 100%)",
+                    background: "#007185",
                     color: "white",
-                    padding: "6px 12px",
-                    borderRadius: "20px",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
                     fontSize: "12px",
-                    fontWeight: "800",
-                    boxShadow: "0 3px 10px rgba(0, 184, 148, 0.4)",
+                    fontWeight: "700",
                   }}
                 >
                   جديد
                 </div>
               )}
             </div>
+
+            {/* Wishlist button */}
+            <div
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+              }}
+            >
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  handelFav();
+                }}
+                style={{
+                  background: "rgba(255,255,255,0.9)",
+                  borderRadius: "50%",
+                  padding: "6px",
+                  cursor: "pointer",
+                  border: "1px solid #ddd"
+                }}
+              >
+                <img
+                  src={favImg}
+                  alt="المفضلة"
+                  style={{
+                    height: "16px",
+                    width: "16px",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </Link>
 
-        <div
-          className="d-flex justify-content-end mx-2"
-          style={{ marginTop: "-20px", position: "relative", zIndex: 2 }}
-        >
+        <Card.Body style={{ padding: "12px" }}>
+          {/* Product Title */}
           <div
             style={{
-              background: "white",
-              borderRadius: "50%",
-              padding: "10px",
-              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.2)",
-              border: "2px solid rgba(102, 126, 234, 0.1)",
+              fontSize: "14px",
+              fontWeight: "400",
+              color: "#0f1111",
+              marginBottom: "8px",
+              lineHeight: "1.3",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              minHeight: "36px",
             }}
           >
-            <img
-              src={favImg}
-              alt="المفضلة"
-              onClick={handelFav}
-              className="text-center"
-              style={{
-                height: "24px",
-                width: "26px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                filter: isHovered
-                  ? "drop-shadow(0 2px 4px rgba(227, 6, 19, 0.3))"
-                  : "none",
-              }}
-              onMouseEnter={(e) =>
-                (e.target.style.transform = "scale(1.3) rotate(10deg)")
-              }
-              onMouseLeave={(e) =>
-                (e.target.style.transform = "scale(1) rotate(0deg)")
-              }
-            />
+            {item.title}
           </div>
-        </div>
-        <Card.Body style={{ padding: "15px 20px 20px" }}>
-          <Card.Title>
-            <div
-              className="card-title"
-              style={{
-                fontSize: "17px",
+
+          {/* Rating */}
+          <div style={{ marginBottom: "8px", display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
+              {[...Array(5)].map((_, i) => (
+                <span key={i} style={{
+                  color: i < Math.floor(item.ratingsAverage || 0) ? '#ff9900' : '#ddd',
+                  fontSize: '12px'
+                }}>★</span>
+              ))}
+            </div>
+            <span style={{ fontSize: '12px', color: '#007185' }}>
+              ({item.ratingsQuantity || 0})
+            </span>
+          </div>
+
+          {/* Price */}
+          <div style={{ marginBottom: "8px" }}>
+            {item.priceAfterDiscount >= 1 ? (
+              <div>
+                <span style={{
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  color: "#B12704"
+                }}>
+                  ${item.priceAfterDiscount}
+                </span>
+                <span style={{
+                  fontSize: "14px",
+                  color: "#565959",
+                  textDecoration: "line-through",
+                  marginRight: "8px"
+                }}>
+                  ${item.price}
+                </span>
+              </div>
+            ) : (
+              <span style={{
+                fontSize: "18px",
                 fontWeight: "700",
-                color: "#2d3748",
-                marginBottom: "12px",
-                lineHeight: "1.5",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                minHeight: "48px",
-              }}
-            >
-              {item.title}
-            </div>
-          </Card.Title>
-          <Card.Text>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <div
-                className="d-flex align-items-center"
-                style={{
-                  background: "linear-gradient(135deg, #ffeaa7, #fdcb6e)",
-                  padding: "6px 12px",
-                  borderRadius: "20px",
-                  boxShadow: "0 2px 8px rgba(253, 203, 110, 0.3)",
-                }}
-              >
-                <img src={rate} alt="التقييم" height="14px" width="14px" />
-                <div
-                  className="card-rate mx-2"
-                  style={{
-                    color: "#d63031",
-                    fontWeight: "800",
-                    fontSize: "13px",
-                  }}
-                >
-                  {item.ratingsAverage ? item.ratingsAverage.toFixed(1) : 0}
-                </div>
-              </div>
-              <div className="d-flex align-items-center flex-wrap justify-content-end">
-                <div className="price-container d-flex align-items-baseline">
-                  {item.priceAfterDiscount >= 1 ? (
-                    <>
-                      <div
-                        className="old-price"
-                        style={{
-                          textDecoration: "line-through",
-                          color: "#a0a0a0",
-                          fontSize: "13px",
-                          marginLeft: "8px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {item.price}
-                      </div>
-                      <div
-                        className="card-price"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          fontWeight: "900",
-                          fontSize: "20px",
-                        }}
-                      >
-                        {item.priceAfterDiscount}
-                      </div>
-                    </>
-                  ) : (
-                    <div
-                      className="card-price"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        fontWeight: "900",
-                        fontSize: "20px",
-                      }}
-                    >
-                      {item.price}
-                    </div>
-                  )}
-                  <div
-                    className="card-currency mx-1"
-                    style={{
-                      color: "#718096",
-                      fontSize: "13px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    usd
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card.Text>
+                color: "#B12704"
+              }}>
+                ${item.price}
+              </span>
+            )}
+          </div>
+
+          {/* Shipping Info */}
+          <div style={{ fontSize: "12px", color: "#007185", marginBottom: "8px" }}>
+            شحن مجاني
+          </div>
+
+          {/* Stock Status */}
+          <div style={{ fontSize: "12px", color: "#007600", fontWeight: "600" }}>
+            متوفر في المخزون
+          </div>
         </Card.Body>
       </Card>
       <ToastContainer />

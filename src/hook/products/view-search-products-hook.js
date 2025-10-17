@@ -1,17 +1,34 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts, getAllProductsSearch } from '../../redux/actions/productsAction';
-import { getAllProductsPage } from './../../redux/actions/productsAction';
 
 const ViewSearchProductsHook = () => {
     let limit = 8;
     const dispatch = useDispatch();
+    const [loading, setLoading] = React.useState(true);
+    
+    // تعريف المتغيرات في النطاق الصحيح
+    let pricefromString = "", priceToString = "";
+    let word = "", queryCat = "", brandCat = "", priceTo = "", priceFrom = "";
+    let sortType = "", sort = "";
 
     const getProduct = async () => {
-        getStorge();
-        sortData();
+        try {
+            setLoading(true);
+            getStorge();
+            sortData();
 
-        await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&keyword=${word}&${queryCat}&${brandCat}${pricefromString}${priceToString}`))
+            // إذا لم توجد معاملات بحث، اجلب جميع المنتجات
+            if (!word && !queryCat && !brandCat && !pricefromString && !priceToString) {
+                await dispatch(getAllProducts(`sort=${sort}&limit=${limit}`));
+            } else {
+                await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&keyword=${word}&${queryCat}&${brandCat}${pricefromString}${priceToString}`));
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        } finally {
+            setLoading(false);
+        }
     }
     useEffect(() => {
         getProduct()
@@ -43,10 +60,15 @@ const ViewSearchProductsHook = () => {
     const onPress = async (page) => {
         getStorge();
         sortData();
-        await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&page=${page}&keyword=${word}&${queryCat}&${brandCat}${pricefromString}${priceToString}`))
+        
+        // إذا لم توجد معاملات بحث، اجلب جميع المنتجات
+        if (!word && !queryCat && !brandCat && !pricefromString && !priceToString) {
+            await dispatch(getAllProducts(`sort=${sort}&limit=${limit}&page=${page}`));
+        } else {
+            await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&page=${page}&keyword=${word}&${queryCat}&${brandCat}${pricefromString}${priceToString}`));
+        }
     }
-    let pricefromString = "", priceToString = ""
-    let word = "", queryCat = "", brandCat = "", priceTo = "", priceFrom = "";
+    
     const getStorge = () => {
         if (localStorage.getItem("searchWord") != null)
             word = localStorage.getItem("searchWord")
@@ -72,7 +94,6 @@ const ViewSearchProductsHook = () => {
         }
     }
 
-    let sortType = "", sort;
     ///when user choose sort type
     const sortData = () => {
         if (localStorage.getItem("sortType") !== null) {
@@ -96,7 +117,7 @@ const ViewSearchProductsHook = () => {
 
 
 
-    return [items, pagination, onPress, getProduct, results]
+    return [items, pagination, onPress, getProduct, results, loading]
 
 }
 

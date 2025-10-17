@@ -53,19 +53,53 @@ const AdminEditProducts = () => {
     removeVariantSize,
   ] = AdminEditProductsHook(id);
 
+  // تحويل الصور من array إلى object للتوافق مع MultiImageInput
+  const convertImagesToObject = (imageArray) => {
+    if (!Array.isArray(imageArray)) return {};
+    const imageObj = {};
+    imageArray.forEach((img, index) => {
+      imageObj[index] = img;
+    });
+    return imageObj;
+  };
+
+  // تحويل الصور من object إلى array
+  const convertImagesToArray = (imageObj) => {
+    if (!imageObj || typeof imageObj !== 'object') return [];
+    return Object.values(imageObj);
+  };
+
+  // إضافة حالة التحميل
+  if (!prodName && !prodDescription) {
+    return (
+      <div style={{ 
+        textAlign: 'center', 
+        padding: '60px 20px',
+        color: '#666' 
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+        <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
+          جاري تحميل بيانات المنتج...
+        </div>
+        <div style={{ fontSize: '14px', color: '#999' }}>
+          يرجى الانتظار
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <Row className="justify-content-start ">
+      <Row className="justify-content-start">
         <div className="admin-content-text pb-4">
-          {" "}
           تعديل المنتج - {prodName}
         </div>
         <Col sm="8">
-          <div className="text-form pb-2"> صور للمنتج</div>
+          <div className="text-form pb-2">صور للمنتج</div>
 
           <MultiImageInput
-            images={images}
-            setImages={setImages}
+            images={convertImagesToObject(images)}
+            setImages={(imageObj) => setImages(convertImagesToArray(imageObj))}
             theme={"light"}
             allowCrop={false}
             max={4}
@@ -89,22 +123,22 @@ const AdminEditProducts = () => {
           <input
             type="number"
             className="input-form d-block mt-3 px-3"
-            placeholder="السعر قبل الخصم"
-            value={priceBefore}
+            placeholder="السعر قبل الخصم (بالدولار)"
+            value={priceBefore || ""}
             onChange={onChangePriceBefor}
           />
           <input
             type="number"
             className="input-form d-block mt-3 px-3"
-            placeholder="السعر بعد الخصم"
-            value={priceAftr}
+            placeholder="السعر بعد الخصم (بالدولار)"
+            value={priceAftr || ""}
             onChange={onChangePriceAfter}
           />
           <input
             type="number"
             className="input-form d-block mt-3 px-3"
             placeholder="الكمية المتاحة"
-            value={qty}
+            value={qty || ""}
             onChange={onChangeQty}
           />
           <input
@@ -121,9 +155,9 @@ const AdminEditProducts = () => {
             className="select input-form-area mt-3 px-2 "
           >
             <option value="0">التصنيف الرئيسي</option>
-            {category.data
-              ? category.data.map((item) => {
-                  return <option value={item._id}>{item.name}</option>;
+            {category && category.data
+              ? category.data.map((item, index) => {
+                  return <option key={item._id || index} value={item._id}>{item.name}</option>;
                 })
               : null}
           </select>
@@ -144,21 +178,21 @@ const AdminEditProducts = () => {
             className="select input-form-area mt-3 px-2 "
           >
             <option value="0">اختر ماركة</option>
-            {brand.data
-              ? brand.data.map((item) => {
-                  return <option value={item._id}>{item.name}</option>;
+            {brand && brand.data
+              ? brand.data.map((item, index) => {
+                  return <option key={item._id || index} value={item._id}>{item.name}</option>;
                 })
               : null}
           </select>
-          <div className="text-form mt-3 "> الالوان المتاحه للمنتج</div>
+          <div className="text-form mt-3">الألوان المتاحة للمنتج</div>
           <div className="mt-1 d-flex">
-            {colors.length >= 1
+            {colors && colors.length >= 1
               ? colors.map((color, index) => {
                   return (
                     <div
                       key={index}
                       onClick={() => removeColor(color)}
-                      className="color ms-2 border  mt-1"
+                      className="color ms-2 border mt-1"
                       style={{ backgroundColor: color }}
                     ></div>
                   );

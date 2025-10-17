@@ -20,7 +20,7 @@ const OrderPayCardHook = (addressDetalis) => {
             notify("من فضلك اضف منتجات الى العربه اولا", "warn")
             return
         }
-        if (addressDetalis.length <= 0) {
+        if (!addressDetalis || !addressDetalis._id) {
             notify("من فضلك اختر عنوان اولا", "warn")
             return
         }

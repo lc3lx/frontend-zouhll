@@ -19,82 +19,158 @@ const AdminAllProductsCard = ({ item }) => {
   };
 
   return (
-    <Col xs="12" sm="6" md="5" lg="4" className="d-flex">
+    <Col xs="12" sm="6" md="6" lg="4" className="mb-3">
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title>
-            {" "}
-            <div className="font">تاكيد الحذف</div>
+            <div className="font">تأكيد الحذف</div>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="font">هل انتا متاكد من عملية الحذف للمنتج</div>
+          <div className="font">هل أنت متأكد من عملية حذف المنتج؟</div>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="font" variant="success" onClick={handleClose}>
+          <Button className="font" variant="secondary" onClick={handleClose}>
             تراجع
           </Button>
-          <Button className="font" variant="dark" onClick={handelDelete}>
+          <Button className="font" variant="danger" onClick={handelDelete}>
             حذف
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <Card
-        className="my-2"
+      <div
         style={{
-          width: "100%",
-          height: "350px",
+          background: "#fff",
+          border: "1px solid #ddd",
           borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#FFFFFF",
+          overflow: "hidden",
+          transition: "all 0.2s ease",
+          cursor: "pointer",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+          e.currentTarget.style.transform = "translateY(-2px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
+          e.currentTarget.style.transform = "translateY(0)";
         }}
       >
-        <Row className="d-flex justify-content-center px-2">
-          <Col className=" d-flex justify-content-between">
-            <div onClick={handleShow} className="d-inline item-delete-edit">
-              ازاله
+        {/* Action Buttons */}
+        <div style={{ 
+          padding: "8px 12px", 
+          borderBottom: "1px solid #eee",
+          display: "flex",
+          justifyContent: "space-between",
+          background: "#f8f9fa"
+        }}>
+          <button
+            onClick={handleShow}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#dc3545",
+              fontSize: "12px",
+              fontWeight: "600",
+              cursor: "pointer",
+              padding: "4px 8px"
+            }}
+          >
+            حذف
+          </button>
+          <Link
+            to={`/admin/editproduct/${item._id}`}
+            style={{ 
+              textDecoration: "none",
+              color: "#007185",
+              fontSize: "12px",
+              fontWeight: "600",
+              padding: "4px 8px"
+            }}
+          >
+            تعديل
+          </Link>
+        </div>
+
+        {/* Product Image */}
+        <Link to={`/products/${item._id}`} style={{ textDecoration: "none", flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{
+            height: "200px",
+            background: "#f8f8f8",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden"
+          }}>
+            <img
+              style={{ 
+                maxHeight: "180px", 
+                maxWidth: "100%",
+                objectFit: "contain"
+              }}
+              src={getProductImage(item)}
+              alt={item.title}
+            />
+          </div>
+
+          {/* Product Info */}
+          <div style={{ padding: "12px", flex: 1, display: "flex", flexDirection: "column" }}>
+            <div style={{
+              fontSize: "14px",
+              fontWeight: "400",
+              color: "#0f1111",
+              marginBottom: "8px",
+              lineHeight: "1.3",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              minHeight: "36px",
+            }}>
+              {item.title}
             </div>
-            <Link
-              to={`/admin/editproduct/${item._id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div className="d-inline item-delete-edit">تعديل</div>
-            </Link>
-          </Col>
-        </Row>
-        <Link to={`/products/${item._id}`} style={{ textDecoration: "none" }}>
-          <Card.Img
-            style={{ height: "228px", width: "100%" }}
-            src={getProductImage(item)}
-          />
-          <Card.Body>
-            <Card.Title>
-              <div className="card-title">{item.title}</div>
-            </Card.Title>
-            <Card.Text>
-              <div className="d-flex justify-content-between">
-                <div className="card-rate">{item.ratingsQuantity}</div>
-                <div className="d-flex">
-                  <div className="card-price">
-                    {item.priceAfterDiscount >= 1 ? (
-                      <div>
-                        <span style={{ textDecorationLine: "line-through" }}>
-                          {item.price}
-                        </span>{" "}
-                        {item.priceAfterDiscount}
-                      </div>
-                    ) : (
-                      item.price
-                    )}
-                  </div>
-                  <div className="card-currency mx-1">جنيه</div>
-                </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+              <div style={{ fontSize: "12px", color: "#666" }}>
+                ⭐ {item.ratingsQuantity || 0} تقييم
               </div>
-            </Card.Text>
-          </Card.Body>
+              
+              <div style={{ textAlign: "right" }}>
+                {item.priceAfterDiscount >= 1 ? (
+                  <div>
+                    <div style={{
+                      fontSize: "16px",
+                      fontWeight: "700",
+                      color: "#B12704"
+                    }}>
+                      ${item.priceAfterDiscount}
+                    </div>
+                    <div style={{
+                      fontSize: "12px",
+                      color: "#565959",
+                      textDecoration: "line-through"
+                    }}>
+                      ${item.price}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    color: "#B12704"
+                  }}>
+                    ${item.price}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </Link>
-      </Card>
+      </div>
     </Col>
   );
 };

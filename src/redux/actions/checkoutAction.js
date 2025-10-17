@@ -1,4 +1,4 @@
-import { CREATE_ORDER_CASH,CREATE_ORDER_CRAD } from '../type'
+import { CREATE_ORDER_CASH, CREATE_ORDER_CRAD, CREATE_ORDER_SHAMCASH } from '../type'
 import { useGetData, useGetDataToken } from '../../hooks/useGetData'
 import { useInsertData, useInsertDataWithImage } from '../../hooks/useInsertData'
 
@@ -34,6 +34,25 @@ export const createOrderCARD = (id, body) => async (dispatch) => {
     } catch (e) {
         dispatch({
             type: CREATE_ORDER_CRAD,
+            payload: e.response,
+        })
+    }
+}
+
+
+//create order by ShamCash for user
+export const createOrderShamCash = (id, body) => async (dispatch) => {
+    try {
+        const response = await useInsertData(`/api/v1/orders/shamcash/${id}`, body);
+        console.log(response)
+        dispatch({
+            type: CREATE_ORDER_SHAMCASH,
+            payload: response,
+        })
+
+    } catch (e) {
+        dispatch({
+            type: CREATE_ORDER_SHAMCASH,
             payload: e.response,
         })
     }

@@ -12,11 +12,11 @@ const CardProductsContainer = ({ title, btntitle, pathText, products, loading = 
   const productList = Array.isArray(products) ? products : [];
 
   return (
-    <Container>
-      {productList.length > 0 && (
+    <div>
+      {productList.length > 0 && title && (
         <SubTiltle title={title} btntitle={btntitle} pathText={pathText} />
       )}
-      <Row className="my-2 d-flex justify-content-between">
+      <Row className="g-3">
         {loading ? (
           // Show skeleton loaders while loading
           Array.from({ length: 8 }).map((_, index) => (
@@ -24,17 +24,23 @@ const CardProductsContainer = ({ title, btntitle, pathText, products, loading = 
           ))
         ) : productList.length > 0 ? (
           productList.map((item, index) => (
-            <div key={item._id || index} className="stagger-item">
-              <ProductCard favProd={favProd} item={item} />
-            </div>
+            <ProductCard key={item._id || index} favProd={favProd} item={item} />
           ))
         ) : (
           <div className="col-12 text-center py-5">
-            <p style={{ color: "#888", fontWeight: 600 }}>لا يوجد منتجات</p>
+            <div style={{ 
+              color: "#666", 
+              fontSize: "16px",
+              padding: "40px 20px"
+            }}>
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📦</div>
+              <div style={{ fontWeight: "600", marginBottom: "8px" }}>لا توجد منتجات</div>
+              <div style={{ fontSize: "14px", color: "#999" }}>جرب تغيير معايير البحث أو الفلترة</div>
+            </div>
           </div>
         )}
       </Row>
-    </Container>
+    </div>
   );
 };
 

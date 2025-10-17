@@ -43,13 +43,15 @@ import ProductsByCategory from "./Page/Products/ProductsByCategory";
 import ProductsByBrand from "./Page/Products/ProductsByBrand";
 import ProductsBySubcategory from "./Page/Products/ProductsBySubcategory";
 import ModernAllCategoryPage from "./Page/Category/ModernAllCategoryPage";
+import ZuhalAI from "./Components/AI/ZuhalAI";
+
 function App() {
   const [isUser, isAdmin] = ProtectedRouteHook();
 
   return (
     <div className="font">
-      <NavBarLogin />
       <BrowserRouter>
+        <NavBarLogin />
         <Routes>
           <Route index element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -60,6 +62,9 @@ function App() {
           <Route path="/products" element={<ShopProductsPage />} />
           <Route path="/products/:id" element={<ProductDetalisPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/electronics" element={<ShopProductsPage />} />
+          <Route path="/fashion" element={<ShopProductsPage />} />
+          <Route path="/home" element={<ShopProductsPage />} />
           <Route
             path="/user/forget-password"
             element={<ForgetPasswordPage />}
@@ -139,9 +144,10 @@ function App() {
             <Route path="/user/wallet" element={<UserWallet />} />
           </Route>
         </Routes>
+        <Footer />
+        <ScrollToTop />
+        <ZuhalAI />
       </BrowserRouter>
-      <Footer />
-      <ScrollToTop />
     </div>
   );
 }

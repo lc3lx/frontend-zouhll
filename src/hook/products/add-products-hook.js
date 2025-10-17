@@ -133,18 +133,23 @@ const AdminAddProductsHook = () => {
 
   //when selet category store id
   const onSeletCategory = async (e) => {
-    if (e.target.value !== 0) {
-      await dispatch(getOneCategory(e.target.value));
+    const val = e.target.value;
+    setCatID(val);
+    if (val && val !== "0") {
+      await dispatch(getOneCategory(val));
+    } else {
+      setOptions([]);
     }
-    setCatID(e.target.value);
+    // reset selected subcategories when category changes
+    setSeletedSubID([]);
   };
   useEffect(() => {
-    if (CatID !== 0) {
-      if (subCat.data) {
-        setOptions(subCat.data);
-      }
-    } else setOptions([]);
-  }, [CatID]);
+    if (CatID && CatID !== "0") {
+      if (subCat.data) setOptions(subCat.data);
+    } else {
+      setOptions([]);
+    }
+  }, [CatID, subCat]);
 
   //when selet brand store id
   const onSeletBrand = (e) => {
@@ -169,11 +174,12 @@ const AdminAddProductsHook = () => {
   //to save data
   const handelSubmit = async (e) => {
     e.preventDefault();
+    const imgList = Object.values(images || {});
     if (
-      CatID === 0 ||
+      !CatID || CatID === "0" ||
       prodName === "" ||
       prodDescription === "" ||
-      images.length <= 0 ||
+      imgList.length <= 0 ||
       priceBefore <= 0
     ) {
       notify("من فضلك اكمل البيانات", "warn");
@@ -181,11 +187,9 @@ const AdminAddProductsHook = () => {
     }
 
     //convert base 64 image to file
-    const imgCover = dataURLtoFile(images[0], Math.random() + ".png");
+    const imgCover = dataURLtoFile(imgList[0], Math.random() + ".png");
     //convert array of base 64 image to file
-    const itemImages = Array.from(Array(Object.keys(images).length).keys()).map(
-      (item, index) => dataURLtoFile(images[index], Math.random() + ".png")
-    );
+    const itemImages = imgList.map((src) => dataURLtoFile(src, Math.random() + ".png"));
 
     const formData = new FormData();
     formData.append("title", prodName);
@@ -196,14 +200,21 @@ const AdminAddProductsHook = () => {
       formData.append("priceAfterDiscount", Number(priceAftr));
     }
     formData.append("category", CatID);
-    formData.append("brand", BrandID);
+    if (BrandID && BrandID !== "0") {
+      formData.append("brand", BrandID);
+    }
     if (productUrl) formData.append("productUrl", productUrl);
 
     // append images synchronously
     formData.append("imageCover", imgCover);
     itemImages.forEach((item) => formData.append("images", item));
-    colors.map((color) => formData.append("colors", color));
-    seletedSubID.map((item) => formData.append("subcategories", item._id));
+    if (Array.isArray(colors) && colors.length) {
+      formData.append("colors", JSON.stringify(colors));
+    }
+    const subIds = Array.isArray(seletedSubID) ? seletedSubID.map((s) => s._id) : [];
+    if (subIds.length) {
+      formData.append("subcategories", JSON.stringify(subIds));
+    }
 
     // Build variants payload if any
     try {

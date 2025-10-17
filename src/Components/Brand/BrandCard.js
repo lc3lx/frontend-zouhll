@@ -14,105 +14,51 @@ const BrandCard = ({ img, id }) => {
       xs="6"
       sm="6"
       md="4"
-      lg="2"
-      className="my-3 d-flex justify-content-center fade-in"
+      lg="3"
+      className="mb-3"
     >
       <Link
         to={`/products/brand/${id}`}
-        style={{ textDecoration: "none", width: "100%", maxWidth: "180px" }}
+        style={{ textDecoration: "none" }}
       >
-        <Card
-          className="brand-card-modern"
+        <div
+          className="amazon-brand-card"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
-            width: "100%",
-            height: "170px",
-            borderRadius: "25px",
-            border: `2px solid ${
-              isHovered
-                ? "rgba(102, 126, 234, 0.5)"
-                : "rgba(102, 126, 234, 0.1)"
-            }`,
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(10px)",
-            boxShadow: isHovered
-              ? "0 20px 60px rgba(102, 126, 234, 0.3)"
-              : "0 8px 32px rgba(102, 126, 234, 0.15)",
-            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-            transform: isHovered
-              ? "translateY(-12px) scale(1.05)"
-              : "translateY(0) scale(1)",
-            overflow: "hidden",
-            position: "relative",
+            background: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "20px",
+            textAlign: "center",
+            transition: "all 0.2s ease",
+            cursor: "pointer",
+            height: "160px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "20px",
+            boxShadow: isHovered
+              ? "0 4px 8px rgba(0,0,0,0.1)"
+              : "0 2px 4px rgba(0,0,0,0.05)",
+            transform: isHovered
+              ? "translateY(-2px)"
+              : "translateY(0)",
           }}
         >
-          {/* Top gradient line */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "4px",
-              background: "linear-gradient(90deg, #667eea, #764ba2, #667eea)",
-              transform: isHovered ? "scaleX(1)" : "scaleX(0)",
-              transition: "transform 0.4s ease",
-            }}
-          />
-
-          {/* Decorative circles */}
-          <div
-            style={{
-              position: "absolute",
-              top: "-50px",
-              right: "-50px",
-              width: "100px",
-              height: "100px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #667eea22, #764ba222)",
-              opacity: isHovered ? 1 : 0,
-              transition: "opacity 0.4s ease",
-            }}
-          />
-
-          <div
-            style={{
-              position: "absolute",
-              bottom: "-30px",
-              left: "-30px",
-              width: "80px",
-              height: "80px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #764ba222, #667eea22)",
-              opacity: isHovered ? 1 : 0,
-              transition: "opacity 0.4s ease",
-            }}
-          />
-
-          <Card.Img
+          <img
             src={brandImage}
             alt="ماركة"
             loading="lazy"
             decoding="async"
             style={{
-              width: "100%",
-              height: "130px",
+              maxWidth: "100%",
+              maxHeight: "120px",
               objectFit: "contain",
-              transition: "all 0.4s ease",
-              transform: isHovered ? "scale(1.1)" : "scale(1)",
-              filter: isHovered
-                ? "drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3))"
-                : "none",
-              position: "relative",
-              zIndex: 1,
+              transition: "transform 0.2s ease",
+              transform: isHovered ? "scale(1.05)" : "scale(1)",
             }}
           />
-        </Card>
+        </div>
       </Link>
     </Col>
   );

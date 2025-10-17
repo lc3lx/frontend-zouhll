@@ -11,29 +11,41 @@ const GetOrderDetalisHook = (id) => {
 
 
     const get = async () => {
-        setLoading(true)
-        await dispatch(getOneOrders(id))
-        setLoading(false)
+        try {
+            setLoading(true)
+            await dispatch(getOneOrders(id))
+        } catch (error) {
+            console.error('Error fetching order:', error);
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
-        get()
-    }, [])
+        if (id) {
+            get()
+        }
+    }, [id])
 
     //get address detalis for user
     const resOneOrder = useSelector(state => state.orderReducer.getOneOrder)
+    
     useEffect(() => {
         if (loading === false) {
-            if (resOneOrder.data)
-                setOrderData(resOneOrder.data)
-            if (resOneOrder.data.cartItems)
-                setCartItems(resOneOrder.data.cartItems)
-            console.log(resOneOrder)
+            console.log('resOneOrder:', resOneOrder);
+            if (resOneOrder && resOneOrder.data) {
+                setOrderData(resOneOrder.data);
+                if (resOneOrder.data.cartItems) {
+                    setCartItems(resOneOrder.data.cartItems);
+                }
+            } else {
+                console.error('No order data found:', resOneOrder);
+            }
         }
-    }, [loading])
+    }, [loading, resOneOrder])
 
 
-    return [orderData, cartItems]
+    return [orderData, cartItems, loading]
 
 }
 

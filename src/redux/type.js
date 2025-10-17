@@ -78,3 +78,6 @@ export const DELETE_RECHARGE_CODE = "DELETE_RECHARGE_CODE";
 
 // Wallet checkout
 export const CREATE_ORDER_WALLET = "CREATE_ORDER_WALLET";
+
+// ShamCash checkout
+export const CREATE_ORDER_SHAMCASH = "CREATE_ORDER_SHAMCASH";

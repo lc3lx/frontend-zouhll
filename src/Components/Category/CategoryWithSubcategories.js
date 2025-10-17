@@ -5,12 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAllCategory } from '../../redux/actions/categoryAction';
 import { getOneCategory as getSubCategory } from '../../redux/actions/subcategoryAction';
 import { getCategoryImage } from '../../utils/imageHelper';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiSearch } from 'react-icons/fi';
 import './CategoryWithSubcategories.css';
 
 const CategoryWithSubcategories = () => {
     const dispatch = useDispatch();
     const [expandedCategories, setExpandedCategories] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         dispatch(getAllCategory(100));
@@ -36,82 +37,238 @@ const CategoryWithSubcategories = () => {
         return subcategories.data.filter(sub => sub.category === categoryId || sub.category._id === categoryId) || [];
     };
 
+    // Filter categories based on search term
+    const filteredCategories = categories?.data?.filter(category => 
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
     return (
-        <Container className="py-4">
-            <div className="text-center mb-4">
-                <h2 className="category-main-title">تصفح التصنيفات</h2>
-                <p className="text-muted">اكتشف منتجاتنا المتنوعة عبر التصنيفات والأقسام الفرعية</p>
+        <div>
+            {/* Search Bar */}
+            <div style={{
+                background: '#fff',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: '16px'
+            }}>
+                <div style={{ position: 'relative', maxWidth: '400px', margin: '0 auto' }}>
+                    <FiSearch style={{
+                        position: 'absolute',
+                        left: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#999',
+                        fontSize: '18px'
+                    }} />
+                    <input
+                        type="text"
+                        placeholder="البحث في التصنيفات..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '12px 16px 12px 40px',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            fontSize: '16px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease'
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#007185'}
+                        onBlur={(e) => e.target.style.borderColor = '#ddd'}
+                    />
+                </div>
             </div>
 
-            <Row>
-                {categories?.data?.map((category) => (
-                    <Col key={category._id} lg={6} className="mb-4">
-                        <Card className="category-hierarchy-card h-100">
-                            <div className="category-main-section">
-                                <Row className="align-items-center">
-                                    <Col xs={3}>
-                                        <div className="category-image-container">
-                                            <img
-                                                src={getCategoryImage(category)}
-                                                alt={category.name}
-                                                className="category-main-image"
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col xs={7}>
+            {/* Categories Count */}
+            <div style={{
+                marginBottom: '16px',
+                fontSize: '14px',
+                color: '#565959'
+            }}>
+                {filteredCategories.length > 0 ? (
+                    <>
+                        <span style={{ fontWeight: '600', color: '#0f1111' }}>
+                            {filteredCategories.length}
+                        </span>
+                        <span> تصنيف</span>
+                        {searchTerm && <span> من أصل {categories?.data?.length || 0}</span>}
+                    </>
+                ) : searchTerm ? (
+                    'لا توجد تصنيفات تطابق البحث'
+                ) : (
+                    'لا توجد تصنيفات'
+                )}
+            </div>
+
+            {filteredCategories.length > 0 ? (
+                <Row className="g-3">
+                    {filteredCategories.map((category) => (
+                        <Col key={category._id} lg={4} md={6} className="mb-3">
+                        <div style={{
+                            background: '#fff',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            transition: 'all 0.2s ease',
+                            cursor: 'pointer'
+                        }}
+                        className="amazon-category-card"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                        >
+                            {/* Main Category Section */}
+                            <div style={{ padding: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                    <div style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        background: '#f8f8f8',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginLeft: '12px',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <img
+                                            src={getCategoryImage(category)}
+                                            alt={category.name}
+                                            style={{
+                                                width: '50px',
+                                                height: '50px',
+                                                objectFit: 'contain'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
                                         <Link 
                                             to={`/products/category/${category._id}`}
-                                            className="category-main-link"
+                                            style={{
+                                                textDecoration: 'none',
+                                                color: '#0f1111',
+                                                fontSize: '18px',
+                                                fontWeight: '600',
+                                                display: 'block',
+                                                marginBottom: '4px'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.color = '#007185';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.color = '#0f1111';
+                                            }}
                                         >
-                                            <h4 className="category-main-name">{category.name}</h4>
+                                            {category.name}
                                         </Link>
-                                    </Col>
-                                    <Col xs={2}>
-                                        <Button
-                                            variant="link"
+                                        <button
                                             onClick={() => toggleCategory(category._id)}
-                                            className="expand-btn"
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                color: '#007185',
+                                                fontSize: '14px',
+                                                cursor: 'pointer',
+                                                padding: 0,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}
                                         >
+                                            {expandedCategories[category._id] ? 'إخفاء الأقسام الفرعية' : 'عرض الأقسام الفرعية'}
                                             {expandedCategories[category._id] ? 
-                                                <FiChevronUp size={20} /> : 
-                                                <FiChevronDown size={20} />
+                                                <FiChevronUp size={16} /> : 
+                                                <FiChevronDown size={16} />
                                             }
-                                        </Button>
-                                    </Col>
-                                </Row>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
+                            {/* Subcategories Section */}
                             <Collapse in={expandedCategories[category._id]}>
-                                <div className="subcategories-section">
-                                    <div className="subcategories-divider"></div>
-                                    <div className="subcategories-list">
-                                        {getSubcategoriesForCategory(category._id).length > 0 ? (
-                                            getSubcategoriesForCategory(category._id).map((subcategory) => (
+                                <div style={{
+                                    borderTop: '1px solid #e7e7e7',
+                                    background: '#fafafa',
+                                    padding: '12px 16px'
+                                }}>
+                                    {getSubcategoriesForCategory(category._id).length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            {getSubcategoriesForCategory(category._id).map((subcategory) => (
                                                 <Link
                                                     key={subcategory._id}
                                                     to={`/products/subcategory/${subcategory._id}`}
-                                                    className="subcategory-item"
+                                                    style={{
+                                                        textDecoration: 'none',
+                                                        color: '#007185',
+                                                        fontSize: '14px',
+                                                        padding: '6px 8px',
+                                                        borderRadius: '4px',
+                                                        transition: 'background 0.2s ease',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.background = '#e6f3ff';
+                                                        e.target.style.color = '#c7511f';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.background = 'transparent';
+                                                        e.target.style.color = '#007185';
+                                                    }}
                                                 >
-                                                    <div className="subcategory-content">
-                                                        <span className="subcategory-name">{subcategory.name}</span>
-                                                        <span className="subcategory-arrow">←</span>
-                                                    </div>
+                                                    <span>{subcategory.name}</span>
+                                                    <span style={{ fontSize: '12px' }}>←</span>
                                                 </Link>
-                                            ))
-                                        ) : (
-                                            <div className="no-subcategories">
-                                                <span>لا توجد تصنيفات فرعية</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div style={{
+                                            textAlign: 'center',
+                                            color: '#999',
+                                            fontSize: '14px',
+                                            padding: '12px 0'
+                                        }}>
+                                            لا توجد تصنيفات فرعية
+                                        </div>
+                                    )}
                                 </div>
                             </Collapse>
-                        </Card>
+                        </div>
                     </Col>
-                ))}
-            </Row>
-
-        </Container>
+                    ))}
+                </Row>
+            ) : (
+                <div style={{
+                    textAlign: 'center',
+                    padding: '60px 20px',
+                    background: '#fff',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+                    <div style={{ 
+                        fontSize: '18px', 
+                        fontWeight: '600', 
+                        color: '#0f1111', 
+                        marginBottom: '8px' 
+                    }}>
+                        {searchTerm ? 'لا توجد تصنيفات تطابق البحث' : 'لا توجد تصنيفات'}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#565959' }}>
+                        {searchTerm ? 'جرب البحث بكلمات مختلفة' : 'لم يتم العثور على أي تصنيفات'}
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

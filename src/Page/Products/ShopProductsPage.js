@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 import CategoryHeader from '../../Components/Category/CategoryHeader'
 import CardProductsContainer from '../../Components/Products/CardProductsContainer'
 import Pagination from '../../Components/Uitily/Pagination'
-import SearchCountResult from '../../Components/Uitily/SearchCountResult'
 import ProductsToolbar from '../../Components/Products/ProductsToolbar'
 import ProductsFilter from '../../Components/Products/ProductsFilter'
-import ViewSearchProductsHook from './../../hook/products/view-search-products-hook';
+import ViewSearchProductsHook from './../../hook/products/view-search-products-hook'
+import '../../Components/Products/AmazonStyle.css';
 
 const ShopProductsPage = () => {
-    const [items, pagination, onPress, getProduct, results] = ViewSearchProductsHook();
+    const [items, pagination, onPress, , results, loading] = ViewSearchProductsHook();
     const [sortBy, setSortBy] = useState("default");
     const [viewMode, setViewMode] = useState("grid");
     const [showFilter, setShowFilter] = useState(false);
@@ -39,45 +39,151 @@ const ShopProductsPage = () => {
     };
 
     return (
-        <div style={{ minHeight: '670px', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <div className="amazon-products-page" style={{ minHeight: '100vh', background: '#f3f3f3' }}>
             <CategoryHeader />
-            <Container>
-                {/* Modern toolbar */}
-                <ProductsToolbar
-                    totalProducts={results || 0}
-                    sortBy={sortBy}
-                    onSortChange={handleSortChange}
-                    viewMode={viewMode}
-                    onViewModeChange={handleViewModeChange}
-                    onFilterToggle={handleFilterToggle}
-                />
+            
+            {/* Breadcrumb */}
+            <div className="amazon-breadcrumb">
+                <Container>
+                    <div style={{ padding: '4px 0' }}>
+                        <a href="/" style={{ textDecoration: 'none' }}>الرئيسية</a>
+                        <span className="mx-2">›</span>
+                        <span>المنتجات</span>
+                    </div>
+                </Container>
+            </div>
 
-                {/* Products grid */}
-                <div
-                    style={{
-                        background: "rgba(255, 255, 255, 0.95)",
-                        backdropFilter: "blur(10px)",
-                        borderRadius: "25px",
-                        padding: "30px",
-                        boxShadow: "0 8px 32px rgba(102, 126, 234, 0.15)",
-                        border: "2px solid rgba(102, 126, 234, 0.1)",
-                        marginBottom: "30px",
-                    }}
-                >
-                    <CardProductsContainer 
-                        products={items} 
-                        title="" 
-                        btntitle="" 
-                        loading={false}
-                    />
-                </div>
+            <Container fluid style={{ maxWidth: '1500px', padding: '16px' }}>
+                <Row>
+                    {/* Amazon-style Left Sidebar Filter */}
+                    <Col lg={3} className="d-none d-lg-block">
+                        <div className="amazon-sidebar-filter" style={{
+                            background: '#fff',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            padding: '16px',
+                            marginBottom: '16px'
+                        }}>
+                            <h6 style={{ 
+                                fontWeight: '700', 
+                                color: '#0f1111', 
+                                marginBottom: '16px',
+                                fontSize: '16px'
+                            }}>
+                                تصفية النتائج
+                            </h6>
+                            
+                            {/* Price Filter */}
+                            <div className="amazon-filter-section">
+                                <h6 style={{ fontWeight: '600', color: '#0f1111', marginBottom: '12px', fontSize: '14px' }}>
+                                    السعر
+                                </h6>
+                                <div>
+                                    <div className="amazon-filter-option">أقل من $25</div>
+                                    <div className="amazon-filter-option">$25 إلى $50</div>
+                                    <div className="amazon-filter-option">$50 إلى $100</div>
+                                    <div className="amazon-filter-option">$100 إلى $200</div>
+                                    <div className="amazon-filter-option">أكثر من $200</div>
+                                </div>
+                            </div>
 
-                {/* Pagination */}
-                <div className="d-flex justify-content-center">
-                    <Pagination pageCount={pageCount} onPress={onPress} />
-                </div>
+                            {/* Rating Filter */}
+                            <div className="amazon-filter-section">
+                                <h6 style={{ fontWeight: '600', color: '#0f1111', marginBottom: '12px', fontSize: '14px' }}>
+                                    تقييم العملاء
+                                </h6>
+                                <div>
+                                    <div className="amazon-filter-option" style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ color: '#ff9900', marginLeft: '4px' }}>★★★★★</span>
+                                        <span>وأعلى</span>
+                                    </div>
+                                    <div className="amazon-filter-option" style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ color: '#ff9900', marginLeft: '4px' }}>★★★★</span>
+                                        <span>وأعلى</span>
+                                    </div>
+                                    <div className="amazon-filter-option" style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ color: '#ff9900', marginLeft: '4px' }}>★★★</span>
+                                        <span>وأعلى</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                {/* Filter sidebar */}
+                            {/* Brand Filter */}
+                            <div className="amazon-filter-section">
+                                <h6 style={{ fontWeight: '600', color: '#0f1111', marginBottom: '12px', fontSize: '14px' }}>
+                                    الماركة
+                                </h6>
+                                <div>
+                                    <div className="amazon-filter-option">Apple</div>
+                                    <div className="amazon-filter-option">Samsung</div>
+                                    <div className="amazon-filter-option">Sony</div>
+                                    <div className="amazon-filter-option">Nike</div>
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+
+                    {/* Main Content */}
+                    <Col lg={9}>
+                        {/* Amazon-style Toolbar */}
+                        <div className="amazon-toolbar">
+                            <div style={{ fontSize: '14px', color: '#565959' }}>
+                                {results > 0 ? (
+                                    <>
+                                        <span style={{ fontWeight: '600', color: '#0f1111' }}>1-{Math.min(16, results)}</span>
+                                        <span> من أكثر من {results} نتيجة</span>
+                                    </>
+                                ) : (
+                                    'لا توجد نتائج'
+                                )}
+                            </div>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <button
+                                    className="amazon-filter-button d-lg-none"
+                                    onClick={handleFilterToggle}
+                                >
+                                    فلترة
+                                </button>
+                                
+                                <select
+                                    className="amazon-sort-select"
+                                    value={sortBy}
+                                    onChange={(e) => handleSortChange(e.target.value)}
+                                >
+                                    <option value="default">ترتيب حسب: المميز</option>
+                                    <option value="price-low">السعر: من الأقل للأعلى</option>
+                                    <option value="price-high">السعر: من الأعلى للأقل</option>
+                                    <option value="rating">تقييم العملاء</option>
+                                    <option value="newest">الأحدث</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Products Grid */}
+                        <div style={{
+                            background: '#fff',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            padding: '16px',
+                            marginBottom: '16px'
+                        }}>
+                            <CardProductsContainer 
+                                products={items} 
+                                title="" 
+                                btntitle="" 
+                                loading={loading}
+                            />
+                        </div>
+
+                        {/* Pagination */}
+                        <div className="d-flex justify-content-center">
+                            <Pagination pageCount={pageCount} onPress={onPress} />
+                        </div>
+                    </Col>
+                </Row>
+
+                {/* Mobile Filter Sidebar */}
                 <ProductsFilter
                     show={showFilter}
                     onHide={() => setShowFilter(false)}

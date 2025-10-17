@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
-import { Row, Col, Card, Button, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Button, Spinner, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllBrand } from '../../redux/actions/brandAction';
+import { getAllBrand, deleteBrand } from '../../redux/actions/brandAction';
 import { getBrandImage } from '../../utils/imageHelper';
 
 const AdminAllBrands = () => {
     const dispatch = useDispatch();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedBrand, setSelectedBrand] = useState(null);
     
     useEffect(() => {
         dispatch(getAllBrand(100));
@@ -14,6 +16,26 @@ const AdminAllBrands = () => {
 
     const brands = useSelector(state => state.allBrand.brand);
     const loading = useSelector(state => state.allBrand.loading);
+
+    const handleDeleteClick = (brand) => {
+        setSelectedBrand(brand);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (selectedBrand) {
+            await dispatch(deleteBrand(selectedBrand._id));
+            setShowDeleteModal(false);
+            setSelectedBrand(null);
+            // إعادة تحميل الماركات
+            dispatch(getAllBrand(100));
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setShowDeleteModal(false);
+        setSelectedBrand(null);
+    };
 
     return (
         <div>
@@ -50,7 +72,11 @@ const AdminAllBrands = () => {
                                                     تعديل
                                                 </Button>
                                             </Link>
-                                            <Button variant="danger" size="sm">
+                                            <Button 
+                                                variant="danger" 
+                                                size="sm"
+                                                onClick={() => handleDeleteClick(brand)}
+                                            >
                                                 حذف
                                             </Button>
                                         </div>
@@ -67,6 +93,25 @@ const AdminAllBrands = () => {
                     )}
                 </Row>
             )}
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={handleDeleteCancel}>
+                <Modal.Header>
+                    <Modal.Title>تأكيد الحذف</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    هل أنت متأكد من حذف الماركة "{selectedBrand?.name}"؟
+                    <br />
+                    <strong>تحذير:</strong> سيتم حذف جميع المنتجات المرتبطة بهذه الماركة!
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleDeleteCancel}>
+                        تراجع
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteConfirm}>
+                        حذف
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

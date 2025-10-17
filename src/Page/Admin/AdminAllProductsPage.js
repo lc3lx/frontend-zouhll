@@ -4,34 +4,46 @@ import AdminSideBar from '../../Components/Admin/AdminSideBar'
 import AdminAllProducts from '../../Components/Admin/AdminAllProducts'
 import Pagination from '../../Components/Uitily/Pagination'
 import ViewProductAdminHook from './../../hook/admin/view-product-admin-hook';
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsPage } from './../../redux/actions/productsAction';
+import '../../Components/Products/AmazonStyle.css'
 
 const AdminAllProductsPage = () => {
-    const dispatch = useDispatch();
-    const [items, pagination,onPress] = ViewProductAdminHook();
-    if (pagination)
-        var pageCount = pagination;
-    else
-        pageCount = 0;
-
-   
+    const [items, pagination, onPress] = ViewProductAdminHook();
+    const pageCount = pagination || 0;
 
     return (
-        <Container >
-            <Row className='py-3'>
-                <Col sm="3" xs="2" md="2">
-                    <AdminSideBar />
-                </Col>
+        <div className="amazon-products-page" style={{ minHeight: '100vh', background: '#f3f3f3' }}>
+            <Container fluid style={{ maxWidth: '1500px', padding: '16px' }}>
+                {/* Page Title */}
+                <div className="amazon-page-title">
+                    <h1>إدارة المنتجات</h1>
+                    <p>عرض وإدارة جميع منتجات المتجر</p>
+                </div>
 
-                <Col sm="9" xs="10" md="10">
-                    <AdminAllProducts products={items} />
-                    {
-                        pageCount > 1 ? (<Pagination pageCount={pageCount} onPress={onPress} />) : null
-                    }
-                </Col>
-            </Row>
-        </Container>
+                <Row className='g-3'>
+                    <Col lg="3" md="4" className="d-none d-md-block">
+                        <div style={{
+                            background: '#fff',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            padding: '16px',
+                            position: 'sticky',
+                            top: '16px'
+                        }}>
+                            <AdminSideBar />
+                        </div>
+                    </Col>
+
+                    <Col lg="9" md="8">
+                        <AdminAllProducts products={items} />
+                        {pageCount > 1 && (
+                            <div className="d-flex justify-content-center mt-4">
+                                <Pagination pageCount={pageCount} onPress={onPress} />
+                            </div>
+                        )}
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     )
 }
 

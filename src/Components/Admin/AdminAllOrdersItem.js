@@ -13,166 +13,116 @@ const AdminAllOrdersItem = ({ orderItem }) => {
       >
         <div
           style={{
-            background: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "20px",
-            padding: "20px",
-            boxShadow: "0 4px 15px rgba(102, 126, 234, 0.1)",
-            border: "2px solid rgba(102, 126, 234, 0.1)",
-            transition: "all 0.3s ease",
-            position: "relative",
-            overflow: "hidden",
+            background: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "16px",
+            transition: "all 0.2s ease",
+            cursor: "pointer",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-5px)";
-            e.currentTarget.style.boxShadow =
-              "0 8px 25px rgba(102, 126, 234, 0.2)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow =
-              "0 4px 15px rgba(102, 126, 234, 0.1)";
+            e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
           }}
         >
-          {/* Top gradient line */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "4px",
-              background: "linear-gradient(90deg, #667eea, #764ba2)",
-            }}
-          />
 
-          <Row className="align-items-center mb-3">
-            <Col sm="12">
-              <span
-                style={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: "20px",
-                  fontSize: "14px",
-                  fontWeight: "700",
-                  display: "inline-block",
-                }}
-              >
+          {/* Order Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div>
+              <div style={{
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "#0f1111",
+                marginBottom: "4px",
+              }}>
                 طلب رقم #{orderItem.id}
-              </span>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm="12">
-              <div
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  color: "#2d3748",
-                  marginBottom: "5px",
-                }}
-              >
-                طلب من: {orderItem.user?.name || "غير معروف"}
               </div>
-              <div
-                style={{
-                  fontSize: "14px",
-                  color: "#718096",
-                  fontWeight: "600",
-                }}
-              >
+              <div style={{
+                fontSize: "14px",
+                color: "#565959",
+              }}>
+                العميل: {orderItem.user?.name || "غير معروف"}
+              </div>
+              <div style={{
+                fontSize: "12px",
+                color: "#999",
+              }}>
                 {orderItem.user?.email || ""}
               </div>
-            </Col>
-          </Row>
+            </div>
+            
+            {/* Price */}
+            <div style={{
+              background: "#B12704",
+              color: "white",
+              padding: "8px 12px",
+              borderRadius: "4px",
+              fontSize: "16px",
+              fontWeight: "700",
+            }}>
+              ${orderItem.totalOrderPrice || 0}
+            </div>
+          </div>
 
-          <Row className="align-items-center">
-            <Col xs="12" md="8" className="d-flex flex-wrap gap-2 mb-3 mb-md-0">
-              <div
-                style={{
-                  background: orderItem.isDelivered
-                    ? "linear-gradient(135deg, #d4fc79, #96e6a1)"
-                    : "linear-gradient(135deg, #ffeaa7, #fdcb6e)",
-                  padding: "8px 16px",
-                  borderRadius: "15px",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  color: orderItem.isDelivered ? "#27ae60" : "#d63031",
-                  display: "inline-block",
-                }}
-              >
-                🚚 التوصيل: {orderItem.isDelivered ? "تم التوصيل" : "لم يتم"}
-              </div>
+          {/* Status Badges */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+            {/* Delivery Status */}
+            <div style={{
+              background: orderItem.isDelivered ? "#d4edda" : "#fff3cd",
+              color: orderItem.isDelivered ? "#155724" : "#856404",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "600",
+              border: `1px solid ${orderItem.isDelivered ? "#c3e6cb" : "#ffeaa7"}`
+            }}>
+              {orderItem.isDelivered ? "✅ تم التوصيل" : "📦 في الانتظار"}
+            </div>
 
-              <div
-                style={{
-                  background: orderItem.isPaid
-                    ? "linear-gradient(135deg, #d4fc79, #96e6a1)"
-                    : "linear-gradient(135deg, #ffeaa7, #fdcb6e)",
-                  padding: "8px 16px",
-                  borderRadius: "15px",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  color: orderItem.isPaid ? "#27ae60" : "#d63031",
-                  display: "inline-block",
-                }}
-              >
-                💳 الدفع: {orderItem.isPaid ? "تم الدفع" : "لم يتم"}
-              </div>
+            {/* Payment Status */}
+            <div style={{
+              background: orderItem.isPaid ? "#d4edda" : "#f8d7da",
+              color: orderItem.isPaid ? "#155724" : "#721c24",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "600",
+              border: `1px solid ${orderItem.isPaid ? "#c3e6cb" : "#f5c6cb"}`
+            }}>
+              {orderItem.isPaid ? "💳 تم الدفع" : "❌ لم يتم الدفع"}
+            </div>
 
-              <div
-                style={{
-                  background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-                  padding: "8px 16px",
-                  borderRadius: "15px",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  color: "#4a5568",
-                  display: "inline-block",
-                }}
-              >
-                💰{" "}
-                {orderItem.paymentMethodType === "cash"
-                  ? "كاش"
-                  : "بطاقة ائتمانية"}
-              </div>
-            </Col>
+            {/* Payment Method */}
+            <div style={{
+              background: "#e2e3e5",
+              color: "#383d41",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "600",
+              border: "1px solid #d6d8db"
+            }}>
+              {orderItem.paymentMethodType === "cash" ? "💰 كاش" : "💳 بطاقة ائتمانية"}
+            </div>
 
-            <Col xs="12" md="4" className="text-end">
-              <div
-                style={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  padding: "12px 24px",
-                  borderRadius: "15px",
-                  display: "inline-block",
-                }}
-              >
-                <span
-                  style={{
-                    color: "white",
-                    fontSize: "20px",
-                    fontWeight: "900",
-                  }}
-                >
-                  {orderItem.totalOrderPrice || 0}
-                </span>
-                <span
-                  style={{
-                    color: "white",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    marginRight: "5px",
-                  }}
-                >
-                  جنيه
-                </span>
-              </div>
-            </Col>
-          </Row>
+            {/* Order Date */}
+            <div style={{
+              background: "#f8f9fa",
+              color: "#6c757d",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "600",
+              border: "1px solid #dee2e6"
+            }}>
+              📅 {new Date(orderItem.createdAt).toLocaleDateString('ar-EG')}
+            </div>
+          </div>
         </div>
       </Link>
     </Col>

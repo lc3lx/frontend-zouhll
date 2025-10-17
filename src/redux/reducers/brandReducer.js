@@ -4,6 +4,7 @@ const inital = {
   brand: [],
   oneBrand: [],
   loading: true,
+  error: null,
 };
 const brandReducer = (state = inital, action) => {
   switch (action.type) {
@@ -34,8 +35,8 @@ const brandReducer = (state = inital, action) => {
     case GET_ERROR:
       return {
         ...state,
-        loading: true,
-        brand: action.payload,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;

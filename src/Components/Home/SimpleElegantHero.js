@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FiArrowRight, FiShoppingBag } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import "./ModernHeroSection.css";
 import "./ModernAnimations.css";
 
 const SimpleElegantHero = () => {
@@ -74,32 +75,25 @@ const SimpleElegantHero = () => {
 
       <Container>
         <Row className="align-items-center">
-          <Col lg={6} className="text-white text-center text-lg-start">
-            <h1
-              style={{
-                fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
-                fontWeight: "800",
-                marginBottom: "25px",
-                lineHeight: "1.2",
-              }}
-            >
-              تسوق بذكاء
+          <Col lg={6}>
+            <div className="hero-content text-center text-lg-start">
+            <div className="hero-badge mb-4">
+              <span className="badge-text">
+                🛍️ متجر زوحل - تسوق بثقة
+              </span>
+            </div>
+            <h1 className="hero-title mb-4">
+              <span className="title-line-1">متجرك المفضل</span>
               <br />
-              <span style={{ color: "#ffd93d" }}>وفر أكثر</span>
+              <span className="title-line-2 gradient-text">للتسوق الإلكتروني</span>
               <br />
-              <span style={{ fontSize: "0.6em", color: "rgba(255,255,255,0.9)" }}>Shop Smart, Save More</span>
+              <span className="title-line-3">بجودة عالية</span>
             </h1>
             
-            <p
-              style={{
-                fontSize: "1.3rem",
-                marginBottom: "40px",
-                opacity: 0.95,
-                lineHeight: "1.6",
-                maxWidth: "500px",
-              }}
-            >
-              اكتشف آلاف المنتجات عالية الجودة بأفضل الأسعار مع شحن مجاني وضمان الاسترداد
+            <p className="hero-description mb-5">
+              اكتشف مجموعة واسعة من المنتجات عالية الجودة بأفضل الأسعار.
+              <br />
+              شحن سريع وآمن، دفع مضمون، وخدمة عملاء ممتازة.
             </p>
 
             <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
@@ -164,7 +158,7 @@ const SimpleElegantHero = () => {
               </Button>
             </div>
 
-            
+            </div>
           </Col>
 
           <Col lg={6} className="text-center mt-5 mt-lg-0">

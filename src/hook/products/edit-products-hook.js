@@ -46,9 +46,9 @@ const AdminEditProductsHook = (id) => {
   //values state
   const [prodName, setProdName] = useState("");
   const [prodDescription, setProdDescription] = useState("");
-  const [priceBefore, setPriceBefore] = useState("السعر قبل الخصم");
-  const [priceAftr, setPriceAftr] = useState("السعر بعد الخصم");
-  const [qty, setQty] = useState("الكمية المتاحة");
+  const [priceBefore, setPriceBefore] = useState("");
+  const [priceAftr, setPriceAftr] = useState("");
+  const [qty, setQty] = useState("");
   const [productUrl, setProductUrl] = useState("");
   const [CatID, setCatID] = useState("0");
   const [BrandID, SetBrandID] = useState("0");
@@ -79,17 +79,50 @@ const AdminEditProductsHook = (id) => {
     );
 
   useEffect(() => {
-    if (item.data) {
-      console.log(item.data.images);
-      setImages(item.data.images);
-      setProdName(item.data.title);
-      setProdDescription(item.data.description);
-      setPriceBefore(item.data.price);
-      setQty(item.data.quantity);
+    if (item && item.data) {
+      console.log("Product data:", item.data);
+      
+      // تأكد من أن الصور هي array
+      setImages(Array.isArray(item.data.images) ? item.data.images : []);
+      setProdName(item.data.title || "");
+      setProdDescription(item.data.description || "");
+      setPriceBefore(item.data.price || "");
+      setPriceAftr(item.data.priceAfterDiscount || "");
+      setQty(item.data.quantity || "");
       setProductUrl(item.data.productUrl || "");
-      setCatID(item.data.category);
-      SetBrandID(item.data.brand);
-      setColors(item.data.availableColors);
+      
+      // إصلاح تحديد التصنيف
+      if (item.data.category) {
+        const categoryId = typeof item.data.category === 'object' ? item.data.category._id : item.data.category;
+        setCatID(categoryId || "0");
+        console.log("Category ID set to:", categoryId);
+      }
+      
+      // إصلاح تحديد الماركة
+      if (item.data.brand) {
+        const brandId = typeof item.data.brand === 'object' ? item.data.brand._id : item.data.brand;
+        SetBrandID(brandId || "0");
+        console.log("Brand ID set to:", brandId);
+      }
+      
+      // معالجة الألوان - التحقق من مصادر مختلفة
+      let productColors = [];
+      if (Array.isArray(item.data.availableColors)) {
+        productColors = item.data.availableColors;
+      } else if (Array.isArray(item.data.colors)) {
+        productColors = item.data.colors;
+      } else if (item.data.variants && Array.isArray(item.data.variants)) {
+        productColors = item.data.variants.map(v => v.color?.hex || v.color).filter(Boolean);
+      }
+      setColors(productColors);
+      console.log("Colors set to:", productColors);
+      
+      // معالجة التصنيفات الفرعية
+      if (item.data.subcategory && Array.isArray(item.data.subcategory)) {
+        setSeletedSubID(item.data.subcategory);
+        console.log("Subcategories set to:", item.data.subcategory);
+      }
+      
       if (Array.isArray(item.data.variants)) {
         // initialize variants without pre-filling images (admin can re-upload per color)
         const init = item.data.variants.map((v) => ({
@@ -101,6 +134,7 @@ const AdminEditProductsHook = (id) => {
           sizes: Array.isArray(v?.sizes) ? v.sizes.map((s) => ({ label: s.label, stock: s.stock })) : [],
         }));
         setVariants(init);
+        console.log("Variants set to:", init);
       }
     }
   }, [item]);
@@ -240,7 +274,9 @@ const AdminEditProductsHook = (id) => {
     if (priceAftr && Number(priceAftr) > 0) formData.append("priceAfterDiscount", priceAftr);
     if (productUrl) formData.append("productUrl", productUrl);
     formData.append("category", CatID);
-    formData.append("brand", BrandID);
+    if (BrandID && BrandID !== "0") {
+      formData.append("brand", BrandID);
+    }
 
     setTimeout(() => {
       formData.append("imageCover", imgCover);

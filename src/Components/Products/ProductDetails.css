@@ -1,0 +1,106 @@
+/* Amazon-style tabs */
+.amazon-tab {
+  transition: all 0.2s ease;
+}
+
+.amazon-tab:hover {
+  color: #007185 !important;
+  border-bottom-color: #007185 !important;
+}
+
+.amazon-tab.active {
+  color: #007185 !important;
+  border-bottom: 2px solid #007185 !important;
+  background: transparent !important;
+}
+
+/* Image gallery customization */
+.image-gallery-slide img {
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.image-gallery-thumbnail img {
+  border-radius: 4px;
+}
+
+.image-gallery-thumbnail.active {
+  border: 2px solid #ff9900;
+}
+
+.image-gallery-thumbnail:hover {
+  border: 2px solid #ff9900;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .product-details-container {
+    padding: 10px !important;
+  }
+  
+  .product-title {
+    font-size: 20px !important;
+  }
+  
+  .product-price {
+    font-size: 20px !important;
+  }
+}
+
+/* Color picker styles */
+.color-option {
+  transition: all 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  box-shadow: 0 0 0 2px #ff9900;
+}
+
+/* Size selector styles */
+.size-option {
+  transition: all 0.2s ease;
+}
+
+.size-option:hover {
+  border-color: #ff9900 !important;
+  background-color: #fff3cd !important;
+}
+
+.size-option:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+/* Button styles */
+.add-to-cart-btn {
+  transition: all 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: #e47911 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.buy-now-btn {
+  transition: all 0.2s ease;
+}
+
+.buy-now-btn:hover {
+  background: #ff8f00 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-btn {
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #f0f0f0 !important;
+  border-color: #999 !important;
+}

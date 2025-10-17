@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
-import { Row, Col, Card, Button, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Button, Spinner, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllCategory } from '../../redux/actions/categoryAction';
+import { getAllCategory, deleteCategory } from '../../redux/actions/categoryAction';
 import { getCategoryImage } from '../../utils/imageHelper';
 
 const AdminAllCategories = () => {
     const dispatch = useDispatch();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
     
     useEffect(() => {
         dispatch(getAllCategory(100));
@@ -14,6 +16,26 @@ const AdminAllCategories = () => {
 
     const categories = useSelector(state => state.allCategory.category);
     const loading = useSelector(state => state.allCategory.loading);
+
+    const handleDeleteClick = (category) => {
+        setSelectedCategory(category);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (selectedCategory) {
+            await dispatch(deleteCategory(selectedCategory._id));
+            setShowDeleteModal(false);
+            setSelectedCategory(null);
+            // إعادة تحميل التصنيفات
+            dispatch(getAllCategory(100));
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setShowDeleteModal(false);
+        setSelectedCategory(null);
+    };
 
     return (
         <div>
@@ -50,7 +72,11 @@ const AdminAllCategories = () => {
                                                     تعديل
                                                 </Button>
                                             </Link>
-                                            <Button variant="danger" size="sm">
+                                            <Button 
+                                                variant="danger" 
+                                                size="sm"
+                                                onClick={() => handleDeleteClick(category)}
+                                            >
                                                 حذف
                                             </Button>
                                         </div>
@@ -67,6 +93,25 @@ const AdminAllCategories = () => {
                     )}
                 </Row>
             )}
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={handleDeleteCancel}>
+                <Modal.Header>
+                    <Modal.Title>تأكيد الحذف</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    هل أنت متأكد من حذف التصنيف "{selectedCategory?.name}"؟
+                    <br />
+                    <strong>تحذير:</strong> سيتم حذف جميع المنتجات المرتبطة بهذا التصنيف!
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleDeleteCancel}>
+                        تراجع
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteConfirm}>
+                        حذف
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

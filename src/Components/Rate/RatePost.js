@@ -9,18 +9,19 @@ const RatePost = () => {
   const {id} =useParams() ;
   const [OnChangeRateText, OnChangeRateValue, rateText, rateValue, user, onSubmit] = AddRateHook(id)
 
- 
-
   var name = ""
-  if (user)
+  if (user && user.name) {
     name = user.name
+  } else {
+    name = "يرجى تسجيل الدخول للتقييم"
+  }
 
   const setting = {
     size: 20,
     count: 5,
     color: "#979797",
     activeColor: "#ffc107",
-    value: 7.5,
+    value: rateValue,
     a11y: true,
     isHalf: true,
     emptyIcon: <i className="far fa-star" />,

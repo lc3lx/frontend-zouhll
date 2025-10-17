@@ -332,3 +332,276 @@ html {
     transform: none;
   }
 }
+
+/* Modern Homepage Styles - Global Store Design */
+.modern-homepage {
+  font-family: 'Almarai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #1a202c;
+  overflow-x: hidden;
+}
+
+/* Section Styling */
+.modern-homepage section {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hero Section */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Trust Section */
+.trust-section {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.trust-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+/* Categories Section */
+.categories-section .section-title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.categories-section .section-subtitle {
+  opacity: 0.8;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* Featured Section */
+.featured-section {
+  position: relative;
+}
+
+.featured-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.featured-section > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Stories Section */
+.stories-section {
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+/* Promo Section */
+.promo-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Best Sellers Section */
+.bestsellers-section {
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.bestsellers-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(102, 126, 234, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Visual Categories */
+.visual-categories {
+  position: relative;
+  color: white;
+}
+
+.visual-categories::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 1;
+}
+
+.visual-categories > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  background: #ffffff;
+  position: relative;
+}
+
+.testimonials-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+/* Stats Section */
+.stats-section {
+  color: white;
+  position: relative;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>') repeat;
+  z-index: 1;
+}
+
+.stats-section > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* New Arrivals */
+.new-arrivals {
+  position: relative;
+}
+
+.new-arrivals::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+}
+
+/* Services Section */
+.services-section {
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+/* Brands Section */
+.brands-section {
+  position: relative;
+}
+
+.brands-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+}
+
+/* CTA Section */
+.cta-section {
+  position: relative;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  color: white;
+}
+
+/* Section hover effects */
+.modern-homepage section:hover {
+  transform: translateY(-1px);
+}
+
+.hero-section:hover,
+.stats-section:hover,
+.cta-section:hover,
+.visual-categories:hover {
+  transform: none; /* Disable hover effect for full-width dark sections */
+}
+
+/* Enhanced spacing and typography */
+.modern-homepage h1,
+.modern-homepage h2,
+.modern-homepage h3 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.modern-homepage p {
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+/* Smooth section transitions */
+.modern-homepage section + section {
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  .modern-homepage section {
+    padding: 60px 0 !important;
+  }
+  
+  .categories-section .section-title {
+    font-size: 2rem !important;
+  }
+  
+  .categories-section .section-subtitle {
+    font-size: 1rem !important;
+  }
+  
+  .modern-homepage section:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .modern-homepage section {
+    padding: 40px 0 !important;
+  }
+  
+  .categories-section .section-title {
+    font-size: 1.75rem !important;
+  }
+}

@@ -22,7 +22,19 @@ const GetAllUserCartHook = () => {
 
     const get = async () => {
       setLoading(true);
-      await dispatch(getAllUserCartItems());
+      
+      // التحقق من وجود token
+      const token = localStorage.getItem("token");
+      console.log('User token:', token ? 'Found' : 'Not found');
+      
+      if (token) {
+        await dispatch(getAllUserCartItems());
+      } else {
+        console.log('No token found, skipping cart fetch');
+        setLoading(false);
+        return;
+      }
+      
       if (isMounted) {
         setLoading(false);
       }
@@ -34,11 +46,32 @@ const GetAllUserCartHook = () => {
     };
   }, []);
   const res = useSelector((state) => state.cartReducer.getAllUserCart);
+  
+  // Debug: طباعة البيانات من Redux
+  console.log('Redux Cart Response:', res);
+  console.log('Loading state:', loading);
+
   useEffect(() => {
     if (loading === false && res) {
+      console.log('Processing cart data:', res);
+      
       if (res.status === "success" && res.data) {
+        console.log('Cart data found:', res.data);
+        console.log('Cart items from API:', res.data.cartItems);
+        console.log('Products from API:', res.data.products);
+        
         setItemsNum(res.numOfCartItems || 0);
-        setCartItems(Array.isArray(res.data.products) ? res.data.products : []);
+        
+        // البحث عن المنتجات في cartItems أو products
+        let items = [];
+        if (Array.isArray(res.data.cartItems)) {
+          items = res.data.cartItems;
+        } else if (Array.isArray(res.data.products)) {
+          items = res.data.products;
+        }
+        
+        console.log('Final cart items to set:', items);
+        setCartItems(items);
         setTotalCartPrice(res.data.totalCartPrice || 0);
         setCartID(res.data._id || "0");
         if (res.data.coupon) {
@@ -46,15 +79,16 @@ const GetAllUserCartHook = () => {
         } else {
           setCouponName("");
         }
-        if (res.data.totalAfterDiscount) {
-          setTotalCartPriceAfterDiscount(res.data.totalAfterDiscount);
+        if (res.data.totalPriceAfterDiscount) {
+          setTotalCartPriceAfterDiscount(Number(res.data.totalPriceAfterDiscount));
         } else {
-          setTotalCartPriceAfterDiscount("");
+          setTotalCartPriceAfterDiscount(0);
         }
       } else {
+        console.log('No cart data or error:', res);
         setCartID("0");
         setCouponName("");
-        setTotalCartPriceAfterDiscount("");
+        setTotalCartPriceAfterDiscount(0);
         setItemsNum(0);
         setCartItems([]);
         setTotalCartPrice(0);

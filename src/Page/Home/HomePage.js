@@ -7,41 +7,54 @@ import AmazonStyleProducts from "../../Components/Home/AmazonStyleProducts";
 import AmazonStyleBrands from "../../Components/Home/AmazonStyleBrands";
 import AmazonStyleFooter from "../../Components/Uitily/AmazonStyleFooter";
 import ScrollAnimations from "../../Components/Home/ScrollAnimations";
+import ErrorMessage from "../../Components/Common/ErrorMessage";
 import "../../Components/Home/AmazonStyle.css";
 
 const HomePage = () => {
-  const [items, loading] = ViewHomeProductsHook();
+  const [items, loading, error] = ViewHomeProductsHook();
 
   return (
-    <div className="amazon-homepage" style={{ background: '#ffffff' }}>
+    <div className="amazon-homepage" style={{ background: "#ffffff" }}>
       <ScrollAnimations />
-      
+
       {/* 1. Amazon Style Hero Carousel */}
       <AmazonStyleHero />
 
       {/* Main Content Container */}
-      <div style={{ 
-        background: "#ffffff",
-        paddingTop: "20px",
-        position: "relative",
-        zIndex: 2
-      }}>
+      <div
+        style={{
+          background: "#ffffff",
+          paddingTop: "20px",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
         {/* 2. Categories Grid */}
         <div style={{ marginBottom: "20px" }}>
           <AmazonStyleCategories />
         </div>
 
         {/* Products Sections Container */}
-        <div style={{ 
-          maxWidth: "1500px", 
-          margin: "0 auto"
-        }}>
+        <div
+          style={{
+            maxWidth: "1500px",
+            margin: "0 auto",
+          }}
+        >
           {/* 3. Featured Products */}
-          <AmazonStyleProducts
-            products={items}
-            title="المنتجات المميزة"
-            loading={loading}
-          />
+          {error ? (
+            <ErrorMessage
+              error={error}
+              onRetry={() => window.location.reload()}
+              title="خطأ في تحميل المنتجات"
+            />
+          ) : (
+            <AmazonStyleProducts
+              products={items}
+              title="المنتجات المميزة"
+              loading={loading}
+            />
+          )}
 
           {/* 4. Best Sellers */}
           <AmazonStyleProducts
@@ -69,62 +82,28 @@ const HomePage = () => {
         </div>
 
         {/* Special Offers Banner */}
-        <div style={{
-          background: "#fff3cd",
-          margin: "0",
-          padding: "30px 0",
-          textAlign: "center",
-          borderTop: "1px solid #e7e7e7",
-          borderBottom: "1px solid #e7e7e7"
-        }}>
-          <div style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "0 20px"
-          }}>
-            <h2 style={{
-              color: "#0f1111",
-              fontSize: "2rem",
-              fontWeight: "700",
-              marginBottom: "10px"
-            }}>
+        <div className="theme-bg-light theme-border-medium py-5 text-center">
+          <div className="container">
+            <h2
+              className="theme-text-primary mb-3"
+              style={{ fontSize: "2rem", fontWeight: "700" }}
+            >
               🔥 عروض حصرية لفترة محدودة
             </h2>
-            <p style={{
-              color: "#0f1111",
-              fontSize: "1.1rem",
-              marginBottom: "20px"
-            }}>
-              وفر حتى 70% على مجموعة مختارة من المنتجات - أسعار بالدولار الأمريكي
-            </p>
-            <Link
-              to="/products"
-              style={{
-                background: "#ff9900",
-                color: "#0f1111",
-                padding: "12px 30px",
-                borderRadius: "4px",
-                textDecoration: "none",
-                fontWeight: "600",
-                display: "inline-block",
-                transition: "all 0.2s ease",
-                border: "1px solid #e47911"
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = "#e47911";
-                e.target.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = "#ff9900";
-                e.target.style.transform = "translateY(0)";
-              }}
+            <p
+              className="theme-text-secondary mb-4"
+              style={{ fontSize: "1.1rem" }}
             >
+              وفر حتى 70% على مجموعة مختارة من المنتجات - أسعار بالدولار
+              الأمريكي
+            </p>
+            <Link to="/products" className="theme-btn theme-btn-amazon">
               تسوق العروض الآن
             </Link>
           </div>
         </div>
       </div>
-      
+
       {/* Footer */}
       <AmazonStyleFooter />
     </div>

@@ -1,0 +1,396 @@
+/* Zouhal Theme Variables - Extracted from Home Page */
+:root {
+  /* Amazon-inspired Color Palette */
+  --amazon-orange: #ff9900;
+  --amazon-orange-hover: #e47911;
+  --amazon-blue: #007185;
+  --amazon-dark-blue: #232f3e;
+  --amazon-light-blue: #37475a;
+  --amazon-yellow: #febd69;
+  --amazon-red: #cc0c39;
+  --amazon-gray: #565959;
+  --amazon-light-gray: #f3f3f3;
+  --amazon-bg: #eaeded;
+
+  /* Primary Colors */
+  --primary-color: #667eea;
+  --primary-hover: #764ba2;
+  --secondary-color: #e30613;
+  --secondary-hover: #c20510;
+
+  /* Text Colors */
+  --text-primary: #0f1111;
+  --text-secondary: #565959;
+  --text-muted: #979797;
+  --text-light: #718096;
+
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fdfdf6;
+  --bg-light: #f8f9fa;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+  /* Border Colors */
+  --border-light: #e7e7e7;
+  --border-medium: #ddd;
+  --border-dark: #979797;
+
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
+  --shadow-primary: rgba(102, 126, 234, 0.15);
+  --shadow-secondary: rgba(227, 6, 19, 0.3);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #e30613, #ff4444);
+  --gradient-amazon: linear-gradient(135deg, #ff9900, #febd69);
+
+  /* Typography */
+  --font-family: "Almarai", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-2xl: 25px;
+  --radius-full: 50px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Z-Index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* Global Theme Classes */
+.theme-bg-primary {
+  background-color: var(--bg-primary);
+}
+.theme-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+.theme-bg-light {
+  background-color: var(--bg-light);
+}
+
+.theme-text-primary {
+  color: var(--text-primary);
+}
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-border {
+  border: 1px solid var(--border-light);
+}
+.theme-border-medium {
+  border: 1px solid var(--border-medium);
+}
+
+.theme-shadow-sm {
+  box-shadow: 0 2px 4px var(--shadow-light);
+}
+.theme-shadow-md {
+  box-shadow: 0 4px 8px var(--shadow-light);
+}
+.theme-shadow-lg {
+  box-shadow: 0 8px 16px var(--shadow-medium);
+}
+
+.theme-gradient-primary {
+  background: var(--gradient-primary);
+}
+.theme-gradient-secondary {
+  background: var(--gradient-secondary);
+}
+
+.theme-rounded-sm {
+  border-radius: var(--radius-sm);
+}
+.theme-rounded-md {
+  border-radius: var(--radius-md);
+}
+.theme-rounded-lg {
+  border-radius: var(--radius-lg);
+}
+.theme-rounded-xl {
+  border-radius: var(--radius-xl);
+}
+
+.theme-transition {
+  transition: all var(--transition-base);
+}
+.theme-transition-fast {
+  transition: all var(--transition-fast);
+}
+.theme-transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* Theme Button Styles */
+.theme-btn {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.theme-btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 15px var(--shadow-primary);
+}
+
+.theme-btn-primary:hover {
+  background: var(--gradient-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow-primary);
+  color: white;
+}
+
+.theme-btn-secondary {
+  background: var(--gradient-secondary);
+  color: white;
+  box-shadow: 0 4px 15px var(--shadow-secondary);
+}
+
+.theme-btn-secondary:hover {
+  background: var(--gradient-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow-secondary);
+  color: white;
+}
+
+.theme-btn-amazon {
+  background: var(--amazon-yellow);
+  color: var(--text-primary);
+  border: 1px solid #a88734;
+}
+
+.theme-btn-amazon:hover {
+  background: #f3a847;
+  border-color: #9c7e31;
+  color: var(--text-primary);
+}
+
+/* Theme Card Styles */
+.theme-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 32px var(--shadow-light);
+  transition: all var(--transition-bounce);
+  overflow: hidden;
+  position: relative;
+}
+
+.theme-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px var(--shadow-medium);
+}
+
+.theme-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform var(--transition-slow);
+}
+
+.theme-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Theme Input Styles */
+.theme-input {
+  font-family: var(--font-family);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-slow);
+  background: var(--bg-light);
+  width: 100%;
+}
+
+.theme-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: var(--bg-primary);
+  outline: none;
+}
+
+/* Theme Loading States */
+.theme-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: themeShimmer 2s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes themeShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.theme-loading-dots {
+  display: inline-flex;
+  gap: var(--spacing-sm);
+}
+
+.theme-loading-dots div {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  animation: themeBounce 1.4s ease-in-out infinite both;
+}
+
+.theme-loading-dots div:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.theme-loading-dots div:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.theme-loading-dots div:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes themeBounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Theme Animations */
+.theme-fade-in {
+  animation: themeFadeIn 0.6s ease-out;
+}
+
+@keyframes themeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-slide-in-left {
+  animation: themeSlideInLeft 0.8s ease-out;
+}
+
+@keyframes themeSlideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.theme-slide-in-right {
+  animation: themeSlideInRight 0.8s ease-out;
+}
+
+@keyframes themeSlideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --font-size-3xl: 1.5rem;
+    --font-size-4xl: 1.875rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+  }
+
+  .theme-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .theme-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --font-size-2xl: 1.25rem;
+    --font-size-3xl: 1.375rem;
+  }
+}

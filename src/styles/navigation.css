@@ -1,0 +1,457 @@
+/* نظام التصفح مثل موقع نون - الأنماط */
+
+/* شريط التصنيفات الرئيسية */
+.categories-navbar {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 2px 4px var(--shadow-light);
+  position: relative;
+  z-index: var(--z-dropdown);
+}
+
+.categories-nav {
+  padding: 0;
+}
+
+.categories-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.categories-list::-webkit-scrollbar {
+  display: none;
+}
+
+.category-item {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.category-link {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.category-link:hover {
+  color: var(--primary-color);
+  background: var(--bg-light);
+  border-bottom-color: var(--primary-color);
+}
+
+.category-item.active .category-link {
+  color: var(--primary-color);
+  background: var(--bg-light);
+  border-bottom-color: var(--primary-color);
+}
+
+/* رابط "جميع الفئات" */
+.category-link.all-categories {
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  margin-left: var(--spacing-md);
+  border-bottom: none;
+}
+
+.category-link.all-categories:hover {
+  background: var(--gradient-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-primary);
+}
+
+/* رابط "المزيد" */
+.category-link.more-categories {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.category-link.more-categories:hover {
+  color: var(--primary-color);
+}
+
+/* القائمة المنسدلة */
+.category-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-top: none;
+  box-shadow: 0 8px 32px var(--shadow-medium);
+  z-index: var(--z-dropdown);
+  animation: dropdownSlideDown 0.3s ease-out;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-content {
+  padding: var(--spacing-xl);
+}
+
+/* عنوان القائمة المنسدلة */
+.dropdown-header {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+  text-align: center;
+}
+
+.category-title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.category-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.category-title a:hover {
+  color: var(--primary-color);
+}
+
+.category-description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* شبكة التصنيفات الفرعية */
+.subcategories-grid {
+  margin: 0 -var(--spacing-sm);
+}
+
+.subcategory-column {
+  padding: 0 var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.subcategory-section {
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-light);
+  transition: all var(--transition-base);
+  height: 100%;
+}
+
+.subcategory-section:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px var(--shadow-light);
+  transform: translateY(-2px);
+}
+
+/* عنوان التصنيف الفرعي */
+.subcategory-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.subcategory-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.subcategory-title a:hover {
+  color: var(--primary-color);
+}
+
+/* قائمة التصنيفات الثانوية */
+.secondary-categories-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.secondary-categories-list li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.secondary-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-base);
+  display: block;
+  padding: var(--spacing-xs) 0;
+  border-radius: var(--radius-sm);
+}
+
+.secondary-link:hover {
+  color: var(--primary-color);
+  background: var(--bg-primary);
+  padding-left: var(--spacing-sm);
+  transform: translateX(4px);
+}
+
+.more-link a {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+  font-style: italic;
+}
+
+/* عدم وجود تصنيفات ثانوية */
+.no-secondary {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.no-secondary a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* عدم وجود تصنيفات فرعية */
+.no-subcategories {
+  text-align: center;
+  padding: var(--spacing-2xl) 0;
+}
+
+/* تذييل القائمة المنسدلة */
+.dropdown-footer {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-light);
+}
+
+.quick-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.quick-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  background: var(--bg-primary);
+}
+
+.quick-link:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: var(--bg-light);
+  transform: translateY(-2px);
+}
+
+/* الاستجابة للأجهزة المحمولة */
+@media (max-width: 768px) {
+  .categories-navbar {
+    display: none; /* إخفاء في الأجهزة المحمولة - سيتم استبداله بقائمة hamburger */
+  }
+
+  .category-dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 100vh;
+    z-index: var(--z-modal);
+  }
+
+  .dropdown-content {
+    padding: var(--spacing-lg);
+  }
+
+  .subcategories-grid {
+    margin: 0;
+  }
+
+  .subcategory-column {
+    padding: 0;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .quick-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .quick-link {
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .dropdown-header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+  }
+
+  .category-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .subcategory-section {
+    padding: var(--spacing-md);
+  }
+
+  .subcategory-title {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* تحسينات الأداء */
+.category-dropdown {
+  will-change: transform, opacity;
+}
+
+.subcategory-section {
+  will-change: transform, box-shadow;
+}
+
+.secondary-link {
+  will-change: transform, color;
+}
+
+/* إمكانية الوصول */
+.category-link:focus,
+.subcategory-title a:focus,
+.secondary-link:focus,
+.quick-link:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* أنماط قائمة الأجهزة المحمولة */
+.mobile-categories-menu .offcanvas-header {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.mobile-categories-menu .offcanvas-title {
+  color: white;
+  font-weight: var(--font-weight-bold);
+}
+
+.mobile-categories-menu .btn-close {
+  filter: invert(1);
+}
+
+.mobile-category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
+  border: 2px solid var(--border-light);
+  transition: all var(--transition-base);
+}
+
+.mobile-category-icon.all-categories {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.mobile-category-icon i {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.mobile-category-icon.all-categories i {
+  color: white;
+}
+
+.subcategory-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
+  border: 1px solid var(--border-light);
+}
+
+.subcategory-icon i {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.secondary-categories-mobile {
+  background: var(--bg-light);
+}
+
+.secondary-link-mobile:hover {
+  background: var(--bg-primary);
+  color: var(--primary-color) !important;
+}
+
+.mobile-categories-menu .accordion-button {
+  padding: var(--spacing-md);
+  background: var(--bg-primary);
+  border: none;
+  box-shadow: none;
+}
+
+.mobile-categories-menu .accordion-button:not(.collapsed) {
+  background: var(--bg-light);
+  color: var(--primary-color);
+}
+
+.mobile-categories-menu .accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.mobile-categories-menu .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23667eea'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* تحسين الطباعة */
+@media print {
+  .categories-navbar,
+  .category-dropdown,
+  .mobile-categories-menu {
+    display: none;
+  }
+}

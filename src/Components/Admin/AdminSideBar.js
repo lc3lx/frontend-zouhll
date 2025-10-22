@@ -47,6 +47,23 @@ const AdminSideBar = () => {
             إدارة التصنيفات الفرعية
           </div>
         </Link>
+
+        <Link
+          to="/admin/add-secondary-category"
+          style={{ textDecoration: "none" }}
+        >
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            اضف تصنيف ثانوي
+          </div>
+        </Link>
+        <Link
+          to="/admin/all-secondary-categories"
+          style={{ textDecoration: "none" }}
+        >
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة التصنيفات الثانوية
+          </div>
+        </Link>
         <Link to="/admin/addproduct" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             اضف منتج
@@ -60,6 +77,16 @@ const AdminSideBar = () => {
         <Link to="/admin/recharge-codes" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             أكواد الشحن
+          </div>
+        </Link>
+        <Link to="/admin/add-exchange-rate" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إضافة سعر صرف
+          </div>
+        </Link>
+        <Link to="/admin/all-exchange-rates" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة أسعار الصرف
           </div>
         </Link>
       </div>

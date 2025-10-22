@@ -61,27 +61,46 @@ const AdminEditProductsHook = (id) => {
   const addVariant = () => {
     setVariants((prev) => [
       ...prev,
-      { colorName: "", colorHex: "#000000", price: "", sku: "", images: {}, sizes: [] },
+      {
+        colorName: "",
+        colorHex: "#000000",
+        price: "",
+        sku: "",
+        images: {},
+        sizes: [],
+      },
     ]);
   };
-  const removeVariant = (index) => setVariants((prev) => prev.filter((_, i) => i !== index));
+  const removeVariant = (index) =>
+    setVariants((prev) => prev.filter((_, i) => i !== index));
   const setVariantField = (index, field, value) =>
-    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
-  const setVariantImages = (index, imagesObj) => setVariantField(index, "images", imagesObj);
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+    );
+  const setVariantImages = (index, imagesObj) =>
+    setVariantField(index, "images", imagesObj);
   const addVariantSize = (index, label, stock) => {
     if (!label) return;
     const s = { label, stock: Number(stock || 0) };
-    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v)));
+    setVariants((prev) =>
+      prev.map((v, i) =>
+        i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v
+      )
+    );
   };
   const removeVariantSize = (vIndex, sIndex) =>
     setVariants((prev) =>
-      prev.map((v, i) => (i === vIndex ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) } : v))
+      prev.map((v, i) =>
+        i === vIndex
+          ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) }
+          : v
+      )
     );
 
   useEffect(() => {
     if (item && item.data) {
       console.log("Product data:", item.data);
-      
+
       // تأكد من أن الصور هي array
       setImages(Array.isArray(item.data.images) ? item.data.images : []);
       setProdName(item.data.title || "");
@@ -90,21 +109,27 @@ const AdminEditProductsHook = (id) => {
       setPriceAftr(item.data.priceAfterDiscount || "");
       setQty(item.data.quantity || "");
       setProductUrl(item.data.productUrl || "");
-      
+
       // إصلاح تحديد التصنيف
       if (item.data.category) {
-        const categoryId = typeof item.data.category === 'object' ? item.data.category._id : item.data.category;
+        const categoryId =
+          typeof item.data.category === "object"
+            ? item.data.category._id
+            : item.data.category;
         setCatID(categoryId || "0");
         console.log("Category ID set to:", categoryId);
       }
-      
+
       // إصلاح تحديد الماركة
       if (item.data.brand) {
-        const brandId = typeof item.data.brand === 'object' ? item.data.brand._id : item.data.brand;
+        const brandId =
+          typeof item.data.brand === "object"
+            ? item.data.brand._id
+            : item.data.brand;
         SetBrandID(brandId || "0");
         console.log("Brand ID set to:", brandId);
       }
-      
+
       // معالجة الألوان - التحقق من مصادر مختلفة
       let productColors = [];
       if (Array.isArray(item.data.availableColors)) {
@@ -112,17 +137,19 @@ const AdminEditProductsHook = (id) => {
       } else if (Array.isArray(item.data.colors)) {
         productColors = item.data.colors;
       } else if (item.data.variants && Array.isArray(item.data.variants)) {
-        productColors = item.data.variants.map(v => v.color?.hex || v.color).filter(Boolean);
+        productColors = item.data.variants
+          .map((v) => v.color?.hex || v.color)
+          .filter(Boolean);
       }
       setColors(productColors);
       console.log("Colors set to:", productColors);
-      
+
       // معالجة التصنيفات الفرعية
       if (item.data.subcategory && Array.isArray(item.data.subcategory)) {
         setSeletedSubID(item.data.subcategory);
         console.log("Subcategories set to:", item.data.subcategory);
       }
-      
+
       if (Array.isArray(item.data.variants)) {
         // initialize variants without pre-filling images (admin can re-upload per color)
         const init = item.data.variants.map((v) => ({
@@ -131,7 +158,9 @@ const AdminEditProductsHook = (id) => {
           price: v?.price || "",
           sku: v?.sku || "",
           images: {},
-          sizes: Array.isArray(v?.sizes) ? v.sizes.map((s) => ({ label: s.label, stock: s.stock })) : [],
+          sizes: Array.isArray(v?.sizes)
+            ? v.sizes.map((s) => ({ label: s.label, stock: s.stock }))
+            : [],
         }));
         setVariants(init);
         console.log("Variants set to:", init);
@@ -271,7 +300,8 @@ const AdminEditProductsHook = (id) => {
     formData.append("description", prodDescription);
     formData.append("quantity", qty);
     formData.append("price", priceBefore);
-    if (priceAftr && Number(priceAftr) > 0) formData.append("priceAfterDiscount", priceAftr);
+    if (priceAftr && Number(priceAftr) > 0)
+      formData.append("priceAfterDiscount", priceAftr);
     if (productUrl) formData.append("productUrl", productUrl);
     formData.append("category", CatID);
     if (BrandID && BrandID !== "0") {
@@ -297,10 +327,15 @@ const AdminEditProductsHook = (id) => {
         const variantImageMap = [];
         const variantPayload = variants.map((v) => {
           const keys = Object.keys(v.images || {});
-          const files = keys.map((_, idx) => dataURLtoFile(v.images[idx], Math.random() + ".png"));
+          const files = keys.map((_, idx) =>
+            dataURLtoFile(v.images[idx], Math.random() + ".png")
+          );
           files.forEach((f) => formData.append("variantImages", f));
           variantImageMap.push(files.length);
-          const cleanSizes = (v.sizes || []).map((s) => ({ label: s.label, stock: Number(s.stock || 0) }));
+          const cleanSizes = (v.sizes || []).map((s) => ({
+            label: s.label,
+            stock: Number(s.stock || 0),
+          }));
           const payload = {
             color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
             sizes: cleanSizes,
@@ -317,9 +352,9 @@ const AdminEditProductsHook = (id) => {
     }
 
     setTimeout(async () => {
-      setLoading(true)
-      await dispatch(updateProducts(id, formData))
-      setLoading(false)
+      setLoading(true);
+      await dispatch(updateProducts(id, formData));
+      setLoading(false);
     }, 1000);
   };
 
@@ -327,7 +362,7 @@ const AdminEditProductsHook = (id) => {
   const product = useSelector((state) => state.allproducts.updateProducts);
 
   useEffect(() => {
-    if (loading === false) {
+    if (loading === false && product) {
       //setCatID(0)
       setColors([]);
       setImages([]);
@@ -339,17 +374,14 @@ const AdminEditProductsHook = (id) => {
       setProductUrl("");
       SetBrandID(0);
       setSeletedSubID([]);
-      setTimeout(() => setLoading(true), 1500);
 
-      if (product) {
-        if (product.status === 200) {
-          notify("تم التعديل بنجاح", "success");
-        } else {
-          notify("هناك مشكله", "error");
-        }
+      if (product.status === 200) {
+        notify("تم التعديل بنجاح", "success");
+      } else {
+        notify("هناك مشكله", "error");
       }
     }
-  }, [loading]);
+  }, [loading, product]);
 
   return [
     CatID,

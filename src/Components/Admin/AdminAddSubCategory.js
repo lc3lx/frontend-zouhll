@@ -6,14 +6,16 @@ import useAddSubcategoryHook from "./../../hook/subcategory/add-subcategory-hook
 
 const AdminAddSubCategory = () => {
   const [
-    , // id - not used
+    id,
     name,
-    , // loading - not used
+    img,
+    loading,
     category,
-    , // subcategory - not used
+    subcategory,
     handelChange,
     handelSubmit,
     onChangeName,
+    onChangeImg,
   ] = useAddSubcategoryHook();
 
   return (
@@ -21,6 +23,29 @@ const AdminAddSubCategory = () => {
       <Row className="justify-content-start ">
         <div className="admin-content-text pb-4">اضافه تصنيف فرعي جديد</div>
         <Col sm="8">
+          <div className="text-form pb-2">صورة التصنيف الفرعي</div>
+          <div>
+            <label htmlFor="upload-photo">
+              <img
+                src={
+                  img
+                    ? URL.createObjectURL(img)
+                    : require("../../images/avatar.png")
+                }
+                alt="subcategory"
+                height="100px"
+                width="120px"
+                style={{ cursor: "pointer" }}
+              />
+            </label>
+            <input
+              type="file"
+              name="photo"
+              onChange={onChangeImg}
+              id="upload-photo"
+              style={{ display: "none" }}
+            />
+          </div>
           <input
             value={name}
             onChange={onChangeName}

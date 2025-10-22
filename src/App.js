@@ -30,7 +30,11 @@ import AdminEditBrandPage from "./Page/Admin/AdminEditBrandPage";
 import AdminAllCategoriesPage from "./Page/Admin/AdminAllCategoriesPage";
 import AdminAllBrandsPage from "./Page/Admin/AdminAllBrandsPage";
 import AdminRechargeCodes from "./Page/Admin/AdminRechargeCodes";
+import AdminAddExchangeRatePage from "./Page/Admin/AdminAddExchangeRatePage";
+import AdminAllExchangeRatesPage from "./Page/Admin/AdminAllExchangeRatesPage";
 import AdminAllSubcategoriesPage from "./Page/Admin/AdminAllSubcategoriesPage";
+import AdminAddSecondaryCategoryPage from "./Page/Admin/AdminAddSecondaryCategoryPage";
+import AdminAllSecondaryCategoriesPage from "./Page/Admin/AdminAllSecondaryCategoriesPage";
 import ForgetPasswordPage from "./Page/Auth/ForgetPasswordPage";
 import VerifyPasswordPage from "./Page/Auth/VerifyPasswordPage";
 import RsetPasswordPage from "./Page/Auth/ResetPasswordPage";
@@ -44,9 +48,63 @@ import ProductsByBrand from "./Page/Products/ProductsByBrand";
 import ProductsBySubcategory from "./Page/Products/ProductsBySubcategory";
 import ModernAllCategoryPage from "./Page/Category/ModernAllCategoryPage";
 import ZuhalAI from "./Components/AI/ZuhalAI";
+import { useEffect } from "react";
+import { api } from "./Api/client";
+import { categoryTreeCache } from "./Components/Navigation/CategoryDropdown";
 
 function App() {
   const [isUser, isAdmin] = ProtectedRouteHook();
+  useEffect(() => {
+    let cancelled = false;
+    async function prefetchCategoriesTree() {
+      try {
+        // جلب كل التصنيفات الرئيسية
+        const catRes = await api.getCategories({ limit: 100, sort: "name" });
+        const categories = catRes?.data || [];
+        // لكل فئة: جلب الفرعية والثانوية بالتوازي وتعبئة الكاش
+        await Promise.all(
+          categories.map(async (cat) => {
+            if (cancelled) return;
+            try {
+              const [subRes, secAllRes] = await Promise.all([
+                api.getSubcategories({
+                  category: cat._id,
+                  limit: 100,
+                  sort: "name",
+                }),
+                api.getSecondaryCategories({
+                  category: cat._id,
+                  limit: 1000,
+                  sort: "name",
+                }),
+              ]);
+              const subcategories = subRes?.data || [];
+              const allSecondary = secAllRes?.data || [];
+              const secBySubId = allSecondary.reduce((acc, item) => {
+                const key = item.subCategory?._id || item.subCategory;
+                if (!key) return acc;
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(item);
+                return acc;
+              }, {});
+              const subWithSecondary = subcategories.map((sub) => ({
+                ...sub,
+                secondaryCategories: secBySubId[sub._id] || [],
+              }));
+              categoryTreeCache.set(cat._id, {
+                data: { ...cat, subcategories: subWithSecondary },
+                expireAt: Date.now() + 60 * 1000,
+              });
+            } catch (_) {}
+          })
+        );
+      } catch (_) {}
+    }
+    prefetchCategoriesTree();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="font">
@@ -76,7 +134,14 @@ function App() {
             element={<ProductsByCategory />}
           />
           <Route path="/products/brand/:id" element={<ProductsByBrand />} />
-          <Route path="/products/subcategory/:id" element={<ProductsBySubcategory />} />
+          <Route
+            path="/products/subcategory/:id"
+            element={<ProductsBySubcategory />}
+          />
+          <Route
+            path="/products/secondary-category/:id"
+            element={<ProductsBySubcategory />}
+          />
 
           <Route element={<ProtectedRoute auth={isAdmin} />}>
             <Route path="/admin/allorders" element={<AdminAllOrdersPage />} />
@@ -93,14 +158,31 @@ function App() {
               path="/admin/addcategory"
               element={<AdminAddCategoryPage />}
             />
-            <Route path="/admin/allcategories" element={<AdminAllCategoriesPage />} />
+            <Route
+              path="/admin/allcategories"
+              element={<AdminAllCategoriesPage />}
+            />
             <Route path="/admin/allbrands" element={<AdminAllBrandsPage />} />
             <Route
               path="/admin/addsubcategory"
               element={<AdminAddSubCategoryPage />}
             />
-            <Route path="/admin/allsubcategories" element={<AdminAllSubcategoriesPage />} />
-            <Route path="/admin/addproduct" element={<AdminAddProductsPage />} />
+            <Route
+              path="/admin/allsubcategories"
+              element={<AdminAllSubcategoriesPage />}
+            />
+            <Route
+              path="/admin/add-secondary-category"
+              element={<AdminAddSecondaryCategoryPage />}
+            />
+            <Route
+              path="/admin/all-secondary-categories"
+              element={<AdminAllSecondaryCategoriesPage />}
+            />
+            <Route
+              path="/admin/addproduct"
+              element={<AdminAddProductsPage />}
+            />
             <Route path="/admin/addcoupon" element={<AdminAddCouponPage />} />
             <Route
               path="/admin/editcoupon/:id"
@@ -121,6 +203,14 @@ function App() {
             <Route
               path="/admin/recharge-codes"
               element={<AdminRechargeCodes />}
+            />
+            <Route
+              path="/admin/add-exchange-rate"
+              element={<AdminAddExchangeRatePage />}
+            />
+            <Route
+              path="/admin/all-exchange-rates"
+              element={<AdminAllExchangeRatesPage />}
             />
           </Route>
 

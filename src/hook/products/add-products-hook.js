@@ -44,6 +44,13 @@ const AdminAddProductsHook = () => {
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // New fields state
+  const [season, setSeason] = useState("");
+  const [fabricType, setFabricType] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [sizes, setSizes] = useState([]); // For products without color variants
+
   // Variant builder state
   const [variants, setVariants] = useState([]);
   // helpers to manage variants
@@ -64,7 +71,9 @@ const AdminAddProductsHook = () => {
     setVariants((prev) => prev.filter((_, i) => i !== index));
   };
   const setVariantField = (index, field, value) => {
-    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+    );
   };
   const setVariantImages = (index, imagesObj) => {
     setVariantField(index, "images", imagesObj);
@@ -73,13 +82,17 @@ const AdminAddProductsHook = () => {
     if (!label) return;
     const s = { label, stock: Number(stock || 0) };
     setVariants((prev) =>
-      prev.map((v, i) => (i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v))
+      prev.map((v, i) =>
+        i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v
+      )
     );
   };
   const removeVariantSize = (vIndex, sIndex) => {
     setVariants((prev) =>
       prev.map((v, i) =>
-        i === vIndex ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) } : v
+        i === vIndex
+          ? { ...v, sizes: (v.sizes || []).filter((_, j) => j !== sIndex) }
+          : v
       )
     );
   };
@@ -111,6 +124,36 @@ const AdminAddProductsHook = () => {
   const onChangeProductUrl = (event) => {
     event.persist();
     setProductUrl(event.target.value);
+  };
+
+  // New fields change handlers
+  const onChangeSeason = (event) => {
+    setSeason(event.target.value);
+  };
+
+  const onChangeFabricType = (event) => {
+    event.persist();
+    setFabricType(event.target.value);
+  };
+
+  const onChangeDeliveryTime = (event) => {
+    event.persist();
+    setDeliveryTime(event.target.value);
+  };
+
+  const onChangeCurrency = (event) => {
+    setCurrency(event.target.value);
+  };
+
+  // Size management for products without color variants
+  const addSize = (label, stock) => {
+    if (!label) return;
+    const newSize = { label, stock: Number(stock || 0) };
+    setSizes([...sizes, newSize]);
+  };
+
+  const removeSize = (index) => {
+    setSizes(sizes.filter((_, i) => i !== index));
   };
   const onChangeColor = (event) => {
     event.persist();
@@ -176,7 +219,8 @@ const AdminAddProductsHook = () => {
     e.preventDefault();
     const imgList = Object.values(images || {});
     if (
-      !CatID || CatID === "0" ||
+      !CatID ||
+      CatID === "0" ||
       prodName === "" ||
       prodDescription === "" ||
       imgList.length <= 0 ||
@@ -189,7 +233,9 @@ const AdminAddProductsHook = () => {
     //convert base 64 image to file
     const imgCover = dataURLtoFile(imgList[0], Math.random() + ".png");
     //convert array of base 64 image to file
-    const itemImages = imgList.map((src) => dataURLtoFile(src, Math.random() + ".png"));
+    const itemImages = imgList.map((src) =>
+      dataURLtoFile(src, Math.random() + ".png")
+    );
 
     const formData = new FormData();
     formData.append("title", prodName);
@@ -205,13 +251,26 @@ const AdminAddProductsHook = () => {
     }
     if (productUrl) formData.append("productUrl", productUrl);
 
+    // New fields
+    if (season) formData.append("season", season);
+    if (fabricType) formData.append("fabricType", fabricType);
+    if (deliveryTime) formData.append("deliveryTime", deliveryTime);
+    formData.append("currency", currency);
+
+    // Add sizes for products without color variants
+    if (sizes.length > 0) {
+      formData.append("sizes", JSON.stringify(sizes));
+    }
+
     // append images synchronously
     formData.append("imageCover", imgCover);
     itemImages.forEach((item) => formData.append("images", item));
     if (Array.isArray(colors) && colors.length) {
       formData.append("colors", JSON.stringify(colors));
     }
-    const subIds = Array.isArray(seletedSubID) ? seletedSubID.map((s) => s._id) : [];
+    const subIds = Array.isArray(seletedSubID)
+      ? seletedSubID.map((s) => s._id)
+      : [];
     if (subIds.length) {
       formData.append("subcategories", JSON.stringify(subIds));
     }
@@ -224,7 +283,9 @@ const AdminAddProductsHook = () => {
         const variantPayload = variants.map((v) => {
           // convert MultiImageInput object to File list
           const keys = Object.keys(v.images || {});
-          const files = keys.map((_, idx) => dataURLtoFile(v.images[idx], Math.random() + ".png"));
+          const files = keys.map((_, idx) =>
+            dataURLtoFile(v.images[idx], Math.random() + ".png")
+          );
           let pushed = 0;
           files.forEach((f) => {
             if (variantImageCount < 30) {
@@ -234,7 +295,10 @@ const AdminAddProductsHook = () => {
             }
           });
           variantImageMap.push(pushed);
-          const cleanSizes = (v.sizes || []).map((s) => ({ label: s.label, stock: Number(s.stock || 0) }));
+          const cleanSizes = (v.sizes || []).map((s) => ({
+            label: s.label,
+            stock: Number(s.stock || 0),
+          }));
           const payload = {
             color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
             sizes: cleanSizes,
@@ -259,7 +323,7 @@ const AdminAddProductsHook = () => {
   const product = useSelector((state) => state.allproducts.products);
 
   useEffect(() => {
-    if (loading === false) {
+    if (loading === false && product) {
       // setCatID(0)
       setColors([]);
       setImages([]);
@@ -271,17 +335,22 @@ const AdminAddProductsHook = () => {
       setProductUrl("");
       SetBrandID(0);
       setSeletedSubID([]);
-      setTimeout(() => setLoading(true), 1500);
 
-      if (product) {
-        if (product.status === 201) {
-          notify("تم الاضافة بنجاح", "success");
-        } else {
-          notify("هناك مشكله", "error");
-        }
+      // Reset new fields
+      setSeason("");
+      setFabricType("");
+      setDeliveryTime("");
+      setCurrency("USD");
+      setSizes([]);
+      setVariants([]);
+
+      if (product.status === 201) {
+        notify("تم الاضافة بنجاح", "success");
+      } else {
+        notify("هناك مشكله", "error");
       }
     }
-  }, [loading]);
+  }, [loading, product]);
 
   return [
     onChangeDesName,
@@ -319,6 +388,18 @@ const AdminAddProductsHook = () => {
     setVariantImages,
     addVariantSize,
     removeVariantSize,
+    // New fields exports
+    season,
+    fabricType,
+    deliveryTime,
+    currency,
+    sizes,
+    onChangeSeason,
+    onChangeFabricType,
+    onChangeDeliveryTime,
+    onChangeCurrency,
+    addSize,
+    removeSize,
   ];
 };
 

@@ -16,6 +16,7 @@ const useAddSubcategoryHook = () => {
   }, []);
   const [id, setID] = useState("0");
   const [name, setName] = useState("");
+  const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(true);
   //get last catgeory state from redux
   const category = useSelector((state) => state.allCategory.category);
@@ -34,6 +35,13 @@ const useAddSubcategoryHook = () => {
     e.persist();
     setName(e.target.value);
   };
+
+  //to save image
+  const onChangeImg = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImg(e.target.files[0]);
+    }
+  };
   //on save data
   const handelSubmit = async (e) => {
     e.preventDefault();
@@ -50,20 +58,23 @@ const useAddSubcategoryHook = () => {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("category", id);
+    if (img) {
+      formData.append("image", img);
+    }
+
     setLoading(true);
-    await dispatch(
-      createSubCategory({
-        name,
-        category: id,
-      })
-    );
+    await dispatch(createSubCategory(formData));
     setLoading(false);
   };
   useEffect(() => {
-    if (loading === false) {
+    if (loading === false && subcategory) {
       setName("");
       setID("0");
-      if (subcategory) console.log(subcategory);
+      setImg(null);
+      console.log(subcategory);
       if (subcategory.status === 201) {
         notify("تمت الاضافة بنجاح", "success");
       } else if (
@@ -73,8 +84,6 @@ const useAddSubcategoryHook = () => {
       } else {
         notify("هناك مشكله فى عملية الاضافة", "warn");
       }
-
-      setLoading(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, subcategory]);
@@ -82,12 +91,14 @@ const useAddSubcategoryHook = () => {
   return [
     id,
     name,
+    img,
     loading,
     category,
     subcategory,
     handelChange,
     handelSubmit,
     onChangeName,
+    onChangeImg,
   ];
 };
 

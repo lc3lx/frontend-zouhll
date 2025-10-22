@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import categoryReducer from "./categoryReducer";
 import brandReducer from "./brandReducer";
 import subcategoryReducer from "./subcategoryReducer";
+import secondaryCategoryReducer from "./secondaryCategoryReducer";
 import productsReducer from "./productsReducer";
 import authReducer from "./authReducer";
 import reviewReducer from "./reviewReducer";
@@ -13,10 +14,12 @@ import checkoutReducer from "./checkoutReducer";
 import orderReducer from "./orderReducer";
 import walletReducer from "./walletReducer";
 import rechargeCodeReducer from "./rechargeCodeReducer";
+import exchangeRateReducer from "./exchangeRateReducer";
 export default combineReducers({
   allCategory: categoryReducer,
   allBrand: brandReducer,
   subCategory: subcategoryReducer,
+  secondaryCategory: secondaryCategoryReducer,
   allproducts: productsReducer,
   authReducer: authReducer,
   reviewReducer: reviewReducer,
@@ -28,4 +31,5 @@ export default combineReducers({
   orderReducer: orderReducer,
   walletReducer: walletReducer,
   rechargeCodeReducer: rechargeCodeReducer,
+  exchangeRateReducer: exchangeRateReducer,
 });

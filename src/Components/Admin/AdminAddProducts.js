@@ -45,6 +45,18 @@ const AdminAddProducts = () => {
     setVariantImages,
     addVariantSize,
     removeVariantSize,
+    // New fields
+    season,
+    fabricType,
+    deliveryTime,
+    currency,
+    sizes,
+    onChangeSeason,
+    onChangeFabricType,
+    onChangeDeliveryTime,
+    onChangeCurrency,
+    addSize,
+    removeSize,
   ] = AdminAddProductsHook();
 
   return (
@@ -107,6 +119,47 @@ const AdminAddProducts = () => {
             value={productUrl}
             onChange={onChangeProductUrl}
           />
+
+          {/* New fields */}
+          <select
+            name="season"
+            value={season}
+            onChange={onChangeSeason}
+            className="select input-form-area mt-3 px-2"
+          >
+            <option value="">اختر الفصل (اختياري)</option>
+            <option value="summer">صيف</option>
+            <option value="autumn">خريف</option>
+            <option value="spring">ربيع</option>
+            <option value="winter">شتاء</option>
+          </select>
+
+          <input
+            type="text"
+            className="input-form d-block mt-3 px-3"
+            placeholder="نوع القماش (اختياري)"
+            value={fabricType}
+            onChange={onChangeFabricType}
+          />
+
+          <input
+            type="text"
+            className="input-form d-block mt-3 px-3"
+            placeholder="مدة التوصيل (اختياري)"
+            value={deliveryTime}
+            onChange={onChangeDeliveryTime}
+          />
+
+          <select
+            name="currency"
+            value={currency}
+            onChange={onChangeCurrency}
+            className="select input-form-area mt-3 px-2"
+          >
+            <option value="USD">دولار أمريكي (USD)</option>
+            <option value="SYP">ليرة سورية (SYP)</option>
+          </select>
+
           <select
             name="cat"
             onChange={onSeletCategory}
@@ -177,10 +230,69 @@ const AdminAddProducts = () => {
             ) : null}
           </div>
 
-          {/* Variants Builder */}
-          <div className="text-form mt-4"> متغيرات المنتج (ألوان/صور/قياسات)</div>
+          {/* Sizes without colors */}
+          <div className="text-form mt-4">المقاسات (للمنتجات بدون ألوان)</div>
           <div className="mt-2">
-            <button type="button" onClick={addVariant} className="btn btn-outline-primary">
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <input
+                type="text"
+                className="input-form d-block px-3"
+                placeholder="قياس (مثل S أو 38)"
+                id="newSizeLabel"
+              />
+              <input
+                type="number"
+                className="input-form d-block px-3"
+                placeholder="المخزون"
+                id="newSizeStock"
+              />
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-success"
+                onClick={() => {
+                  const label = document.getElementById("newSizeLabel").value;
+                  const stock = document.getElementById("newSizeStock").value;
+                  if (label) {
+                    addSize(label, stock);
+                    document.getElementById("newSizeLabel").value = "";
+                    document.getElementById("newSizeStock").value = "";
+                  }
+                }}
+              >
+                إضافة قياس
+              </button>
+            </div>
+            {sizes && sizes.length > 0 && (
+              <div className="mt-2 d-flex flex-wrap gap-2">
+                {sizes.map((s, i) => (
+                  <span
+                    key={i}
+                    className="badge bg-light text-dark border d-flex align-items-center"
+                  >
+                    {s.label} - {Number(s.stock) || 0}
+                    <button
+                      type="button"
+                      className="btn-close btn-close-white ms-2"
+                      style={{ fontSize: "10px" }}
+                      onClick={() => removeSize(i)}
+                    ></button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Variants Builder */}
+          <div className="text-form mt-4">
+            {" "}
+            متغيرات المنتج (ألوان/صور/قياسات)
+          </div>
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={addVariant}
+              className="btn btn-outline-primary"
+            >
               إضافة لون/متغير
             </button>
             {Array.isArray(variants) && variants.length > 0 && (
@@ -193,27 +305,35 @@ const AdminAddProducts = () => {
                         className="input-form d-block px-3"
                         placeholder="اسم اللون"
                         value={v.colorName || ""}
-                        onChange={(e) => setVariantField(i, "colorName", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "colorName", e.target.value)
+                        }
                       />
                       <input
                         type="color"
                         className="ms-2"
                         value={v.colorHex || "#000000"}
-                        onChange={(e) => setVariantField(i, "colorHex", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "colorHex", e.target.value)
+                        }
                       />
                       <input
                         type="number"
                         className="input-form d-block px-3"
                         placeholder="سعر هذا المتغير (اختياري)"
                         value={v.price || ""}
-                        onChange={(e) => setVariantField(i, "price", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "price", e.target.value)
+                        }
                       />
                       <input
                         type="text"
                         className="input-form d-block px-3"
                         placeholder="SKU (اختياري)"
                         value={v.sku || ""}
-                        onChange={(e) => setVariantField(i, "sku", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "sku", e.target.value)
+                        }
                       />
                       <button
                         type="button"
@@ -240,14 +360,18 @@ const AdminAddProducts = () => {
                           className="input-form d-block px-3"
                           placeholder="قياس (مثل S أو 38)"
                           value={v.newSizeLabel || ""}
-                          onChange={(e) => setVariantField(i, "newSizeLabel", e.target.value)}
+                          onChange={(e) =>
+                            setVariantField(i, "newSizeLabel", e.target.value)
+                          }
                         />
                         <input
                           type="number"
                           className="input-form d-block px-3"
                           placeholder="المخزون"
                           value={v.newSizeStock || ""}
-                          onChange={(e) => setVariantField(i, "newSizeStock", e.target.value)}
+                          onChange={(e) =>
+                            setVariantField(i, "newSizeStock", e.target.value)
+                          }
                         />
                         <button
                           type="button"
@@ -264,8 +388,17 @@ const AdminAddProducts = () => {
                       {v.sizes && v.sizes.length > 0 && (
                         <div className="mt-2 d-flex flex-wrap gap-2">
                           {v.sizes.map((s, si) => (
-                            <span key={si} className="badge bg-light text-dark border">
+                            <span
+                              key={si}
+                              className="badge bg-light text-dark border d-flex align-items-center"
+                            >
                               {s.label} - {Number(s.stock) || 0}
+                              <button
+                                type="button"
+                                className="btn-close btn-close-white ms-2"
+                                style={{ fontSize: "10px" }}
+                                onClick={() => removeVariantSize(i, si)}
+                              ></button>
                             </span>
                           ))}
                         </div>

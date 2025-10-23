@@ -2,7 +2,7 @@
 
 /* Global Amazon Styles */
 .amazon-homepage {
-  font-family: 'Amazon Ember', Arial, sans-serif;
+  font-family: "Amazon Ember", Arial, sans-serif;
   background: #ffffff;
   color: #0f1111;
   min-height: 100vh;
@@ -38,34 +38,64 @@
 .amazon-homepage h4,
 .amazon-homepage h5,
 .amazon-homepage h6 {
-  font-family: 'Amazon Ember', Arial, sans-serif;
+  font-family: "Amazon Ember", Arial, sans-serif;
   font-weight: 600;
   color: #0f1111;
   margin-bottom: 0.5rem;
 }
 
 .amazon-homepage p {
-  font-family: 'Amazon Ember', Arial, sans-serif;
+  font-family: "Amazon Ember", Arial, sans-serif;
   color: #565959;
   line-height: 1.5;
 }
 
-/* Amazon Cards */
+/* Enhanced Amazon Cards */
 .amazon-category-card,
 .amazon-product-card,
 .amazon-brand-card {
-  transition: all 0.2s ease-in-out;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.amazon-category-card::before,
+.amazon-product-card::before,
+.amazon-brand-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s;
+  z-index: 1;
+}
+
+.amazon-category-card:hover::before,
+.amazon-product-card:hover::before,
+.amazon-brand-card:hover::before {
+  left: 100%;
 }
 
 .amazon-category-card:hover,
 .amazon-product-card:hover,
 .amazon-brand-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
-  border-color: #007185;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) scale(1.02);
 }
 
 /* Amazon Buttons */
@@ -207,6 +237,63 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+/* Enhanced Product Images */
+.amazon-product-card .card-img,
+.amazon-category-card .card-img {
+  transition: all 0.3s ease;
+  border-radius: 12px 12px 0 0;
+}
+
+.amazon-product-card:hover .card-img,
+.amazon-category-card:hover .card-img {
+  transform: scale(1.05);
+}
+
+/* Enhanced Brand Images */
+.amazon-brand-card .card-img {
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.amazon-brand-card:hover .card-img {
+  transform: scale(1.1);
+}
+
+/* Enhanced Typography */
+.amazon-product-card .card-title,
+.amazon-category-card .card-title,
+.amazon-brand-card .card-title {
+  font-weight: 700;
+  color: #2c3e50;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Buttons */
+.amazon-product-card .btn,
+.amazon-category-card .btn,
+.amazon-brand-card .btn {
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.amazon-product-card .btn:hover,
+.amazon-category-card .btn:hover,
+.amazon-brand-card .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Glass Effect for Cards */
+.amazon-product-card,
+.amazon-category-card,
+.amazon-brand-card {
+  backdrop-filter: blur(10px);
+  background: rgba(248, 249, 250, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 /* Amazon Carousel */
 .amazon-carousel .carousel-indicators {
   bottom: 20px;
@@ -214,7 +301,7 @@
 }
 
 .amazon-carousel .carousel-indicators button {
-  background-color: rgba(255,255,255,0.6);
+  background-color: rgba(255, 255, 255, 0.6);
   border: none;
   width: 8px;
   height: 8px;
@@ -233,7 +320,7 @@
 .amazon-carousel .carousel-control-next {
   width: 60px;
   height: 60px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   top: 50%;
   transform: translateY(-50%);
@@ -313,7 +400,7 @@
 }
 
 .amazon-nav-link:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
 }
 
@@ -355,16 +442,16 @@
   .amazon-grid-4 {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-  
+
   .amazon-section {
     padding: 15px;
     margin-bottom: 15px;
   }
-  
+
   .amazon-section-title {
     font-size: 1.4rem;
   }
-  
+
   .amazon-nav-link {
     padding: 6px 8px;
     font-size: 0.85rem;
@@ -377,11 +464,11 @@
   .amazon-grid-4 {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .amazon-section {
     padding: 10px;
   }
-  
+
   .amazon-section-title {
     font-size: 1.2rem;
   }
@@ -450,7 +537,7 @@
 
 .amazon-hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Amazon Section Spacing */

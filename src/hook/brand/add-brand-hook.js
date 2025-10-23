@@ -39,7 +39,9 @@ const AddBrandHook = () => {
     }
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("image", selectedFile);
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
     setLoading(true);
     setIsPress(true);
     await dispatch(createBrand(formData));

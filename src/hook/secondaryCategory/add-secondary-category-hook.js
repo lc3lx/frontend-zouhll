@@ -31,6 +31,7 @@ const useAddSecondaryCategoryHook = () => {
   const createResponse = useSelector(
     (state) => state.secondaryCategory.secondaryCategories
   );
+  const createError = useSelector((state) => state.secondaryCategory.error);
 
   // Loading state for subcategories fetch
   const [subLoading, setSubLoading] = useState(false);
@@ -104,19 +105,25 @@ const useAddSecondaryCategoryHook = () => {
   };
 
   useEffect(() => {
-    if (loading === false && createResponse) {
-      // نجاح
-      if (createResponse.status === 201) {
-        setName("");
-        setCategoryId("0");
-        setSubCategoryId("0");
-        notify("تم الإضافة بنجاح", "success");
-      } else if (createResponse.status && createResponse.status >= 400) {
-        // فشل مع حالة HTTP
-        notify("هناك مشكله فى عملية الإضافة", "error");
-      }
+    if (loading) return;
+    if (createResponse && createResponse.status === 201) {
+      setName("");
+      setCategoryId("0");
+      setSubCategoryId("0");
+      notify("تم الإضافة بنجاح", "success");
+      return;
     }
-  }, [loading, createResponse]);
+    if (createError) {
+      const msg =
+        (createError &&
+          createError.response &&
+          createError.response.data &&
+          createError.response.data.message) ||
+        (typeof createError === "string" ? createError : null) ||
+        "هناك مشكله فى عملية الإضافة";
+      notify(msg, "error");
+    }
+  }, [loading, createResponse, createError]);
 
   return [
     categoryId,

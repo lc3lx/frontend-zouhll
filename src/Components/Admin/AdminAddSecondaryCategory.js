@@ -1,5 +1,6 @@
 import React from "react";
 import { Row, Col, Spinner, Card, Form, Button } from "react-bootstrap";
+import { ToastContainer } from "react-toastify";
 import useAddSecondaryCategoryHook from "../../hook/secondaryCategory/add-secondary-category-hook";
 
 const AdminAddSecondaryCategory = () => {
@@ -88,6 +89,7 @@ const AdminAddSecondaryCategory = () => {
           </Card>
         </Col>
       </Row>
+      <ToastContainer />
     </div>
   );
 };

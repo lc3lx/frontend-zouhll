@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getOneCategory } from "../../redux/actions/subcategoryAction";
 import { createProduct } from "../../redux/actions/productsAction";
 import notify from "./../../hook/useNotifaction";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import { getAllBrand } from "./../../redux/actions/brandAction";
+import { useGetData as getData } from "../../hooks/useGetData";
 
 const AdminAddProductsHook = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllCategory());
     dispatch(getAllBrand());
-  }, []);
+  }, [dispatch]);
   //get last catgeory state from redux
   const category = useSelector((state) => state.allCategory.category);
   //get last brand state from redux
@@ -19,6 +20,8 @@ const AdminAddProductsHook = () => {
 
   //get last sub cat state from redux
   const subCat = useSelector((state) => state.subCategory.subcategory);
+  const [secondaryCatID, setSecondaryCatID] = useState([]);
+  const [secondaryOptions, setSecondaryOptions] = useState([]);
 
   const onSelect = (selectedList) => {
     setSeletedSubID(selectedList);
@@ -26,6 +29,9 @@ const AdminAddProductsHook = () => {
   const onRemove = (selectedList) => {
     setSeletedSubID(selectedList);
   };
+  // معالجات اختيار/إزالة التصنيف الثانوي
+  const onSelectSecondary = (selectedList) => setSecondaryCatID(selectedList);
+  const onRemoveSecondary = (selectedList) => setSecondaryCatID(selectedList);
 
   const [options, setOptions] = useState([]);
 
@@ -40,7 +46,7 @@ const AdminAddProductsHook = () => {
   const [productUrl, setProductUrl] = useState("");
   const [CatID, setCatID] = useState("");
   const [BrandID, SetBrandID] = useState("");
-  const [subCatID, setSubCatID] = useState([]);
+  // const [subCatID, setSubCatID] = useState([]);
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +59,39 @@ const AdminAddProductsHook = () => {
 
   // Variant builder state
   const [variants, setVariants] = useState([]);
+  // عندما تتغير التصنيفات الفرعية، اجلب التصنيفات الثانوية المقابلة
+  useEffect(() => {
+    const run = async () => {
+      if (!seletedSubID || seletedSubID.length === 0) {
+        setSecondaryOptions([]);
+        setSecondaryCatID([]);
+        return;
+      }
+      try {
+        const ids = seletedSubID.map((s) => s._id);
+        const results = await Promise.all(
+          ids.map((id) =>
+            getData(`/api/v1/subcategories/${id}/secondary-categories`)
+          )
+        );
+        const merged = [];
+        const seen = new Set();
+        results.forEach((res) => {
+          (res?.data || []).forEach((sc) => {
+            if (!seen.has(sc._id)) {
+              seen.add(sc._id);
+              merged.push(sc);
+            }
+          });
+        });
+        setSecondaryOptions(merged);
+      } catch (e) {
+        setSecondaryOptions([]);
+      }
+    };
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(seletedSubID)]);
   // helpers to manage variants
   const addVariant = () => {
     setVariants((prev) => [
@@ -183,8 +222,10 @@ const AdminAddProductsHook = () => {
     } else {
       setOptions([]);
     }
-    // reset selected subcategories when category changes
+    // reset selected subcategories and secondary categories when category changes
     setSeletedSubID([]);
+    setSecondaryCatID([]);
+    setSecondaryOptions([]);
   };
   useEffect(() => {
     if (CatID && CatID !== "0") {
@@ -274,7 +315,12 @@ const AdminAddProductsHook = () => {
     if (subIds.length) {
       formData.append("subcategories", JSON.stringify(subIds));
     }
-
+    const secondaryIds = Array.isArray(secondaryCatID)
+      ? secondaryCatID.map((s) => s._id)
+      : [];
+    if (secondaryIds.length) {
+      formData.append("secondaryCategories", JSON.stringify(secondaryIds));
+    }
     // Build variants payload if any
     try {
       if (Array.isArray(variants) && variants.length > 0) {
@@ -326,7 +372,7 @@ const AdminAddProductsHook = () => {
     if (loading === false && product) {
       // setCatID(0)
       setColors([]);
-      setImages([]);
+      setImages({});
       setProdName("");
       setProdDescription("");
       setPriceBefore("السعر قبل الخصم");
@@ -400,6 +446,10 @@ const AdminAddProductsHook = () => {
     onChangeCurrency,
     addSize,
     removeSize,
+    secondaryCatID,
+    onSelectSecondary,
+    onRemoveSecondary,
+    secondaryOptions,
   ];
 };
 

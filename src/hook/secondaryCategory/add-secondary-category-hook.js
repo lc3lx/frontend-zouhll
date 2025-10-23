@@ -13,8 +13,9 @@ const useAddSecondaryCategoryHook = () => {
       notify("هناك مشكله فى الاتصال بالانترنت", "warn");
       return;
     }
-    dispatch(getAllCategory());
-    dispatch(getAllSubcategories());
+    // Load all categories with large limit
+    dispatch(getAllCategory(1000));
+    // Subcategories will load lazily based on selected category
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -29,6 +30,9 @@ const useAddSecondaryCategoryHook = () => {
   const secondaryCategory = useSelector(
     (state) => state.secondaryCategory.secondaryCategories
   );
+
+  // Loading state for subcategories fetch
+  const [subLoading, setSubLoading] = useState(false);
 
   // On change category dropdown
   const handleCategoryChange = (e) => {
@@ -47,13 +51,22 @@ const useAddSecondaryCategoryHook = () => {
     setName(e.target.value);
   };
 
-  // Get filtered subcategories based on selected category
-  const getFilteredSubcategories = () => {
-    if (!subcategories?.data || categoryId === "0") return [];
-    return subcategories.data.filter(
-      (sub) => sub.category === categoryId || sub.category._id === categoryId
-    );
-  };
+  // Fetch subcategories lazily when category changes
+  useEffect(() => {
+    const fetchSubs = async () => {
+      if (!categoryId || categoryId === "0") return;
+      setSubLoading(true);
+      try {
+        await dispatch(
+          getAllSubcategories(`category=${categoryId}&limit=1000&sort=name`)
+        );
+      } finally {
+        setSubLoading(false);
+      }
+    };
+    fetchSubs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId]);
 
   // On save data
   const handleSubmit = async (e) => {
@@ -109,7 +122,8 @@ const useAddSecondaryCategoryHook = () => {
     onChangeName,
     handleSubmit,
     categories,
-    getFilteredSubcategories,
+    subcategories,
+    subLoading,
   ];
 };
 

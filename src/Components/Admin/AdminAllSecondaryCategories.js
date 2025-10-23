@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import useAdminSecondaryCategories from "../../hook/secondaryCategory/admin-secondary-categories-hook";
 import { useDispatch } from "react-redux";
 import { deleteSecondaryCategory } from "../../redux/actions/secondaryCategoryAction";
+import EditSecondaryCategoryModal from "./EditSecondaryCategoryModal";
 
 const AdminAllSecondaryCategories = () => {
   const {
@@ -28,6 +29,8 @@ const AdminAllSecondaryCategories = () => {
 
   const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const allIds = useMemo(() => rows.map((r) => r._id), [rows]);
   const categoryIdToName = useMemo(() => {
     const map = {};
@@ -56,8 +59,14 @@ const AdminAllSecondaryCategories = () => {
       `هل أنت متأكد من حذف التصنيف الثانوي: ${name || id}?`
     );
     if (!ok) return;
-    await dispatch(deleteSecondaryCategory(id));
-    setPage(page);
+
+    try {
+      await dispatch(deleteSecondaryCategory(id));
+      // Refresh the page to show updated data
+      window.location.reload();
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
   };
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
@@ -65,12 +74,28 @@ const AdminAllSecondaryCategories = () => {
       `حذف ${selectedIds.length} عنصر/عناصر؟ لا يمكن التراجع.`
     );
     if (!ok) return;
-    for (const id of selectedIds) {
-      // eslint-disable-next-line no-await-in-loop
-      await dispatch(deleteSecondaryCategory(id));
+
+    try {
+      for (const id of selectedIds) {
+        // eslint-disable-next-line no-await-in-loop
+        await dispatch(deleteSecondaryCategory(id));
+      }
+      setSelectedIds([]);
+      // Refresh the page to show updated data
+      window.location.reload();
+    } catch (error) {
+      console.error("Bulk delete error:", error);
     }
-    setSelectedIds([]);
-    setPage(page);
+  };
+
+  const handleEditClick = (id) => {
+    setEditingId(id);
+    setShowEditModal(true);
+  };
+
+  const handleEditSuccess = () => {
+    // Refresh data after successful edit
+    window.location.reload();
   };
 
   // عرض حالة التحميل أثناء جلب البيانات
@@ -215,7 +240,7 @@ const AdminAllSecondaryCategories = () => {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">
+                  <td colSpan={7} className="text-center py-4">
                     لا توجد نتائج مطابقة
                   </td>
                 </tr>
@@ -258,13 +283,13 @@ const AdminAllSecondaryCategories = () => {
                     </td>
                     <td>
                       <div className="d-flex gap-2">
-                        <Link
-                          to={`/admin/secondary-categories/edit/${item._id}`}
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleEditClick(item._id)}
                         >
-                          <Button variant="outline-primary" size="sm">
-                            تعديل
-                          </Button>
-                        </Link>
+                          تعديل
+                        </Button>
                         <Button
                           variant="outline-danger"
                           size="sm"
@@ -303,6 +328,14 @@ const AdminAllSecondaryCategories = () => {
           </div>
         )}
       </Card>
+
+      {/* Edit Modal */}
+      <EditSecondaryCategoryModal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        secondaryCategoryId={editingId}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 };

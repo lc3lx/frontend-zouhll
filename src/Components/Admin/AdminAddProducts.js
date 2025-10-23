@@ -57,6 +57,10 @@ const AdminAddProducts = () => {
     onChangeCurrency,
     addSize,
     removeSize,
+    secondaryCatID,
+    onSelectSecondary,
+    onRemoveSecondary,
+    secondaryOptions,
   ] = AdminAddProductsHook();
 
   return (
@@ -185,6 +189,15 @@ const AdminAddProducts = () => {
             onRemove={onRemove}
             displayValue="name"
             style={{ color: "red" }}
+          />
+          <Multiselect
+            className="mt-2 text-end"
+            placeholder="التصنيف الثانوي"
+            options={secondaryOptions}
+            selectedValues={secondaryCatID}
+            onSelect={onSelectSecondary}
+            onRemove={onRemoveSecondary}
+            displayValue="name"
           />
           <select
             name="brand"

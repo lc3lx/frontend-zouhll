@@ -27,7 +27,8 @@ const useAddSecondaryCategoryHook = () => {
   // Get categories and subcategories from redux
   const categories = useSelector((state) => state.allCategory.category);
   const subcategories = useSelector((state) => state.subCategory.subcategories);
-  const secondaryCategory = useSelector(
+  // رد إنشاء التصنيف الثانوي (يعود من CREATE_SECONDARY_CATEGORY)
+  const createResponse = useSelector(
     (state) => state.secondaryCategory.secondaryCategories
   );
 
@@ -93,24 +94,28 @@ const useAddSecondaryCategoryHook = () => {
       category: categoryId,
       subCategory: subCategoryId,
     };
-
-    setLoading(true);
-    await dispatch(createSecondaryCategory(data));
-    setLoading(false);
+    try {
+      setLoading(true);
+      await dispatch(createSecondaryCategory(data));
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (loading === false && secondaryCategory) {
-      setName("");
-      setCategoryId("0");
-      setSubCategoryId("0");
-      if (secondaryCategory.status === 201) {
+    if (loading === false && createResponse) {
+      // نجاح
+      if (createResponse.status === 201) {
+        setName("");
+        setCategoryId("0");
+        setSubCategoryId("0");
         notify("تم الإضافة بنجاح", "success");
-      } else {
+      } else if (createResponse.status && createResponse.status >= 400) {
+        // فشل مع حالة HTTP
         notify("هناك مشكله فى عملية الإضافة", "error");
       }
     }
-  }, [loading, secondaryCategory]);
+  }, [loading, createResponse]);
 
   return [
     categoryId,

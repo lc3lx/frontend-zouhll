@@ -22,7 +22,7 @@ const useAddSecondaryCategoryHook = () => {
   const [categoryId, setCategoryId] = useState("0");
   const [subCategoryId, setSubCategoryId] = useState("0");
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Get categories and subcategories from redux
   const categories = useSelector((state) => state.allCategory.category);
@@ -37,7 +37,8 @@ const useAddSecondaryCategoryHook = () => {
 
   // On change category dropdown
   const handleCategoryChange = (e) => {
-    setCategoryId(e.target.value);
+    const val = e.target.value;
+    setCategoryId(val);
     setSubCategoryId("0"); // Reset subcategory when category changes
   };
 

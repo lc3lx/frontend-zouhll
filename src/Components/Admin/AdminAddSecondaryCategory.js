@@ -23,7 +23,7 @@ const AdminAddSecondaryCategory = () => {
       <Row className="justify-content-start">
         <Col sm="8">
           <Card className="p-3">
-            <Form>
+            <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="secondaryName">
                 <Form.Label>اسم التصنيف الثانوي</Form.Label>
                 <Form.Control
@@ -75,11 +75,7 @@ const AdminAddSecondaryCategory = () => {
               </Form.Group>
 
               <div className="d-flex justify-content-end">
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                >
+                <Button variant="primary" type="submit" disabled={loading}>
                   حفظ التعديلات
                 </Button>
                 {loading ? (

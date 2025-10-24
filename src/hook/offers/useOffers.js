@@ -30,10 +30,18 @@ export function useActiveOffers(filters = {}, options = {}) {
     isActive: true,
   };
 
-  return useOffers(offerFilters, {
+  const result = useOffers(offerFilters, {
     ttl: 30000, // 30 seconds cache for active offers
     ...options,
   });
+
+  // Extract offers from the response
+  const offers = result.data?.data || [];
+
+  return {
+    ...result,
+    offers,
+  };
 }
 
 // Hook for fetching featured offers (for home page/header)
@@ -64,9 +72,11 @@ export function useBannerOffers(options = {}) {
   );
 }
 
-export default {
+const offersHooks = {
   useOffers,
   useActiveOffers,
   useFeaturedOffers,
   useBannerOffers,
 };
+
+export default offersHooks;

@@ -369,8 +369,8 @@ const AdminAddProductsHook = () => {
   const product = useSelector((state) => state.allproducts.products);
 
   useEffect(() => {
-    if (loading === false && product) {
-      // setCatID(0)
+    if (loading === false && product && product.status === 201) {
+      // Only clear form data on successful submission
       setColors([]);
       setImages({});
       setProdName("");
@@ -390,11 +390,10 @@ const AdminAddProductsHook = () => {
       setSizes([]);
       setVariants([]);
 
-      if (product.status === 201) {
-        notify("تم الاضافة بنجاح", "success");
-      } else {
-        notify("هناك مشكله", "error");
-      }
+      notify("تم الاضافة بنجاح", "success");
+    } else if (loading === false && product && product.status !== 201) {
+      // Show error message but keep form data
+      notify("هناك مشكله", "error");
     }
   }, [loading, product]);
 

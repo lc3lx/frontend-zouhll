@@ -4,12 +4,10 @@ import {
   Container,
   Form,
   InputGroup,
-  Nav,
   NavDropdown,
   Badge,
 } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../../images/logo.png";
 import NavbarSearchHook from "./../../hook/search/navbar-search-hook";
 import GetAllUserCartHook from "./../../hook/cart/get-all-user-cart-hook";
 import CategoriesNavBar from "../Navigation/CategoriesNavBar";
@@ -39,43 +37,6 @@ const NavBarLogin = () => {
   return (
     <>
       {/* Top Header */}
-      <div
-        style={{
-          background: "#131921",
-          color: "white",
-          padding: "8px 0",
-          fontSize: "0.85rem",
-        }}
-      >
-        <Container>
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex gap-3">
-              <span style={{ color: "white" }}>📍 التوصيل إلى دمشق، سوريا</span>
-              <span style={{ color: "white" }}>💵 USD - الدولار الأمريكي</span>
-            </div>
-            <div className="d-flex gap-3">
-              {user !== "" ? (
-                <span style={{ color: "white" }}>
-                  مرحباً، {user.name || "المستخدم"}
-                </span>
-              ) : (
-                <Link
-                  to="/login"
-                  style={{ color: "white", textDecoration: "none" }}
-                >
-                  مرحباً، تسجيل الدخول
-                </Link>
-              )}
-              <Link
-                to="/user/allorders"
-                style={{ color: "white", textDecoration: "none" }}
-              >
-                الطلبات والإرجاع
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </div>
 
       {/* Main Navbar */}
       <Navbar
@@ -100,7 +61,7 @@ const NavBarLogin = () => {
               marginLeft: "20px",
             }}
           >
-            <span style={{ color: "#ff9900" }}>زوحال</span>
+            <span style={{ color: "#ff9900" }}>زحل</span>
           </Navbar.Brand>
 
           {/* Search Bar */}
@@ -109,7 +70,7 @@ const NavBarLogin = () => {
               <InputGroup>
                 <Form.Control
                   type="text"
-                  placeholder="ابحث في زوحال..."
+                  placeholder="ابحث في زحل..."
                   value={word}
                   onChange={OnChangeSearch}
                   style={{
@@ -239,72 +200,6 @@ const NavBarLogin = () => {
       {/* Categories Navigation + شريط التصنيفات في الهوم فقط */}
       {location.pathname === "/" && (
         <>
-          <div
-            style={{
-              background: "#37475a",
-              padding: "8px 0",
-              borderBottom: "1px solid #3a4553",
-            }}
-          >
-            <Container>
-              <div className="d-flex align-items-center gap-4 flex-wrap">
-                <Link
-                  to="/categories"
-                  style={{
-                    color: "white",
-                    textDecoration: "none",
-                    fontSize: "0.9rem",
-                    fontWeight: "bold",
-                    padding: "5px 10px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  📋 جميع الفئات
-                </Link>
-
-                <Link
-                  to="/allbrand"
-                  style={{
-                    color: "white",
-                    textDecoration: "none",
-                    fontSize: "0.85rem",
-                    padding: "5px 8px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  العلامات التجارية
-                </Link>
-
-                <Link
-                  to="/products"
-                  style={{
-                    color: "white",
-                    textDecoration: "none",
-                    fontSize: "0.85rem",
-                    padding: "5px 8px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  المنتجات
-                </Link>
-
-                <Link
-                  to="/products"
-                  style={{
-                    color: "#ff9900",
-                    textDecoration: "none",
-                    fontSize: "0.9rem",
-                    fontWeight: "bold",
-                    padding: "5px 10px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  🔥 عروض اليوم
-                </Link>
-              </div>
-            </Container>
-          </div>
-
           {/* شريط التصنيفات */}
           <CategoriesNavBar />
         </>

@@ -1,10 +1,20 @@
 import React, { useMemo, useState } from "react";
-import { Row, Col, Card, Button, Form, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Table,
+  Tabs,
+  Tab,
+} from "react-bootstrap";
 import useAdminSecondaryCategories from "../../hook/secondaryCategory/admin-secondary-categories-hook";
 import { useDispatch } from "react-redux";
 import { deleteSecondaryCategory } from "../../redux/actions/secondaryCategoryAction";
 import EditSecondaryCategoryModal from "./EditSecondaryCategoryModal";
+import AdminAddSecondaryCategory from "./AdminAddSecondaryCategory";
+import { ToastContainer } from "react-toastify";
 
 const AdminAllSecondaryCategories = () => {
   const {
@@ -31,6 +41,7 @@ const AdminAllSecondaryCategories = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [activeTab, setActiveTab] = useState("list");
   const allIds = useMemo(() => rows.map((r) => r._id), [rows]);
   const categoryIdToName = useMemo(() => {
     const map = {};
@@ -98,6 +109,16 @@ const AdminAllSecondaryCategories = () => {
     window.location.reload();
   };
 
+  const handleAddNew = () => {
+    setActiveTab("add");
+  };
+
+  const handleBackToList = () => {
+    setActiveTab("list");
+    // Refresh data
+    window.location.reload();
+  };
+
   // عرض حالة التحميل أثناء جلب البيانات
   if (loading) {
     return (
@@ -112,222 +133,242 @@ const AdminAllSecondaryCategories = () => {
     <div>
       <div className="admin-content-text">إدارة التصنيفات الثانوية</div>
 
-      {/* Quick actions */}
-      <div className="d-flex gap-2 mb-3">
-        <Link to="/admin/add-secondary-category">
-          <Button variant="primary" size="sm">
-            + إضافة تصنيف ثانوي
-          </Button>
-        </Link>
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => {
-            handleCategoryChange("");
-            handleSubCategoryChange("");
-            handleKeywordChange("");
-            handleLimitChange(20);
-            handleSortChange("-createdAt");
-            setPage(1);
-          }}
-        >
-          إعادة تعيين الفلاتر
-        </Button>
-        <Button
-          variant="outline-danger"
-          size="sm"
-          disabled={selectedIds.length === 0}
-          onClick={handleBulkDelete}
-        >
-          حذف المحدد ({selectedIds.length})
-        </Button>
-      </div>
+      <Tabs
+        activeKey={activeTab}
+        onSelect={(k) => setActiveTab(k)}
+        className="mb-3"
+      >
+        <Tab eventKey="list" title="قائمة التصنيفات الثانوية">
+          {/* Quick actions */}
+          <div className="d-flex gap-2 mb-3">
+            <Button variant="primary" size="sm" onClick={handleAddNew}>
+              + إضافة تصنيف ثانوي
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => {
+                handleCategoryChange("");
+                handleSubCategoryChange("");
+                handleKeywordChange("");
+                handleLimitChange(20);
+                handleSortChange("-createdAt");
+                setPage(1);
+              }}
+            >
+              إعادة تعيين الفلاتر
+            </Button>
+            <Button
+              variant="outline-danger"
+              size="sm"
+              disabled={selectedIds.length === 0}
+              onClick={handleBulkDelete}
+            >
+              حذف المحدد ({selectedIds.length})
+            </Button>
+          </div>
 
-      {/* Filters */}
-      <Card className="mb-3 p-3">
-        <Row className="g-2">
-          <Col md={4}>
-            <Form.Label>التصنيف الرئيسي</Form.Label>
-            <Form.Select
-              value={categoryId}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-            >
-              <option value="">الكل</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col md={4}>
-            <Form.Label>التصنيف الفرعي</Form.Label>
-            <Form.Select
-              value={subCategoryId}
-              onChange={(e) => handleSubCategoryChange(e.target.value)}
-              disabled={!categoryId}
-            >
-              <option value="">الكل</option>
-              {subcategories.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col md={4}>
-            <Form.Label>بحث بالاسم</Form.Label>
-            <Form.Control
-              type="text"
-              value={keyword}
-              onChange={(e) => handleKeywordChange(e.target.value)}
-              placeholder="ابحث عن تصنيف ثانوي..."
-            />
-          </Col>
-        </Row>
-        <Row className="g-2 mt-2">
-          <Col md={3}>
-            <Form.Label>عدد العناصر</Form.Label>
-            <Form.Select
-              value={limit}
-              onChange={(e) => handleLimitChange(Number(e.target.value))}
-            >
-              {[10, 20, 50, 100].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col md={3}>
-            <Form.Label>الترتيب</Form.Label>
-            <Form.Select
-              value={sort}
-              onChange={(e) => handleSortChange(e.target.value)}
-            >
-              <option value="-createdAt">الأحدث أولاً</option>
-              <option value="name">الاسم (أ-ي)</option>
-              <option value="-name">الاسم (ي-أ)</option>
-            </Form.Select>
-          </Col>
-        </Row>
-      </Card>
+          {/* Filters */}
+          <Card className="mb-3 p-3">
+            <Row className="g-2">
+              <Col md={4}>
+                <Form.Label>التصنيف الرئيسي</Form.Label>
+                <Form.Select
+                  value={categoryId}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                >
+                  <option value="">الكل</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+              <Col md={4}>
+                <Form.Label>التصنيف الفرعي</Form.Label>
+                <Form.Select
+                  value={subCategoryId}
+                  onChange={(e) => handleSubCategoryChange(e.target.value)}
+                  disabled={!categoryId}
+                >
+                  <option value="">الكل</option>
+                  {subcategories.map((s) => (
+                    <option key={s._id} value={s._id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+              <Col md={4}>
+                <Form.Label>بحث بالاسم</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => handleKeywordChange(e.target.value)}
+                  placeholder="ابحث عن تصنيف ثانوي..."
+                />
+              </Col>
+            </Row>
+            <Row className="g-2 mt-2">
+              <Col md={3}>
+                <Form.Label>عدد العناصر</Form.Label>
+                <Form.Select
+                  value={limit}
+                  onChange={(e) => handleLimitChange(Number(e.target.value))}
+                >
+                  {[10, 20, 50, 100].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+              <Col md={3}>
+                <Form.Label>الترتيب</Form.Label>
+                <Form.Select
+                  value={sort}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                >
+                  <option value="-createdAt">الأحدث أولاً</option>
+                  <option value="name">الاسم (أ-ي)</option>
+                  <option value="-name">الاسم (ي-أ)</option>
+                </Form.Select>
+              </Col>
+            </Row>
+          </Card>
 
-      {/* Table */}
-      <Card className="p-3">
-        <div className="table-responsive">
-          <Table hover size="sm" className="align-middle">
-            <thead>
-              <tr>
-                <th>
-                  <Form.Check
-                    type="checkbox"
-                    checked={
-                      selectedIds.length > 0 &&
-                      selectedIds.length === rows.length
-                    }
-                    onChange={(e) => toggleSelectAll(e.target.checked)}
-                  />
-                </th>
-                <th>#</th>
-                <th>الاسم</th>
-                <th>التصنيف الفرعي</th>
-                <th>التصنيف الرئيسي</th>
-                <th>تاريخ الإنشاء</th>
-                <th>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-4">
-                    لا توجد نتائج مطابقة
-                  </td>
-                </tr>
-              ) : (
-                rows.map((item, idx) => (
-                  <tr key={item._id}>
-                    <td>
+          {/* Table */}
+          <Card className="p-3">
+            <div className="table-responsive">
+              <Table hover size="sm" className="align-middle">
+                <thead>
+                  <tr>
+                    <th>
                       <Form.Check
                         type="checkbox"
-                        checked={selectedIds.includes(item._id)}
-                        onChange={(e) =>
-                          toggleSelect(item._id, e.target.checked)
+                        checked={
+                          selectedIds.length > 0 &&
+                          selectedIds.length === rows.length
                         }
+                        onChange={(e) => toggleSelectAll(e.target.checked)}
                       />
-                    </td>
-                    <td>{(page - 1) * limit + (idx + 1)}</td>
-                    <td>{item.name}</td>
-                    <td>
-                      {(() => {
-                        const val = item.subCategory;
-                        if (!val) return "—";
-                        if (typeof val === "string") {
-                          return subCategoryIdToName[val] || "—";
-                        }
-                        return val.name || "—";
-                      })()}
-                    </td>
-                    <td>
-                      {(() => {
-                        const val = item.category;
-                        if (!val) return "—";
-                        if (typeof val === "string") {
-                          return categoryIdToName[val] || "—";
-                        }
-                        return val.name || "—";
-                      })()}
-                    </td>
-                    <td>
-                      {new Date(item.createdAt).toLocaleDateString("ar-SY")}
-                    </td>
-                    <td>
-                      <div className="d-flex gap-2">
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => handleEditClick(item._id)}
-                        >
-                          تعديل
-                        </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleDeleteOne(item._id, item.name)}
-                        >
-                          حذف
-                        </Button>
-                      </div>
-                    </td>
+                    </th>
+                    <th>#</th>
+                    <th>الاسم</th>
+                    <th>التصنيف الفرعي</th>
+                    <th>التصنيف الرئيسي</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>إجراءات</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-
-        {/* Pagination */}
-        {pagination?.numberOfPages > 1 && (
-          <div className="d-flex justify-content-center mt-3">
-            <div className="d-flex gap-2">
-              {Array.from({ length: pagination.numberOfPages }).map((_, i) => (
-                <Button
-                  key={i}
-                  variant={
-                    pagination.currentPage === i + 1
-                      ? "primary"
-                      : "outline-secondary"
-                  }
-                  size="sm"
-                  onClick={() => setPage(i + 1)}
-                >
-                  {i + 1}
-                </Button>
-              ))}
+                </thead>
+                <tbody>
+                  {rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-4">
+                        لا توجد نتائج مطابقة
+                      </td>
+                    </tr>
+                  ) : (
+                    rows.map((item, idx) => (
+                      <tr key={item._id}>
+                        <td>
+                          <Form.Check
+                            type="checkbox"
+                            checked={selectedIds.includes(item._id)}
+                            onChange={(e) =>
+                              toggleSelect(item._id, e.target.checked)
+                            }
+                          />
+                        </td>
+                        <td>{(page - 1) * limit + (idx + 1)}</td>
+                        <td>{item.name}</td>
+                        <td>
+                          {(() => {
+                            const val = item.subCategory;
+                            if (!val) return "—";
+                            if (typeof val === "string") {
+                              return subCategoryIdToName[val] || "—";
+                            }
+                            return val.name || "—";
+                          })()}
+                        </td>
+                        <td>
+                          {(() => {
+                            const val = item.category;
+                            if (!val) return "—";
+                            if (typeof val === "string") {
+                              return categoryIdToName[val] || "—";
+                            }
+                            return val.name || "—";
+                          })()}
+                        </td>
+                        <td>
+                          {new Date(item.createdAt).toLocaleDateString("ar-SY")}
+                        </td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => handleEditClick(item._id)}
+                            >
+                              تعديل
+                            </Button>
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() =>
+                                handleDeleteOne(item._id, item.name)
+                              }
+                            >
+                              حذف
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
             </div>
+
+            {/* Pagination */}
+            {pagination?.numberOfPages > 1 && (
+              <div className="d-flex justify-content-center mt-3">
+                <div className="d-flex gap-2">
+                  {Array.from({ length: pagination.numberOfPages }).map(
+                    (_, i) => (
+                      <Button
+                        key={i}
+                        variant={
+                          pagination.currentPage === i + 1
+                            ? "primary"
+                            : "outline-secondary"
+                        }
+                        size="sm"
+                        onClick={() => setPage(i + 1)}
+                      >
+                        {i + 1}
+                      </Button>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+          </Card>
+        </Tab>
+
+        <Tab eventKey="add" title="إضافة تصنيف ثانوي">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5>إضافة تصنيف ثانوي جديد</h5>
+            <Button variant="secondary" onClick={handleBackToList}>
+              العودة للقائمة
+            </Button>
           </div>
-        )}
-      </Card>
+          <AdminAddSecondaryCategory />
+        </Tab>
+      </Tabs>
 
       {/* Edit Modal */}
       <EditSecondaryCategoryModal
@@ -336,6 +377,7 @@ const AdminAllSecondaryCategories = () => {
         secondaryCategoryId={editingId}
         onSuccess={handleEditSuccess}
       />
+      <ToastContainer />
     </div>
   );
 };

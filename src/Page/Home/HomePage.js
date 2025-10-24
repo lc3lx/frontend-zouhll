@@ -5,7 +5,7 @@ import AmazonStyleHero from "../../Components/Home/AmazonStyleHero";
 import AmazonStyleCategories from "../../Components/Home/AmazonStyleCategories";
 import AmazonStyleProducts from "../../Components/Home/AmazonStyleProducts";
 import AmazonStyleBrands from "../../Components/Home/AmazonStyleBrands";
-import AmazonStyleFooter from "../../Components/Uitily/AmazonStyleFooter";
+import OffersSlider from "../../Components/Home/OffersSlider";
 import ScrollAnimations from "../../Components/Home/ScrollAnimations";
 import ErrorMessage from "../../Components/Common/ErrorMessage";
 import "../../Components/Home/AmazonStyle.css";
@@ -85,7 +85,10 @@ const HomePage = () => {
           )}
         </div>
 
-        {/* 4. Best Sellers - كارد عائم */}
+        {/* 4. Offers Slider */}
+        <OffersSlider />
+
+        {/* 5. Best Sellers - كارد عائم */}
         <div
           style={{
             maxWidth: "1500px",
@@ -240,7 +243,7 @@ const HomePage = () => {
       </div>
 
       {/* Footer */}
-      <AmazonStyleFooter />
+      {/* <AmazonStyleFooter /> */}
     </div>
   );
 };

@@ -1,0 +1,8 @@
+export const GET_ALL_OFFERS = "GET_ALL_OFFERS";
+export const GET_OFFER = "GET_OFFER";
+export const CREATE_OFFER = "CREATE_OFFER";
+export const UPDATE_OFFER = "UPDATE_OFFER";
+export const DELETE_OFFER = "DELETE_OFFER";
+export const TOGGLE_OFFER_STATUS = "TOGGLE_OFFER_STATUS";
+export const OFFER_LOADING = "OFFER_LOADING";
+export const OFFER_ERROR = "OFFER_ERROR";

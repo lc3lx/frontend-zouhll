@@ -10,6 +10,7 @@ import { getAllCategory } from "../../redux/actions/categoryAction";
 import { getAllBrand } from "./../../redux/actions/brandAction";
 import { updateProducts } from "./../../redux/actions/productsAction";
 import baseUrl from "./../../Api/baseURL";
+import { useGetData as getData } from "../../hooks/useGetData";
 
 const AdminEditProductsHook = (id) => {
   const dispatch = useDispatch();
@@ -55,6 +56,15 @@ const AdminEditProductsHook = (id) => {
   const [subCatID, setSubCatID] = useState([]);
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // New fields state
+  const [season, setSeason] = useState("");
+  const [fabricType, setFabricType] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [sizes, setSizes] = useState([]); // For products without color variants
+  const [secondaryCatID, setSecondaryCatID] = useState([]);
+  const [secondaryOptions, setSecondaryOptions] = useState([]);
 
   // Variant builder state (for edit)
   const [variants, setVariants] = useState([]);
@@ -109,6 +119,29 @@ const AdminEditProductsHook = (id) => {
       setPriceAftr(item.data.priceAfterDiscount || "");
       setQty(item.data.quantity || "");
       setProductUrl(item.data.productUrl || "");
+
+      // Load new fields
+      setSeason(item.data.season || "");
+      setFabricType(item.data.fabricType || "");
+      setDeliveryTime(item.data.deliveryTime || "");
+      setCurrency(item.data.currency || "USD");
+
+      // Load sizes for products without variants
+      if (Array.isArray(item.data.sizes)) {
+        setSizes(item.data.sizes);
+      }
+
+      // Load secondary categories
+      if (
+        item.data.secondaryCategories &&
+        Array.isArray(item.data.secondaryCategories)
+      ) {
+        setSecondaryCatID(item.data.secondaryCategories);
+        console.log(
+          "Secondary categories set to:",
+          item.data.secondaryCategories
+        );
+      }
 
       // إصلاح تحديد التصنيف
       if (item.data.category) {
@@ -201,6 +234,40 @@ const AdminEditProductsHook = (id) => {
     setShowColor(!showColor);
   };
 
+  // New fields change handlers
+  const onChangeSeason = (event) => {
+    setSeason(event.target.value);
+  };
+
+  const onChangeFabricType = (event) => {
+    event.persist();
+    setFabricType(event.target.value);
+  };
+
+  const onChangeDeliveryTime = (event) => {
+    event.persist();
+    setDeliveryTime(event.target.value);
+  };
+
+  const onChangeCurrency = (event) => {
+    setCurrency(event.target.value);
+  };
+
+  // Size management for products without color variants
+  const addSize = (label, stock) => {
+    if (!label) return;
+    const newSize = { label, stock: Number(stock || 0) };
+    setSizes([...sizes, newSize]);
+  };
+
+  const removeSize = (index) => {
+    setSizes(sizes.filter((_, i) => i !== index));
+  };
+
+  // Secondary category handlers
+  const onSelectSecondary = (selectedList) => setSecondaryCatID(selectedList);
+  const onRemoveSecondary = (selectedList) => setSecondaryCatID(selectedList);
+
   //to show hide color picker
   const [showColor, setShowColor] = useState(false);
   //to store all pick color
@@ -238,6 +305,40 @@ const AdminEditProductsHook = (id) => {
   const onSeletBrand = (e) => {
     SetBrandID(e.target.value);
   };
+
+  // عندما تتغير التصنيفات الفرعية، اجلب التصنيفات الثانوية المقابلة
+  useEffect(() => {
+    const run = async () => {
+      if (!seletedSubID || seletedSubID.length === 0) {
+        setSecondaryOptions([]);
+        setSecondaryCatID([]);
+        return;
+      }
+      try {
+        const ids = seletedSubID.map((s) => s._id);
+        const results = await Promise.all(
+          ids.map((id) =>
+            getData(`/api/v1/subcategories/${id}/secondary-categories`)
+          )
+        );
+        const merged = [];
+        const seen = new Set();
+        results.forEach((res) => {
+          (res?.data || []).forEach((sc) => {
+            if (!seen.has(sc._id)) {
+              seen.add(sc._id);
+              merged.push(sc);
+            }
+          });
+        });
+        setSecondaryOptions(merged);
+      } catch (e) {
+        setSecondaryOptions([]);
+      }
+    };
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(seletedSubID)]);
 
   //to convert base 64 to file
   function dataURLtoFile(dataurl, filename) {
@@ -308,6 +409,17 @@ const AdminEditProductsHook = (id) => {
       formData.append("brand", BrandID);
     }
 
+    // New fields
+    if (season) formData.append("season", season);
+    if (fabricType) formData.append("fabricType", fabricType);
+    if (deliveryTime) formData.append("deliveryTime", deliveryTime);
+    formData.append("currency", currency);
+
+    // Add sizes for products without color variants
+    if (sizes.length > 0) {
+      formData.append("sizes", JSON.stringify(sizes));
+    }
+
     setTimeout(() => {
       formData.append("imageCover", imgCover);
       itemImages.map((item) => formData.append("images", item));
@@ -320,6 +432,14 @@ const AdminEditProductsHook = (id) => {
 
     colors.map((color) => formData.append("colors", color));
     seletedSubID.map((item) => formData.append("subcategories", item._id));
+
+    // Add secondary categories
+    const secondaryIds = Array.isArray(secondaryCatID)
+      ? secondaryCatID.map((s) => s._id)
+      : [];
+    if (secondaryIds.length) {
+      formData.append("secondaryCategories", JSON.stringify(secondaryIds));
+    }
 
     // Build variants payload if any
     try {
@@ -421,6 +541,22 @@ const AdminEditProductsHook = (id) => {
     setVariantImages,
     addVariantSize,
     removeVariantSize,
+    // New fields exports
+    season,
+    fabricType,
+    deliveryTime,
+    currency,
+    sizes,
+    onChangeSeason,
+    onChangeFabricType,
+    onChangeDeliveryTime,
+    onChangeCurrency,
+    addSize,
+    removeSize,
+    secondaryCatID,
+    onSelectSecondary,
+    onRemoveSecondary,
+    secondaryOptions,
   ];
 };
 

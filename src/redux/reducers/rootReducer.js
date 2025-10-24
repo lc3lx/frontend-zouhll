@@ -15,6 +15,7 @@ import orderReducer from "./orderReducer";
 import walletReducer from "./walletReducer";
 import rechargeCodeReducer from "./rechargeCodeReducer";
 import exchangeRateReducer from "./exchangeRateReducer";
+import offerReducer from "./offerReducer";
 export default combineReducers({
   allCategory: categoryReducer,
   allBrand: brandReducer,
@@ -32,4 +33,5 @@ export default combineReducers({
   walletReducer: walletReducer,
   rechargeCodeReducer: rechargeCodeReducer,
   exchangeRateReducer: exchangeRateReducer,
+  offers: offerReducer,
 });

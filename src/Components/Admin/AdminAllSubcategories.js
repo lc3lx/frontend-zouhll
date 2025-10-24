@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   Button,
@@ -9,12 +9,16 @@ import {
   Spinner,
   Table,
   Form,
+  Tabs,
+  Tab,
 } from "react-bootstrap";
 import {
   updateSubCategory,
   deleteSubCategory,
 } from "../../redux/actions/subcategoryAction";
 import useAdminSubcategories from "../../hook/subcategory/admin-subcategories-hook";
+import AdminAddSubCategory from "./AdminAddSubCategory";
+import { ToastContainer } from "react-toastify";
 
 const AdminAllSubcategories = () => {
   const dispatch = useDispatch();
@@ -23,6 +27,7 @@ const AdminAllSubcategories = () => {
   const [editName, setEditName] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editImageFile, setEditImageFile] = useState(null);
+  const [activeTab, setActiveTab] = useState("list");
 
   const {
     rows,
@@ -33,7 +38,6 @@ const AdminAllSubcategories = () => {
     keyword,
     limit,
     sort,
-    page,
     setPage,
     handleCategoryChange,
     handleKeywordChange,
@@ -89,6 +93,15 @@ const AdminAllSubcategories = () => {
     }
   };
 
+  const handleAddNew = () => {
+    setActiveTab("add");
+  };
+
+  const handleBackToList = () => {
+    setActiveTab("list");
+    refresh();
+  };
+
   if (loading) {
     return (
       <div
@@ -103,163 +116,194 @@ const AdminAllSubcategories = () => {
   return (
     <div>
       <div className="admin-content-text">إدارة التصنيفات الفرعية</div>
-      <Card className="mt-3">
-        <Card.Body>
-          {/* Filters */}
-          <Row className="g-2 mb-3">
-            <Col md={4}>
-              <Form.Label>التصنيف الرئيسي</Form.Label>
-              <Form.Select
-                value={categoryId}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-              >
-                <option value="">الكل</option>
-                {categories.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Form.Select>
-            </Col>
-            <Col md={4}>
-              <Form.Label>بحث بالاسم</Form.Label>
-              <Form.Control
-                type="text"
-                value={keyword}
-                onChange={(e) => handleKeywordChange(e.target.value)}
-                placeholder="ابحث عن تصنيف فرعي..."
-              />
-            </Col>
-            <Col md={2}>
-              <Form.Label>عدد العناصر</Form.Label>
-              <Form.Select
-                value={limit}
-                onChange={(e) => handleLimitChange(Number(e.target.value))}
-              >
-                {[10, 20, 50, 100].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </Form.Select>
-            </Col>
-            <Col md={2}>
-              <Form.Label>الترتيب</Form.Label>
-              <Form.Select
-                value={sort}
-                onChange={(e) => handleSortChange(e.target.value)}
-              >
-                <option value="-createdAt">الأحدث أولاً</option>
-                <option value="name">الاسم (أ-ي)</option>
-                <option value="-name">الاسم (ي-أ)</option>
-              </Form.Select>
-            </Col>
-          </Row>
-          {rows.length === 0 ? (
-            <div className="text-center py-4">لا توجد تصنيفات فرعية</div>
-          ) : (
-            <Table responsive bordered hover>
-              <thead>
-                <tr>
-                  <th>الصورة</th>
-                  <th>الاسم</th>
-                  <th>التصنيف الرئيسي</th>
-                  <th style={{ width: 160 }}>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((sc) => (
-                  <tr key={sc._id}>
-                    <td>
-                      {sc.image ? (
-                        <img
-                          src={sc.image}
-                          alt={sc.name}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#f8f9fa",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "4px",
-                            fontSize: "12px",
-                            color: "#6c757d",
-                          }}
-                        >
-                          لا توجد صورة
-                        </div>
-                      )}
-                    </td>
-                    <td>{sc.name}</td>
-                    <td>
-                      {(() => {
-                        const val = sc.category;
-                        if (!val) return "-";
-                        if (typeof val === "string") {
-                          const found = categories.find((c) => c._id === val);
-                          return found?.name || "-";
-                        }
-                        return val.name || "-";
-                      })()}
-                    </td>
-                    <td>
-                      <div className="d-flex gap-2">
+
+      <Tabs
+        activeKey={activeTab}
+        onSelect={(k) => setActiveTab(k)}
+        className="mb-3"
+      >
+        <Tab eventKey="list" title="قائمة التصنيفات الفرعية">
+          <Card className="mt-3">
+            <Card.Body>
+              {/* Filters */}
+              <Row className="g-2 mb-3">
+                <Col md={3}>
+                  <Form.Label>التصنيف الرئيسي</Form.Label>
+                  <Form.Select
+                    value={categoryId}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                  >
+                    <option value="">الكل</option>
+                    {categories.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col md={3}>
+                  <Form.Label>بحث بالاسم</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={keyword}
+                    onChange={(e) => handleKeywordChange(e.target.value)}
+                    placeholder="ابحث عن تصنيف فرعي..."
+                  />
+                </Col>
+                <Col md={2}>
+                  <Form.Label>عدد العناصر</Form.Label>
+                  <Form.Select
+                    value={limit}
+                    onChange={(e) => handleLimitChange(Number(e.target.value))}
+                  >
+                    {[10, 20, 50, 100].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col md={2}>
+                  <Form.Label>الترتيب</Form.Label>
+                  <Form.Select
+                    value={sort}
+                    onChange={(e) => handleSortChange(e.target.value)}
+                  >
+                    <option value="-createdAt">الأحدث أولاً</option>
+                    <option value="name">الاسم (أ-ي)</option>
+                    <option value="-name">الاسم (ي-أ)</option>
+                  </Form.Select>
+                </Col>
+                <Col md={2}>
+                  <Form.Label>إجراءات</Form.Label>
+                  <Button
+                    variant="primary"
+                    onClick={handleAddNew}
+                    className="w-100"
+                  >
+                    إضافة تصنيف فرعي
+                  </Button>
+                </Col>
+              </Row>
+              {rows.length === 0 ? (
+                <div className="text-center py-4">لا توجد تصنيفات فرعية</div>
+              ) : (
+                <Table responsive bordered hover>
+                  <thead>
+                    <tr>
+                      <th>الصورة</th>
+                      <th>الاسم</th>
+                      <th>التصنيف الرئيسي</th>
+                      <th style={{ width: 160 }}>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((sc) => (
+                      <tr key={sc._id}>
+                        <td>
+                          {sc.image ? (
+                            <img
+                              src={sc.image}
+                              alt={sc.name}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                backgroundColor: "#f8f9fa",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: "4px",
+                                fontSize: "12px",
+                                color: "#6c757d",
+                              }}
+                            >
+                              لا توجد صورة
+                            </div>
+                          )}
+                        </td>
+                        <td>{sc.name}</td>
+                        <td>
+                          {(() => {
+                            const val = sc.category;
+                            if (!val) return "-";
+                            if (typeof val === "string") {
+                              const found = categories.find(
+                                (c) => c._id === val
+                              );
+                              return found?.name || "-";
+                            }
+                            return val.name || "-";
+                          })()}
+                        </td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="warning"
+                              onClick={() => handleOpen(sc)}
+                            >
+                              تعديل
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              onClick={() => handleDelete(sc._id)}
+                            >
+                              حذف
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+              {/* Pagination */}
+              {pagination?.numberOfPages > 1 && (
+                <div className="d-flex justify-content-center mt-3">
+                  <div className="d-flex gap-2">
+                    {Array.from({ length: pagination.numberOfPages }).map(
+                      (_, i) => (
                         <Button
+                          key={i}
+                          variant={
+                            pagination.currentPage === i + 1
+                              ? "primary"
+                              : "outline-secondary"
+                          }
                           size="sm"
-                          variant="warning"
-                          onClick={() => handleOpen(sc)}
+                          onClick={() => setPage(i + 1)}
                         >
-                          تعديل
+                          {i + 1}
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          onClick={() => handleDelete(sc._id)}
-                        >
-                          حذف
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          )}
-          {/* Pagination */}
-          {pagination?.numberOfPages > 1 && (
-            <div className="d-flex justify-content-center mt-3">
-              <div className="d-flex gap-2">
-                {Array.from({ length: pagination.numberOfPages }).map(
-                  (_, i) => (
-                    <Button
-                      key={i}
-                      variant={
-                        pagination.currentPage === i + 1
-                          ? "primary"
-                          : "outline-secondary"
-                      }
-                      size="sm"
-                      onClick={() => setPage(i + 1)}
-                    >
-                      {i + 1}
-                    </Button>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-        </Card.Body>
-      </Card>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+            </Card.Body>
+          </Card>
+        </Tab>
+
+        <Tab eventKey="add" title="إضافة تصنيف فرعي">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5>إضافة تصنيف فرعي جديد</h5>
+            <Button variant="secondary" onClick={handleBackToList}>
+              العودة للقائمة
+            </Button>
+          </div>
+          <AdminAddSubCategory />
+        </Tab>
+      </Tabs>
 
       {/* Edit Modal */}
       <Modal show={showEdit} onHide={handleClose} centered>
@@ -343,6 +387,7 @@ const AdminAllSubcategories = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer />
     </div>
   );
 };

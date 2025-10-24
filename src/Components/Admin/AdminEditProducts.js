@@ -1,8 +1,6 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import Multiselect from "multiselect-react-dropdown";
-import avatar from "../../images/avatar.png";
 import add from "../../images/add.png";
 import MultiImageInput from "react-multiple-image-input";
 
@@ -10,9 +8,7 @@ import { CompactPicker } from "react-color";
 import { ToastContainer } from "react-toastify";
 import AdminEditProductsHook from "./../../hook/products/edit-products-hook";
 
-const AdminEditProducts = () => {
-  const { id } = useParams();
-
+const AdminEditProducts = ({ productId }) => {
   const [
     CatID,
     BrandID,
@@ -51,7 +47,27 @@ const AdminEditProducts = () => {
     setVariantImages,
     addVariantSize,
     removeVariantSize,
-  ] = AdminEditProductsHook(id);
+    // New fields
+    season,
+    fabricType,
+    deliveryTime,
+    currency,
+    sizes,
+    onChangeSeason,
+    onChangeFabricType,
+    onChangeDeliveryTime,
+    onChangeCurrency,
+    addSize,
+    removeSize,
+    secondaryCatID,
+    onSelectSecondary,
+    onRemoveSecondary,
+    secondaryOptions,
+  ] = AdminEditProductsHook(productId);
+
+  // State for new size inputs
+  const [newSizeLabel, setNewSizeLabel] = useState("");
+  const [newSizeStock, setNewSizeStock] = useState("");
 
   // تحويل الصور من array إلى object للتوافق مع MultiImageInput
   const convertImagesToObject = (imageArray) => {
@@ -65,25 +81,27 @@ const AdminEditProducts = () => {
 
   // تحويل الصور من object إلى array
   const convertImagesToArray = (imageObj) => {
-    if (!imageObj || typeof imageObj !== 'object') return [];
+    if (!imageObj || typeof imageObj !== "object") return [];
     return Object.values(imageObj);
   };
 
   // إضافة حالة التحميل
   if (!prodName && !prodDescription) {
     return (
-      <div style={{ 
-        textAlign: 'center', 
-        padding: '60px 20px',
-        color: '#666' 
-      }}>
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
-        <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
+      <div
+        style={{
+          textAlign: "center",
+          padding: "60px 20px",
+          color: "#666",
+        }}
+      >
+        <div style={{ fontSize: "48px", marginBottom: "16px" }}>⏳</div>
+        <div
+          style={{ fontSize: "18px", fontWeight: "600", marginBottom: "8px" }}
+        >
           جاري تحميل بيانات المنتج...
         </div>
-        <div style={{ fontSize: '14px', color: '#999' }}>
-          يرجى الانتظار
-        </div>
+        <div style={{ fontSize: "14px", color: "#999" }}>يرجى الانتظار</div>
       </div>
     );
   }
@@ -91,9 +109,7 @@ const AdminEditProducts = () => {
   return (
     <div>
       <Row className="justify-content-start">
-        <div className="admin-content-text pb-4">
-          تعديل المنتج - {prodName}
-        </div>
+        <div className="admin-content-text pb-4">تعديل المنتج - {prodName}</div>
         <Col sm="8">
           <div className="text-form pb-2">صور للمنتج</div>
 
@@ -148,6 +164,47 @@ const AdminEditProducts = () => {
             value={productUrl}
             onChange={onChangeProductUrl}
           />
+
+          {/* New fields */}
+          <select
+            name="season"
+            value={season}
+            onChange={onChangeSeason}
+            className="select input-form-area mt-3 px-2"
+          >
+            <option value="">اختر الفصل (اختياري)</option>
+            <option value="summer">صيف</option>
+            <option value="autumn">خريف</option>
+            <option value="spring">ربيع</option>
+            <option value="winter">شتاء</option>
+          </select>
+
+          <input
+            type="text"
+            className="input-form d-block mt-3 px-3"
+            placeholder="نوع القماش (اختياري)"
+            value={fabricType}
+            onChange={onChangeFabricType}
+          />
+
+          <input
+            type="text"
+            className="input-form d-block mt-3 px-3"
+            placeholder="مدة التوصيل (اختياري)"
+            value={deliveryTime}
+            onChange={onChangeDeliveryTime}
+          />
+
+          <select
+            name="currency"
+            value={currency}
+            onChange={onChangeCurrency}
+            className="select input-form-area mt-3 px-2"
+          >
+            <option value="USD">دولار أمريكي (USD)</option>
+            <option value="SYP">ليرة سورية (SYP)</option>
+          </select>
+
           <select
             name="cat"
             value={CatID}
@@ -157,7 +214,11 @@ const AdminEditProducts = () => {
             <option value="0">التصنيف الرئيسي</option>
             {category && category.data
               ? category.data.map((item, index) => {
-                  return <option key={item._id || index} value={item._id}>{item.name}</option>;
+                  return (
+                    <option key={item._id || index} value={item._id}>
+                      {item.name}
+                    </option>
+                  );
                 })
               : null}
           </select>
@@ -171,6 +232,16 @@ const AdminEditProducts = () => {
             displayValue="name"
             style={{ color: "red" }}
           />
+          <Multiselect
+            className="mt-2 text-end"
+            placeholder="التصنيف الثانوي"
+            options={secondaryOptions}
+            selectedValues={secondaryCatID}
+            onSelect={onSelectSecondary}
+            onRemove={onRemoveSecondary}
+            displayValue="name"
+            style={{ color: "red" }}
+          />
           <select
             name="brand"
             value={BrandID}
@@ -180,7 +251,11 @@ const AdminEditProducts = () => {
             <option value="0">اختر ماركة</option>
             {brand && brand.data
               ? brand.data.map((item, index) => {
-                  return <option key={item._id || index} value={item._id}>{item.name}</option>;
+                  return (
+                    <option key={item._id || index} value={item._id}>
+                      {item.name}
+                    </option>
+                  );
                 })
               : null}
           </select>
@@ -212,10 +287,67 @@ const AdminEditProducts = () => {
             ) : null}
           </div>
 
-          {/* Variants Builder */}
-          <div className="text-form mt-4"> متغيرات المنتج (ألوان/صور/قياسات)</div>
+          {/* Sizes Management for products without variants */}
+          <div className="text-form mt-3">
+            القياسات (للمنتجات بدون ألوان متعددة)
+          </div>
           <div className="mt-2">
-            <button type="button" onClick={addVariant} className="btn btn-outline-primary">
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <input
+                type="text"
+                className="input-form d-block px-3"
+                placeholder="قياس (مثل S أو 38)"
+                value={newSizeLabel || ""}
+                onChange={(e) => setNewSizeLabel(e.target.value)}
+              />
+              <input
+                type="number"
+                className="input-form d-block px-3"
+                placeholder="المخزون"
+                value={newSizeStock || ""}
+                onChange={(e) => setNewSizeStock(e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-success"
+                onClick={() => {
+                  addSize(newSizeLabel, newSizeStock);
+                  setNewSizeLabel("");
+                  setNewSizeStock("");
+                }}
+              >
+                إضافة قياس
+              </button>
+            </div>
+            {sizes && sizes.length > 0 && (
+              <div className="mt-2 d-flex flex-wrap gap-2">
+                {sizes.map((s, i) => (
+                  <span key={i} className="badge bg-light text-dark border">
+                    {s.label} - {Number(s.stock) || 0}
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger ms-2"
+                      onClick={() => removeSize(i)}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Variants Builder */}
+          <div className="text-form mt-4">
+            {" "}
+            متغيرات المنتج (ألوان/صور/قياسات)
+          </div>
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={addVariant}
+              className="btn btn-outline-primary"
+            >
               إضافة لون/متغير
             </button>
             {Array.isArray(variants) && variants.length > 0 && (
@@ -228,27 +360,35 @@ const AdminEditProducts = () => {
                         className="input-form d-block px-3"
                         placeholder="اسم اللون"
                         value={v.colorName || ""}
-                        onChange={(e) => setVariantField(i, "colorName", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "colorName", e.target.value)
+                        }
                       />
                       <input
                         type="color"
                         className="ms-2"
                         value={v.colorHex || "#000000"}
-                        onChange={(e) => setVariantField(i, "colorHex", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "colorHex", e.target.value)
+                        }
                       />
                       <input
                         type="number"
                         className="input-form d-block px-3"
                         placeholder="سعر هذا المتغير (اختياري)"
                         value={v.price || ""}
-                        onChange={(e) => setVariantField(i, "price", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "price", e.target.value)
+                        }
                       />
                       <input
                         type="text"
                         className="input-form d-block px-3"
                         placeholder="SKU (اختياري)"
                         value={v.sku || ""}
-                        onChange={(e) => setVariantField(i, "sku", e.target.value)}
+                        onChange={(e) =>
+                          setVariantField(i, "sku", e.target.value)
+                        }
                       />
                       <button
                         type="button"
@@ -275,14 +415,18 @@ const AdminEditProducts = () => {
                           className="input-form d-block px-3"
                           placeholder="قياس (مثل S أو 38)"
                           value={v.newSizeLabel || ""}
-                          onChange={(e) => setVariantField(i, "newSizeLabel", e.target.value)}
+                          onChange={(e) =>
+                            setVariantField(i, "newSizeLabel", e.target.value)
+                          }
                         />
                         <input
                           type="number"
                           className="input-form d-block px-3"
                           placeholder="المخزون"
                           value={v.newSizeStock || ""}
-                          onChange={(e) => setVariantField(i, "newSizeStock", e.target.value)}
+                          onChange={(e) =>
+                            setVariantField(i, "newSizeStock", e.target.value)
+                          }
                         />
                         <button
                           type="button"
@@ -299,8 +443,18 @@ const AdminEditProducts = () => {
                       {v.sizes && v.sizes.length > 0 && (
                         <div className="mt-2 d-flex flex-wrap gap-2">
                           {v.sizes.map((s, si) => (
-                            <span key={si} className="badge bg-light text-dark border">
+                            <span
+                              key={si}
+                              className="badge bg-light text-dark border"
+                            >
                               {s.label} - {Number(s.stock) || 0}
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger ms-2"
+                                onClick={() => removeVariantSize(i, si)}
+                              >
+                                ×
+                              </button>
                             </span>
                           ))}
                         </div>

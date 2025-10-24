@@ -60,7 +60,14 @@ async function apiRequest(method, path, options = {}) {
   };
 
   if (data && (method === "POST" || method === "PUT" || method === "PATCH")) {
-    config.body = JSON.stringify(data);
+    // Check if data is FormData
+    if (data instanceof FormData) {
+      // Don't set Content-Type for FormData, let browser set it
+      delete headers["Content-Type"];
+      config.body = data;
+    } else {
+      config.body = JSON.stringify(data);
+    }
   }
 
   try {
@@ -126,6 +133,18 @@ export const api = {
   // Offers
   getOffers: (params = {}, signal) =>
     apiClient.get("/offers", { params, signal }),
+
+  getOffer: (id, signal) => apiClient.get(`/offers/${id}`, { signal }),
+
+  createOffer: (data, signal) => apiClient.post("/offers", data, { signal }),
+
+  updateOffer: (id, data, signal) =>
+    apiClient.put(`/offers/${id}`, data, { signal }),
+
+  deleteOffer: (id, signal) => apiClient.delete(`/offers/${id}`, { signal }),
+
+  toggleOfferStatus: (id, signal) =>
+    apiClient.patch(`/offers/${id}/toggle-status`, {}, { signal }),
 
   getActiveOffers: (params = {}, signal) =>
     apiClient.get("/offers/active", { params, signal }),

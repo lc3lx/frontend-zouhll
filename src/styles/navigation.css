@@ -6,7 +6,7 @@
   border-bottom: 1px solid var(--border-light);
   box-shadow: 0 2px 4px var(--shadow-light);
   position: relative;
-  z-index: var(--z-dropdown);
+  z-index: 100;
 }
 
 .categories-nav {

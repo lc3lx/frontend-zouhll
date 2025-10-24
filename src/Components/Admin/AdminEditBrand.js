@@ -1,11 +1,9 @@
 import React from "react";
 import { Row, Col, Spinner } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
-import { useParams } from "react-router-dom";
 import EditBrandHook from "../../hook/brand/edit-brand-hook";
 
-const AdminEditBrand = () => {
-  const { id } = useParams();
+const AdminEditBrand = ({ brandId }) => {
   const [
     img,
     name,
@@ -14,7 +12,7 @@ const AdminEditBrand = () => {
     handleSubmit,
     onImageChange,
     onChangeName,
-  ] = EditBrandHook(id);
+  ] = EditBrandHook(brandId);
 
   return (
     <div>

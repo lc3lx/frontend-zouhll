@@ -38,8 +38,10 @@ import AdminAllSecondaryCategoriesPage from "./Page/Admin/AdminAllSecondaryCateg
 import ForgetPasswordPage from "./Page/Auth/ForgetPasswordPage";
 import VerifyPasswordPage from "./Page/Auth/VerifyPasswordPage";
 import RsetPasswordPage from "./Page/Auth/ResetPasswordPage";
+import AdminAllCouponsPage from "./Page/Admin/AdminAllCouponsPage";
 import AdminAddCouponPage from "./Page/Admin/AdminAddCouponPage";
 import AdminEditCouponPage from "./Page/Admin/AdminEditCouponPage";
+import AdminAllOffersPage from "./Page/Admin/AdminAllOffersPage";
 import ProtectedRouteHook from "./hook/auth/protected-route-hook";
 import ProtectedRoute from "./Components/Uitily/ProtectedRoute";
 import ScrollToTop from "./Components/Uitily/ScrollToTop";
@@ -183,11 +185,13 @@ function App() {
               path="/admin/addproduct"
               element={<AdminAddProductsPage />}
             />
+            <Route path="/admin/allcoupons" element={<AdminAllCouponsPage />} />
             <Route path="/admin/addcoupon" element={<AdminAddCouponPage />} />
             <Route
               path="/admin/editcoupon/:id"
               element={<AdminEditCouponPage />}
             />
+            <Route path="/admin/all-offers" element={<AdminAllOffersPage />} />
             <Route
               path="/admin/editproduct/:id"
               element={<AdminEditProductsPage />}

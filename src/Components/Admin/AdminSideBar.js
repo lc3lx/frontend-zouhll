@@ -21,6 +21,12 @@ const AdminSideBar = () => {
           </div>
         </Link>
 
+        <Link to="/admin/allstores" style={{ textDecoration: "none" }}>
+          <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
+            إدارة المتاجر
+          </div>
+        </Link>
+
         <Link to="/admin/allcategories" style={{ textDecoration: "none" }}>
           <div className="admin-side-text my-1 border-bottom p-2 mx-auto text-center">
             إدارة التصنيفات

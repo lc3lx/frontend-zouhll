@@ -16,7 +16,7 @@ const ProductText = ({
 }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, images, cat, brand] = ViewProductsDetalisHook(id);
+  const [item, images, cat, brand, store] = ViewProductsDetalisHook(id);
   const dispatch = useDispatch();
   const [indexColor, setIndexColor] = useState(null);
 
@@ -223,14 +223,58 @@ const ProductText = ({
           </span>
         </div>
 
-        {/* Brand */}
+        {/* Brand and Store */}
         <div
-          style={{ fontSize: "14px", color: "#565959", marginBottom: "12px" }}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "16px",
+            marginBottom: "12px",
+            alignItems: "center",
+          }}
         >
-          الماركة:{" "}
-          <span style={{ color: "#007185", cursor: "pointer" }}>
-            {brand?.name || "غير محدد"}
-          </span>
+          {brand?.name && (
+            <div style={{ fontSize: "14px", color: "#565959" }}>
+              الماركة:{" "}
+              <span style={{ color: "#007185", cursor: "pointer" }}>
+                {brand.name}
+              </span>
+            </div>
+          )}
+          {store?.name && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "14px",
+                color: "#565959",
+                padding: "6px 12px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "6px",
+                border: "1px solid #e7e7e7",
+              }}
+            >
+              {store.logo && (
+                <img
+                  src={store.logo}
+                  alt={store.name}
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    objectFit: "contain",
+                    borderRadius: "4px",
+                  }}
+                />
+              )}
+              <span>
+                متجر:{" "}
+                <span style={{ color: "#007185", fontWeight: "500" }}>
+                  {store.name}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Price - Moved up for better visibility */}

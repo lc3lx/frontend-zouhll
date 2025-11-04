@@ -70,6 +70,18 @@ export const getBrandImage = (brand) => {
 };
 
 /**
+ * معالجة صورة المتجر
+ * @param {object} store - المتجر
+ * @returns {string} - رابط الصورة
+ */
+export const getStoreImage = (store) => {
+  if (store?.logo) {
+    return getImageUrl(store.logo);
+  }
+  return "/images/store.png"; // صورة افتراضية للمتجر
+};
+
+/**
  * معالجة معرض صور المنتج
  * @param {object} product - المنتج
  * @returns {array} - مصفوفة بصيغة react-image-gallery
@@ -102,6 +114,7 @@ const imageHelper = {
   getProductImage,
   getCategoryImage,
   getBrandImage,
+  getStoreImage,
   getProductGalleryImages,
 };
 

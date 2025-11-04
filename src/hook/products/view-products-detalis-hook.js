@@ -64,6 +64,14 @@ const ViewProductsDetalisHook = (prodID) => {
     brand = [];
   }
 
+  //to show store item
+  let store = [];
+  if (item.store) {
+    store = item.store;
+  } else {
+    store = [];
+  }
+
   let prod = [];
   if (productLike && productLike.data) prod = productLike.data;
   else prod = [];
@@ -72,8 +80,9 @@ const ViewProductsDetalisHook = (prodID) => {
   console.log('Product item:', item);
   console.log('Category:', cat);
   console.log('Brand:', brand);
+  console.log('Store:', store);
 
-  return [item, images, cat, brand];
+  return [item, images, cat, brand, store];
 };
 
 export default ViewProductsDetalisHook;

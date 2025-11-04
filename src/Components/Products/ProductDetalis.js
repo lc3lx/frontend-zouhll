@@ -9,7 +9,7 @@ import "./ProductDetails.css";
 
 const ProductDetalis = () => {
   const { id } = useParams();
-  const [item, images, cat, brand] = ViewProductsDetalisHook(id);
+  const [item, images, cat, brand, store] = ViewProductsDetalisHook(id);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
 

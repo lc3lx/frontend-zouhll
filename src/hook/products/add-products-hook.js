@@ -5,6 +5,7 @@ import notify from "./../../hook/useNotifaction";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import { getAllBrand } from "./../../redux/actions/brandAction";
+import { getAllStore } from "./../../redux/actions/storeAction";
 import { useGetData as getData } from "../../hooks/useGetData";
 
 const AdminAddProductsHook = () => {
@@ -12,16 +13,29 @@ const AdminAddProductsHook = () => {
   useEffect(() => {
     dispatch(getAllCategory());
     dispatch(getAllBrand());
+    dispatch(getAllStore());
   }, [dispatch]);
   //get last catgeory state from redux
   const category = useSelector((state) => state.allCategory.category);
   //get last brand state from redux
   const brand = useSelector((state) => state.allBrand.brand);
+  //get last store state from redux
+  const store = useSelector((state) => state.allStore.store);
 
   //get last sub cat state from redux
   const subCat = useSelector((state) => state.subCategory.subcategory);
   const [secondaryCatID, setSecondaryCatID] = useState([]);
   const [secondaryOptions, setSecondaryOptions] = useState([]);
+
+  // Ensure secondaryCatID and secondaryOptions are always arrays
+  useEffect(() => {
+    if (!Array.isArray(secondaryCatID)) {
+      setSecondaryCatID([]);
+    }
+    if (!Array.isArray(secondaryOptions)) {
+      setSecondaryOptions([]);
+    }
+  }, [secondaryCatID, secondaryOptions]);
 
   const onSelect = (selectedList) => {
     setSeletedSubID(selectedList);
@@ -35,6 +49,13 @@ const AdminAddProductsHook = () => {
 
   const [options, setOptions] = useState([]);
 
+  // Ensure options is always an array
+  useEffect(() => {
+    if (!Array.isArray(options)) {
+      setOptions([]);
+    }
+  }, [options]);
+
   //values images products
   const [images, setImages] = useState({});
   //values state
@@ -46,6 +67,7 @@ const AdminAddProductsHook = () => {
   const [productUrl, setProductUrl] = useState("");
   const [CatID, setCatID] = useState("");
   const [BrandID, SetBrandID] = useState("");
+  const [StoreID, SetStoreID] = useState("");
   // const [subCatID, setSubCatID] = useState([]);
   const [seletedSubID, setSeletedSubID] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,9 +75,15 @@ const AdminAddProductsHook = () => {
   // New fields state
   const [season, setSeason] = useState("");
   const [fabricType, setFabricType] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
+  const [deliveryStartDate, setDeliveryStartDate] = useState("");
+  const [deliveryEndDate, setDeliveryEndDate] = useState("");
+  const [deliveryDays, setDeliveryDays] = useState(0);
   const [currency, setCurrency] = useState("USD");
   const [sizes, setSizes] = useState([]); // For products without color variants
+
+  // Color management state
+  const [newColorName, setNewColorName] = useState("");
+  const [newColorHex, setNewColorHex] = useState("#000000");
 
   // Variant builder state
   const [variants, setVariants] = useState([]);
@@ -175,9 +203,32 @@ const AdminAddProductsHook = () => {
     setFabricType(event.target.value);
   };
 
-  const onChangeDeliveryTime = (event) => {
-    event.persist();
-    setDeliveryTime(event.target.value);
+  const onChangeDeliveryStartDate = (event) => {
+    setDeliveryStartDate(event.target.value);
+  };
+
+  const onChangeDeliveryEndDate = (event) => {
+    setDeliveryEndDate(event.target.value);
+  };
+
+  const onChangeDeliveryDays = (event) => {
+    const days = parseInt(event.target.value) || 0;
+    setDeliveryDays(days);
+    // Auto-calculate end date if start date exists
+    if (deliveryStartDate && days > 0) {
+      const start = new Date(deliveryStartDate);
+      const end = new Date(start);
+      end.setDate(end.getDate() + days);
+      setDeliveryEndDate(end.toISOString().split("T")[0]);
+    }
+  };
+
+  const onChangeNewColorName = (event) => {
+    setNewColorName(event.target.value);
+  };
+
+  const onChangeNewColorHex = (event) => {
+    setNewColorHex(event.target.value);
   };
 
   const onChangeCurrency = (event) => {
@@ -201,16 +252,54 @@ const AdminAddProductsHook = () => {
 
   //to show hide color picker
   const [showColor, setShowColor] = useState(false);
-  //to store all pick color
+  //to store all pick color - now with name and hex
   const [colors, setColors] = useState([]);
-  //when choose new color
-  const handelChangeComplete = (color) => {
-    setColors([...colors, color.hex]);
-    setShowColor(!showColor);
+
+  // Ensure colors is always an array
+  useEffect(() => {
+    if (!Array.isArray(colors)) {
+      setColors([]);
+    }
+  }, [colors]);
+
+  // Calculate delivery days when dates change
+  useEffect(() => {
+    if (deliveryStartDate && deliveryEndDate) {
+      const start = new Date(deliveryStartDate);
+      const end = new Date(deliveryEndDate);
+      if (end >= start) {
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        setDeliveryDays(diffDays);
+      } else {
+        setDeliveryDays(0);
+      }
+    } else {
+      setDeliveryDays(0);
+    }
+  }, [deliveryStartDate, deliveryEndDate]);
+
+  // Add color with name and hex
+  const addColor = () => {
+    if (!newColorName.trim()) {
+      notify("الرجاء إدخال اسم اللون", "warn");
+      return;
+    }
+    setColors([...colors, { name: newColorName.trim(), hex: newColorHex }]);
+    setNewColorName("");
+    setNewColorHex("#000000");
   };
-  const removeColor = (color) => {
-    const newColor = colors.filter((e) => e !== color);
-    setColors(newColor);
+
+  const removeColor = (index) => {
+    setColors(colors.filter((_, i) => i !== index));
+  };
+
+  // Legacy color picker handler (for compatibility)
+  const handelChangeComplete = (color) => {
+    setNewColorHex(color.hex);
+    if (!newColorName) {
+      setNewColorName("لون");
+    }
   };
 
   //when selet category store id
@@ -238,6 +327,11 @@ const AdminAddProductsHook = () => {
   //when selet brand store id
   const onSeletBrand = (e) => {
     SetBrandID(e.target.value);
+  };
+
+  //when selet store store id
+  const onSeletStore = (e) => {
+    SetStoreID(e.target.value);
   };
 
   //to convert base 64 to file
@@ -271,31 +365,64 @@ const AdminAddProductsHook = () => {
       return;
     }
 
+    // Check images limit (10 images max total, first one is cover)
+    // MultiImageInput already enforces max={10}, but we double-check here
+    if (imgList.length > 10) {
+      notify("يمكنك إضافة حتى 10 صور للمنتج الرئيسي", "warn");
+      return;
+    }
+
     //convert base 64 image to file
+    // First image is the cover, rest are additional images
     const imgCover = dataURLtoFile(imgList[0], Math.random() + ".png");
-    //convert array of base 64 image to file
-    const itemImages = imgList.map((src) =>
-      dataURLtoFile(src, Math.random() + ".png")
-    );
+    //convert remaining images (skip first image as cover)
+    const itemImages =
+      imgList.length > 1
+        ? imgList
+            .slice(1)
+            .map((src) => dataURLtoFile(src, Math.random() + ".png"))
+        : [];
 
     const formData = new FormData();
     formData.append("title", prodName);
     formData.append("description", prodDescription);
-    formData.append("quantity", qty);
+
+    // Quantity is optional
+    if (qty && qty !== "الكمية المتاحة" && qty !== "") {
+      formData.append("quantity", qty);
+    }
+
     formData.append("price", priceBefore);
     if (priceAftr && Number(priceAftr) > 0) {
       formData.append("priceAfterDiscount", Number(priceAftr));
     }
     formData.append("category", CatID);
+
+    // Brand is optional
     if (BrandID && BrandID !== "0") {
       formData.append("brand", BrandID);
     }
+    
+    // Store is optional
+    if (StoreID && StoreID !== "0") {
+      formData.append("store", StoreID);
+    }
+    
     if (productUrl) formData.append("productUrl", productUrl);
 
     // New fields
     if (season) formData.append("season", season);
     if (fabricType) formData.append("fabricType", fabricType);
-    if (deliveryTime) formData.append("deliveryTime", deliveryTime);
+
+    // Delivery dates and days
+    if (deliveryStartDate && deliveryEndDate) {
+      formData.append("deliveryStartDate", deliveryStartDate);
+      formData.append("deliveryEndDate", deliveryEndDate);
+      if (deliveryDays > 0) {
+        formData.append("deliveryDays", deliveryDays);
+      }
+    }
+
     formData.append("currency", currency);
 
     // Add sizes for products without color variants
@@ -306,8 +433,11 @@ const AdminAddProductsHook = () => {
     // append images synchronously
     formData.append("imageCover", imgCover);
     itemImages.forEach((item) => formData.append("images", item));
+
+    // Colors - convert to array of hex strings if objects
     if (Array.isArray(colors) && colors.length) {
-      formData.append("colors", JSON.stringify(colors));
+      const colorArray = colors.map((c) => (typeof c === "string" ? c : c.hex));
+      formData.append("colors", JSON.stringify(colorArray));
     }
     const subIds = Array.isArray(seletedSubID)
       ? seletedSubID.map((s) => s._id)
@@ -380,15 +510,20 @@ const AdminAddProductsHook = () => {
       setQty("الكمية المتاحة");
       setProductUrl("");
       SetBrandID(0);
+      SetStoreID(0);
       setSeletedSubID([]);
 
       // Reset new fields
       setSeason("");
       setFabricType("");
-      setDeliveryTime("");
+      setDeliveryStartDate("");
+      setDeliveryEndDate("");
+      setDeliveryDays(0);
       setCurrency("USD");
       setSizes([]);
       setVariants([]);
+      setNewColorName("");
+      setNewColorHex("#000000");
 
       notify("تم الاضافة بنجاح", "success");
     } else if (loading === false && product && product.status !== 201) {
@@ -408,6 +543,7 @@ const AdminAddProductsHook = () => {
     showColor,
     category,
     brand,
+    store,
     priceAftr,
     images,
     setImages,
@@ -419,6 +555,7 @@ const AdminAddProductsHook = () => {
     onSeletCategory,
     handelSubmit,
     onSeletBrand,
+    onSeletStore,
     colors,
     priceBefore,
     qty,
@@ -436,15 +573,25 @@ const AdminAddProductsHook = () => {
     // New fields exports
     season,
     fabricType,
-    deliveryTime,
+    deliveryStartDate,
+    deliveryEndDate,
+    deliveryDays,
     currency,
     sizes,
     onChangeSeason,
     onChangeFabricType,
-    onChangeDeliveryTime,
+    onChangeDeliveryStartDate,
+    onChangeDeliveryEndDate,
+    onChangeDeliveryDays,
     onChangeCurrency,
     addSize,
     removeSize,
+    // Color management exports
+    newColorName,
+    newColorHex,
+    onChangeNewColorName,
+    onChangeNewColorHex,
+    addColor,
     secondaryCatID,
     onSelectSecondary,
     onRemoveSecondary,

@@ -6,7 +6,7 @@ import { getImageUrl } from "../../utils/imageHelper";
 
 const ProductGallery = ({ selectedVariantIndex }) => {
   const { id } = useParams();
-  const [item, images, cat, brand] = ViewProductsDetalisHook(id);
+  const [item, images, cat, brand, store] = ViewProductsDetalisHook(id);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [zoomStyle, setZoomStyle] = useState({});

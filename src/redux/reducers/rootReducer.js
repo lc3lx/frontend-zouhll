@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import categoryReducer from "./categoryReducer";
 import brandReducer from "./brandReducer";
+import storeReducer from "./storeReducer";
 import subcategoryReducer from "./subcategoryReducer";
 import secondaryCategoryReducer from "./secondaryCategoryReducer";
 import productsReducer from "./productsReducer";
@@ -19,6 +20,7 @@ import offerReducer from "./offerReducer";
 export default combineReducers({
   allCategory: categoryReducer,
   allBrand: brandReducer,
+  allStore: storeReducer,
   subCategory: subcategoryReducer,
   secondaryCategory: secondaryCategoryReducer,
   allproducts: productsReducer,

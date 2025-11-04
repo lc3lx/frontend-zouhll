@@ -1,10 +1,8 @@
 import React from "react";
 import { Row, Col } from "react-bootstrap";
 import Multiselect from "multiselect-react-dropdown";
-import add from "../../images/add.png";
 import MultiImageInput from "react-multiple-image-input";
 
-import { CompactPicker } from "react-color";
 import { ToastContainer } from "react-toastify";
 import AdminAddProductsHook from "./../../hook/products/add-products-hook";
 
@@ -20,6 +18,7 @@ const AdminAddProducts = () => {
     showColor,
     category,
     brand,
+    store,
     priceAftr,
     images,
     setImages,
@@ -31,6 +30,7 @@ const AdminAddProducts = () => {
     onSeletCategory,
     handelSubmit,
     onSeletBrand,
+    onSeletStore,
     colors,
     priceBefore,
     qty,
@@ -48,15 +48,25 @@ const AdminAddProducts = () => {
     // New fields
     season,
     fabricType,
-    deliveryTime,
+    deliveryStartDate,
+    deliveryEndDate,
+    deliveryDays,
     currency,
     sizes,
     onChangeSeason,
     onChangeFabricType,
-    onChangeDeliveryTime,
+    onChangeDeliveryStartDate,
+    onChangeDeliveryEndDate,
+    onChangeDeliveryDays,
     onChangeCurrency,
     addSize,
     removeSize,
+    // Color management
+    newColorName,
+    newColorHex,
+    onChangeNewColorName,
+    onChangeNewColorHex,
+    addColor,
     secondaryCatID,
     onSelectSecondary,
     onRemoveSecondary,
@@ -73,11 +83,15 @@ const AdminAddProducts = () => {
           <div className="text-form pb-2"> صور للمنتج</div>
 
           <MultiImageInput
-            images={images}
-            setImages={setImages}
+            images={images || {}}
+            setImages={(imgs) => {
+              if (setImages && typeof setImages === "function") {
+                setImages(imgs);
+              }
+            }}
             theme={"light"}
             allowCrop={false}
-            max={4}
+            max={10}
           />
 
           <input
@@ -183,7 +197,7 @@ const AdminAddProducts = () => {
           <input
             type="number"
             className="input-form d-block mt-3 px-3"
-            placeholder="الكمية المتاحة"
+            placeholder="الكمية المتاحة (اختياري)"
             value={qty}
             onChange={onChangeQty}
           />
@@ -217,13 +231,58 @@ const AdminAddProducts = () => {
             onChange={onChangeFabricType}
           />
 
-          <input
-            type="text"
-            className="input-form d-block mt-3 px-3"
-            placeholder="مدة التوصيل (اختياري)"
-            value={deliveryTime}
-            onChange={onChangeDeliveryTime}
-          />
+          <div className="mt-3">
+            <label className="text-form pb-2">مدة التوصيل</label>
+            <div className="row g-2">
+              <div className="col-md-4">
+                <label style={{ fontSize: "12px", color: "#666" }}>
+                  من تاريخ
+                </label>
+                <input
+                  type="date"
+                  className="input-form d-block px-3"
+                  value={deliveryStartDate || ""}
+                  onChange={onChangeDeliveryStartDate}
+                />
+              </div>
+              <div className="col-md-4">
+                <label style={{ fontSize: "12px", color: "#666" }}>
+                  إلى تاريخ
+                </label>
+                <input
+                  type="date"
+                  className="input-form d-block px-3"
+                  value={deliveryEndDate || ""}
+                  onChange={onChangeDeliveryEndDate}
+                />
+              </div>
+              <div className="col-md-4">
+                <label style={{ fontSize: "12px", color: "#666" }}>
+                  عدد الأيام (للعروض)
+                </label>
+                <input
+                  type="number"
+                  className="input-form d-block px-3"
+                  placeholder="عدد الأيام"
+                  value={deliveryDays || ""}
+                  onChange={onChangeDeliveryDays}
+                  min="0"
+                />
+              </div>
+            </div>
+            {deliveryDays > 0 && (
+              <div
+                className="mt-2"
+                style={{
+                  fontSize: "13px",
+                  color: "#007600",
+                  fontWeight: "500",
+                }}
+              >
+                مدة التوصيل: {deliveryDays} يوم
+              </div>
+            )}
+          </div>
 
           <select
             name="currency"
@@ -255,7 +314,7 @@ const AdminAddProducts = () => {
           <Multiselect
             className="mt-2 text-end"
             placeholder="التصنيف الفرعي"
-            options={options}
+            options={Array.isArray(options) ? options : []}
             onSelect={onSelect}
             onRemove={onRemove}
             displayValue="name"
@@ -264,8 +323,8 @@ const AdminAddProducts = () => {
           <Multiselect
             className="mt-2 text-end"
             placeholder="التصنيف الثانوي"
-            options={secondaryOptions}
-            selectedValues={secondaryCatID}
+            options={Array.isArray(secondaryOptions) ? secondaryOptions : []}
+            selectedValues={Array.isArray(secondaryCatID) ? secondaryCatID : []}
             onSelect={onSelectSecondary}
             onRemove={onRemoveSecondary}
             displayValue="name"
@@ -275,7 +334,7 @@ const AdminAddProducts = () => {
             onChange={onSeletBrand}
             className="select input-form-area mt-3 px-2 "
           >
-            <option value="0">اختر ماركة</option>
+            <option value="0">اختر ماركة (اختياري)</option>
             {brand.data
               ? brand.data.map((item, index) => {
                   return (
@@ -286,53 +345,112 @@ const AdminAddProducts = () => {
                 })
               : null}
           </select>
-          <div className="text-form mt-3 "> الالوان المتاحه للمنتج</div>
-          <div className="mt-1 d-flex">
-            {colors.length >= 1
-              ? colors.map((color, index) => {
+          <select
+            name="store"
+            onChange={onSeletStore}
+            className="select input-form-area mt-3 px-2 "
+          >
+            <option value="0">اختر متجر (اختياري)</option>
+            {store.data
+              ? store.data.map((item, index) => {
                   return (
-                    <div
-                      key={index}
-                      onClick={() => removeColor(color)}
-                      className="color ms-2 border  mt-1"
-                      style={{ backgroundColor: color }}
-                    ></div>
+                    <option key={index} value={item._id}>
+                      {item.name}
+                    </option>
                   );
                 })
               : null}
-
-            <img
-              onClick={onChangeColor}
-              src={add}
-              alt=""
-              width="30px"
-              height="35px"
-              style={{ cursor: "pointer" }}
-            />
-            {showColor === true ? (
-              <CompactPicker onChangeComplete={handelChangeComplete} />
-            ) : null}
+          </select>
+          <div className="text-form mt-3">الألوان المتاحة للمنتج</div>
+          <div className="mt-2">
+            <div className="d-flex gap-2 align-items-center flex-wrap mb-3">
+              <input
+                type="text"
+                className="input-form px-3"
+                placeholder="اسم اللون (مثل: أحمر)"
+                value={newColorName || ""}
+                onChange={onChangeNewColorName}
+                style={{ width: "150px" }}
+              />
+              <input
+                type="color"
+                value={newColorHex || "#000000"}
+                onChange={onChangeNewColorHex}
+                style={{
+                  width: "60px",
+                  height: "40px",
+                  cursor: "pointer",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
+              />
+              <button
+                type="button"
+                onClick={addColor}
+                className="btn btn-sm btn-outline-success"
+              >
+                إضافة لون
+              </button>
+            </div>
+            {Array.isArray(colors) && colors.length > 0 && (
+              <div className="d-flex flex-wrap gap-2">
+                {colors.map((color, index) => (
+                  <div
+                    key={index}
+                    className="d-flex align-items-center gap-2 border rounded p-2"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  >
+                    <div
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        backgroundColor:
+                          typeof color === "object"
+                            ? color.hex || color
+                            : color,
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
+                    ></div>
+                    <span style={{ fontSize: "14px" }}>
+                      {typeof color === "object" ? color.name || "لون" : "لون"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeColor(index)}
+                      className="btn-close"
+                      style={{ fontSize: "10px" }}
+                    ></button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Sizes without colors */}
           <div className="text-form mt-4">المقاسات (للمنتجات بدون ألوان)</div>
           <div className="mt-2">
-            <div className="d-flex flex-wrap gap-2 align-items-center">
-              <input
-                type="text"
-                className="input-form d-block px-3"
-                placeholder="قياس (مثل S أو 38)"
-                id="newSizeLabel"
-              />
-              <input
-                type="number"
-                className="input-form d-block px-3"
-                placeholder="المخزون"
-                id="newSizeStock"
-              />
+            <div className="d-flex gap-2 align-items-end">
+              <div style={{ flex: 1 }}>
+                <input
+                  type="text"
+                  className="input-form d-block px-3"
+                  placeholder="قياس (مثل S, M, L)"
+                  id="newSizeLabel"
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <input
+                  type="number"
+                  className="input-form d-block px-3"
+                  placeholder="المخزون"
+                  id="newSizeStock"
+                  min="0"
+                />
+              </div>
               <button
                 type="button"
-                className="btn btn-sm btn-outline-success"
+                className="btn btn-sm btn-success"
                 onClick={() => {
                   const label = document.getElementById("newSizeLabel").value;
                   const stock = document.getElementById("newSizeStock").value;
@@ -343,7 +461,7 @@ const AdminAddProducts = () => {
                   }
                 }}
               >
-                إضافة قياس
+                إضافة
               </button>
             </div>
             {sizes && sizes.length > 0 && (
@@ -351,13 +469,17 @@ const AdminAddProducts = () => {
                 {sizes.map((s, i) => (
                   <span
                     key={i}
-                    className="badge bg-light text-dark border d-flex align-items-center"
+                    className="badge bg-light text-dark border d-flex align-items-center gap-2"
+                    style={{ fontSize: "13px", padding: "8px 12px" }}
                   >
-                    {s.label} - {Number(s.stock) || 0}
+                    <strong>{s.label}</strong>
+                    <span style={{ color: "#666" }}>
+                      المخزون: {Number(s.stock) || 0}
+                    </span>
                     <button
                       type="button"
-                      className="btn-close btn-close-white ms-2"
-                      style={{ fontSize: "10px" }}
+                      className="btn-close"
+                      style={{ fontSize: "8px" }}
                       onClick={() => removeSize(i)}
                     ></button>
                   </span>
@@ -433,43 +555,15 @@ const AdminAddProducts = () => {
             {Array.isArray(variants) && variants.length > 0 && (
               <div className="mt-3">
                 {variants.map((v, i) => (
-                  <div key={i} className="border rounded p-3 my-3">
-                    <div className="d-flex flex-wrap gap-2 align-items-center">
-                      <input
-                        type="text"
-                        className="input-form d-block px-3"
-                        placeholder="اسم اللون"
-                        value={v.colorName || ""}
-                        onChange={(e) =>
-                          setVariantField(i, "colorName", e.target.value)
-                        }
-                      />
-                      <input
-                        type="color"
-                        className="ms-2"
-                        value={v.colorHex || "#000000"}
-                        onChange={(e) =>
-                          setVariantField(i, "colorHex", e.target.value)
-                        }
-                      />
-                      <input
-                        type="number"
-                        className="input-form d-block px-3"
-                        placeholder="سعر هذا المتغير (اختياري)"
-                        value={v.price || ""}
-                        onChange={(e) =>
-                          setVariantField(i, "price", e.target.value)
-                        }
-                      />
-                      <input
-                        type="text"
-                        className="input-form d-block px-3"
-                        placeholder="SKU (اختياري)"
-                        value={v.sku || ""}
-                        onChange={(e) =>
-                          setVariantField(i, "sku", e.target.value)
-                        }
-                      />
+                  <div
+                    key={i}
+                    className="border rounded p-3 my-3"
+                    style={{ backgroundColor: "#fafafa" }}
+                  >
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h6 className="mb-0" style={{ color: "#1565c0" }}>
+                        متغير {i + 1}
+                      </h6>
                       <button
                         type="button"
                         onClick={() => removeVariant(i)}
@@ -479,45 +573,116 @@ const AdminAddProducts = () => {
                       </button>
                     </div>
 
-                    <div className="text-form pb-2 mt-3"> صور هذا اللون</div>
+                    <div className="row g-2 mb-3">
+                      <div className="col-md-4">
+                        <label style={{ fontSize: "12px", color: "#666" }}>
+                          اسم اللون
+                        </label>
+                        <input
+                          type="text"
+                          className="input-form d-block px-3"
+                          placeholder="مثل: أحمر"
+                          value={v.colorName || ""}
+                          onChange={(e) =>
+                            setVariantField(i, "colorName", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="col-md-2">
+                        <label style={{ fontSize: "12px", color: "#666" }}>
+                          كود اللون
+                        </label>
+                        <input
+                          type="color"
+                          className="form-control"
+                          value={v.colorHex || "#000000"}
+                          onChange={(e) =>
+                            setVariantField(i, "colorHex", e.target.value)
+                          }
+                          style={{ height: "40px", cursor: "pointer" }}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <label style={{ fontSize: "12px", color: "#666" }}>
+                          السعر (اختياري)
+                        </label>
+                        <input
+                          type="number"
+                          className="input-form d-block px-3"
+                          placeholder="السعر"
+                          value={v.price || ""}
+                          onChange={(e) =>
+                            setVariantField(i, "price", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <label style={{ fontSize: "12px", color: "#666" }}>
+                          SKU (اختياري)
+                        </label>
+                        <input
+                          type="text"
+                          className="input-form d-block px-3"
+                          placeholder="SKU"
+                          value={v.sku || ""}
+                          onChange={(e) =>
+                            setVariantField(i, "sku", e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-form pb-2 mt-3">
+                      صور هذا اللون (حتى 10 صور)
+                    </div>
                     <MultiImageInput
                       images={v.images || {}}
                       setImages={(imgs) => setVariantImages(i, imgs)}
                       theme={"light"}
                       allowCrop={false}
-                      max={5}
+                      max={10}
                     />
 
                     <div className="mt-3">
-                      <div className="d-flex flex-wrap gap-2 align-items-center">
-                        <input
-                          type="text"
-                          className="input-form d-block px-3"
-                          placeholder="قياس (مثل S أو 38)"
-                          value={v.newSizeLabel || ""}
-                          onChange={(e) =>
-                            setVariantField(i, "newSizeLabel", e.target.value)
-                          }
-                        />
-                        <input
-                          type="number"
-                          className="input-form d-block px-3"
-                          placeholder="المخزون"
-                          value={v.newSizeStock || ""}
-                          onChange={(e) =>
-                            setVariantField(i, "newSizeStock", e.target.value)
-                          }
-                        />
+                      <label className="text-form pb-2">
+                        المقاسات والمخزون
+                      </label>
+                      <div className="d-flex gap-2 align-items-end">
+                        <div style={{ flex: 1 }}>
+                          <input
+                            type="text"
+                            className="input-form d-block px-3"
+                            placeholder="قياس (مثل S, M, L)"
+                            value={v.newSizeLabel || ""}
+                            onChange={(e) =>
+                              setVariantField(i, "newSizeLabel", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <input
+                            type="number"
+                            className="input-form d-block px-3"
+                            placeholder="المخزون"
+                            value={v.newSizeStock || ""}
+                            onChange={(e) =>
+                              setVariantField(i, "newSizeStock", e.target.value)
+                            }
+                            min="0"
+                          />
+                        </div>
                         <button
                           type="button"
-                          className="btn btn-sm btn-outline-success"
+                          className="btn btn-sm btn-success"
                           onClick={() => {
-                            addVariantSize(i, v.newSizeLabel, v.newSizeStock);
-                            setVariantField(i, "newSizeLabel", "");
-                            setVariantField(i, "newSizeStock", "");
+                            if (v.newSizeLabel) {
+                              addVariantSize(i, v.newSizeLabel, v.newSizeStock);
+                              setVariantField(i, "newSizeLabel", "");
+                              setVariantField(i, "newSizeStock", "");
+                            }
                           }}
                         >
-                          إضافة قياس
+                          إضافة
                         </button>
                       </div>
                       {v.sizes && v.sizes.length > 0 && (
@@ -525,13 +690,17 @@ const AdminAddProducts = () => {
                           {v.sizes.map((s, si) => (
                             <span
                               key={si}
-                              className="badge bg-light text-dark border d-flex align-items-center"
+                              className="badge bg-light text-dark border d-flex align-items-center gap-2"
+                              style={{ fontSize: "13px", padding: "8px 12px" }}
                             >
-                              {s.label} - {Number(s.stock) || 0}
+                              <strong>{s.label}</strong>
+                              <span style={{ color: "#666" }}>
+                                المخزون: {Number(s.stock) || 0}
+                              </span>
                               <button
                                 type="button"
-                                className="btn-close btn-close-white ms-2"
-                                style={{ fontSize: "10px" }}
+                                className="btn-close"
+                                style={{ fontSize: "8px" }}
                                 onClick={() => removeVariantSize(i, si)}
                               ></button>
                             </span>

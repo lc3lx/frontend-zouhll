@@ -4,11 +4,13 @@ import {
   GET_ERROR,
   CREATE_CATEGORY,
   UPDATE_CATEGORY,
+  SET_CATEGORY_HIERARCHY,
 } from "../type";
 
 const inital = {
   category: [],
   oneCategory: [],
+  categoryHierarchy: null, // الفئات الهرمية المحفوظة
   loading: true,
   error: null,
 };
@@ -36,6 +38,12 @@ const categoryReducer = (state = inital, action) => {
       return {
         ...state,
         category: action.payload,
+        loading: false,
+      };
+    case SET_CATEGORY_HIERARCHY:
+      return {
+        ...state,
+        categoryHierarchy: action.payload,
         loading: false,
       };
     case GET_ERROR:

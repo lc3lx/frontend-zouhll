@@ -52,11 +52,15 @@ import ProductsBySubcategory from "./Page/Products/ProductsBySubcategory";
 import ModernAllCategoryPage from "./Page/Category/ModernAllCategoryPage";
 import ZuhalAI from "./Components/AI/ZuhalAI";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { api } from "./Api/client";
 import { categoryTreeCache } from "./Components/Navigation/CategoryDropdown";
+import { setCategoryHierarchy } from "./redux/actions/categoryAction";
 
 function App() {
   const [isUser, isAdmin] = ProtectedRouteHook();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     let cancelled = false;
     async function prefetchCategoriesTree() {
@@ -64,50 +68,85 @@ function App() {
         // جلب كل التصنيفات الرئيسية
         const catRes = await api.getCategories({ limit: 100, sort: "name" });
         const categories = catRes?.data || [];
-        // لكل فئة: جلب الفرعية والثانوية بالتوازي وتعبئة الكاش
-        await Promise.all(
-          categories.map(async (cat) => {
-            if (cancelled) return;
-            try {
-              const [subRes, secAllRes] = await Promise.all([
-                api.getSubcategories({
-                  category: cat._id,
-                  limit: 100,
-                  sort: "name",
-                }),
-                api.getSecondaryCategories({
-                  category: cat._id,
-                  limit: 1000,
-                  sort: "name",
-                }),
-              ]);
-              const subcategories = subRes?.data || [];
-              const allSecondary = secAllRes?.data || [];
-              const secBySubId = allSecondary.reduce((acc, item) => {
-                const key = item.subCategory?._id || item.subCategory;
-                if (!key) return acc;
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(item);
-                return acc;
-              }, {});
-              const subWithSecondary = subcategories.map((sub) => ({
-                ...sub,
-                secondaryCategories: secBySubId[sub._id] || [],
-              }));
-              categoryTreeCache.set(cat._id, {
-                data: { ...cat, subcategories: subWithSecondary },
-                expireAt: Date.now() + 60 * 1000,
-              });
-            } catch (_) {}
-          })
-        );
+
+        // بناء الفئات الهرمية
+        const hierarchyPromises = categories.map(async (cat) => {
+          if (cancelled) return null;
+          try {
+            const [subRes, secAllRes] = await Promise.all([
+              api.getSubcategories({
+                category: cat._id,
+                limit: 100,
+                sort: "name",
+              }),
+              api.getSecondaryCategories({
+                category: cat._id,
+                limit: 1000,
+                sort: "name",
+              }),
+            ]);
+            const subcategories = subRes?.data || [];
+            const allSecondary = secAllRes?.data || [];
+            const secBySubId = allSecondary.reduce((acc, item) => {
+              const key = item.subCategory?._id || item.subCategory;
+              if (!key) return acc;
+              if (!acc[key]) acc[key] = [];
+              acc[key].push(item);
+              return acc;
+            }, {});
+            const subWithSecondary = subcategories.map((sub) => ({
+              ...sub,
+              secondaryCategories: secBySubId[sub._id] || [],
+            }));
+
+            // حفظ في cache محلي
+            categoryTreeCache.set(cat._id, {
+              data: { ...cat, subcategories: subWithSecondary },
+              expireAt: Date.now() + 60 * 1000,
+            });
+
+            return {
+              ...cat,
+              subcategories: subWithSecondary,
+            };
+          } catch (_) {
+            return {
+              ...cat,
+              subcategories: [],
+            };
+          }
+        });
+
+        const hierarchyResult = await Promise.all(hierarchyPromises);
+
+        // حفظ الفئات الهرمية في Redux للاستخدام في الصفحة الرئيسية
+        const hierarchyData = {
+          categories: hierarchyResult.filter(Boolean),
+          totalCategories: hierarchyResult.filter(Boolean).length,
+          totalSubcategories: hierarchyResult.reduce(
+            (sum, cat) => sum + (cat?.subcategories?.length || 0),
+            0
+          ),
+          totalSecondaryCategories: hierarchyResult.reduce(
+            (sum, cat) =>
+              sum +
+              (cat?.subcategories?.reduce(
+                (subSum, sub) =>
+                  subSum + (sub?.secondaryCategories?.length || 0),
+                0
+              ) || 0),
+            0
+          ),
+        };
+
+        dispatch(setCategoryHierarchy(hierarchyData));
       } catch (_) {}
     }
     prefetchCategoriesTree();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="font">

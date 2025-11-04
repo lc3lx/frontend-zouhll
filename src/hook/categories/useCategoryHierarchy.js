@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { useFetch } from "../core/useFetch";
 import { api } from "../../Api/client";
 
@@ -11,11 +12,26 @@ export function useCategoryHierarchy(options = {}) {
     onError,
   } = options;
 
-  const [hierarchyData, setHierarchyData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // جلب الفئات الهرمية من Redux إذا كانت موجودة
+  const reduxHierarchy = useSelector(
+    (state) => state.allCategory.categoryHierarchy
+  );
+
+  const [hierarchyData, setHierarchyData] = useState(reduxHierarchy || null);
+  const [loading, setLoading] = useState(!reduxHierarchy);
   const [error, setError] = useState(null);
 
-  // جلب التصنيفات الرئيسية
+  // استخدام البيانات من Redux إذا كانت موجودة
+  useEffect(() => {
+    if (reduxHierarchy) {
+      setHierarchyData(reduxHierarchy);
+      setLoading(false);
+      if (onSuccess) onSuccess(reduxHierarchy);
+      return; // لا حاجة لجلب البيانات مرة أخرى
+    }
+  }, [reduxHierarchy, onSuccess]);
+
+  // جلب التصنيفات الرئيسية (فقط إذا لم تكن موجودة في Redux)
   const categoriesQuery = useFetch(
     "categories-hierarchy",
     async (signal) => {
@@ -26,7 +42,7 @@ export function useCategoryHierarchy(options = {}) {
       return categories;
     },
     {
-      enabled,
+      enabled: enabled && !reduxHierarchy, // لا تجلب إذا كانت موجودة في Redux
       ttl,
       onError,
     }
@@ -127,12 +143,17 @@ export function useCategoryHierarchy(options = {}) {
     }
   }, [categoriesQuery.data, onSuccess, onError]);
 
-  // بناء الهيكل عند توفر البيانات
+  // بناء الهيكل عند توفر البيانات (فقط إذا لم تكن موجودة في Redux)
   useEffect(() => {
-    if (categoriesQuery.data && !categoriesQuery.loading) {
+    if (!reduxHierarchy && categoriesQuery.data && !categoriesQuery.loading) {
       buildHierarchy();
     }
-  }, [categoriesQuery.data, categoriesQuery.loading, buildHierarchy]);
+  }, [
+    categoriesQuery.data,
+    categoriesQuery.loading,
+    buildHierarchy,
+    reduxHierarchy,
+  ]);
 
   // دالة لإعادة التحميل
   const refetch = useCallback(() => {

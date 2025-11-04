@@ -4,6 +4,7 @@ import {
   GET_ONE_CATEGORY,
   CREATE_CATEGORY,
   UPDATE_CATEGORY,
+  SET_CATEGORY_HIERARCHY,
 } from "../type";
 import { useGetData } from "../../hooks/useGetData";
 import { useInsertDataWithImage } from "../../hooks/useInsertData";
@@ -115,4 +116,12 @@ export const deleteCategory = (id) => async (dispatch) => {
       payload: "Error " + e,
     });
   }
+};
+
+//set category hierarchy (for caching)
+export const setCategoryHierarchy = (hierarchyData) => (dispatch) => {
+  dispatch({
+    type: SET_CATEGORY_HIERARCHY,
+    payload: hierarchyData,
+  });
 };

@@ -87,14 +87,85 @@ const AdminAddProducts = () => {
             className="input-form d-block mt-3 px-3"
             placeholder="اسم المنتج"
           />
-          <textarea
-            className="input-form-area p-2 mt-3"
-            rows="4"
-            cols="50"
-            placeholder="وصف المنتج"
-            value={prodDescription}
-            onChange={onChangeDesName}
-          />
+          <div style={{ position: "relative", width: "100%" }}>
+            <textarea
+              className="input-form-area p-2 mt-3"
+              rows="6"
+              cols="50"
+              placeholder="وصف المنتج - اكتب وصفاً مفصلاً للمنتج يتضمن المميزات والفوائد..."
+              value={prodDescription}
+              onChange={onChangeDesName}
+              style={{
+                width: "100%",
+                minHeight: "120px",
+                resize: "vertical",
+              }}
+              maxLength={2000}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: "8px",
+                fontSize: "12px",
+                color: "#666",
+              }}
+            >
+              <span>{prodDescription.length} / 2000 حرف</span>
+              <span
+                style={{
+                  color: prodDescription.length >= 100 ? "#007600" : "#ff6f00",
+                  fontWeight: "500",
+                }}
+              >
+                {prodDescription.length >= 100
+                  ? "✓ جيد"
+                  : "⚠ يجب أن يكون الوصف على الأقل 100 حرف"}
+              </span>
+            </div>
+
+            {/* SEO Helper */}
+            <div
+              style={{
+                background: "#f8f9fa",
+                border: "1px solid #e7e7e7",
+                borderRadius: "6px",
+                padding: "12px",
+                marginTop: "12px",
+                fontSize: "13px",
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: "600",
+                  color: "#0f1111",
+                  marginBottom: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <span>💡</span>
+                <span>نصائح لكتابة وصف محسّن للبحث (SEO)</span>
+              </div>
+              <ul
+                style={{
+                  margin: 0,
+                  paddingRight: "20px",
+                  color: "#565959",
+                  lineHeight: "1.6",
+                }}
+              >
+                <li>ابدأ بذكر الفوائد الرئيسية للمنتج</li>
+                <li>استخدم كلمات مفتاحية طبيعية ومرتبطة بالمنتج</li>
+                <li>اذكر المواصفات والتفاصيل المهمة</li>
+                <li>أضف معلومات عن الاستخدام والفوائد</li>
+                <li>استخدم عناوين فرعية وبنقاط منظمة</li>
+                <li>الحد الأدنى: 100 حرف، الموصى به: 200-500 حرف</li>
+              </ul>
+            </div>
+          </div>
           <input
             type="number"
             className="input-form d-block mt-3 px-3"
@@ -300,13 +371,64 @@ const AdminAddProducts = () => {
             {" "}
             متغيرات المنتج (ألوان/صور/قياسات)
           </div>
+
+          {/* Variants Helper Guide */}
+          <div
+            style={{
+              background: "#e3f2fd",
+              border: "1px solid #90caf9",
+              borderRadius: "6px",
+              padding: "12px",
+              marginTop: "12px",
+              marginBottom: "16px",
+              fontSize: "13px",
+            }}
+          >
+            <div
+              style={{
+                fontWeight: "600",
+                color: "#1565c0",
+                marginBottom: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span>📋</span>
+              <span>دليل إضافة المتغيرات (الألوان والمقاسات)</span>
+            </div>
+            <ul
+              style={{
+                margin: 0,
+                paddingRight: "20px",
+                color: "#424242",
+                lineHeight: "1.6",
+              }}
+            >
+              <li>
+                المتغيرات تسمح لك بإضافة ألوان مختلفة مع صور ومقاسات خاصة لكل
+                لون
+              </li>
+              <li>لكل لون يمكنك إضافة صور مختلفة ومقاسات مختلفة مع المخزون</li>
+              <li>
+                إذا كان المنتج له لون واحد فقط، استخدم قسم "المقاسات" السابق
+              </li>
+              <li>يمكنك إضافة سعر مختلف لكل متغير (اختياري)</li>
+              <li>يمكنك إضافة SKU خاص بكل متغير لتسهيل إدارة المخزون</li>
+            </ul>
+          </div>
+
           <div className="mt-2">
             <button
               type="button"
               onClick={addVariant}
               className="btn btn-outline-primary"
+              style={{
+                fontWeight: "500",
+                padding: "8px 16px",
+              }}
             >
-              إضافة لون/متغير
+              + إضافة لون/متغير
             </button>
             {Array.isArray(variants) && variants.length > 0 && (
               <div className="mt-3">

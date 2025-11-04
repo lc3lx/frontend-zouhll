@@ -8,22 +8,37 @@ import { ToastContainer } from "react-toastify";
 import { addProductToCart } from "../../redux/actions/cartAction";
 import notify from "../../hook/useNotifaction";
 
-const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSize, setSelectedSize }) => {
+const ProductText = ({
+  selectedVariantIndex,
+  setSelectedVariantIndex,
+  selectedSize,
+  setSelectedSize,
+}) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, images, cat, brand] = ViewProductsDetalisHook(id);
   const dispatch = useDispatch();
   const [indexColor, setIndexColor] = useState(null);
 
-  const variants = useMemo(() => (Array.isArray(item?.variants) ? item.variants : []), [item]);
+  const variants = useMemo(
+    () => (Array.isArray(item?.variants) ? item.variants : []),
+    [item]
+  );
   const currentVariant = useMemo(
-    () => (variants.length > 0 && selectedVariantIndex !== null ? variants[selectedVariantIndex] : null),
+    () =>
+      variants.length > 0 && selectedVariantIndex !== null
+        ? variants[selectedVariantIndex]
+        : null,
     [variants, selectedVariantIndex]
   );
 
   const currentPrice = useMemo(() => {
-    if (currentVariant && typeof currentVariant.price === "number") return currentVariant.price;
-    if (typeof item?.priceAfterDiscount === "number" && item.priceAfterDiscount >= 1)
+    if (currentVariant && typeof currentVariant.price === "number")
+      return currentVariant.price;
+    if (
+      typeof item?.priceAfterDiscount === "number" &&
+      item.priceAfterDiscount >= 1
+    )
       return item.priceAfterDiscount;
     return item?.price;
   }, [currentVariant, item]);
@@ -65,7 +80,11 @@ const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSi
     }
 
     // Fallback: old behavior based on colors (new) or availableColors (legacy) without size
-    const flatColors = Array.isArray(item?.colors) ? item.colors : (Array.isArray(item?.availableColors) ? item.availableColors : []);
+    const flatColors = Array.isArray(item?.colors)
+      ? item.colors
+      : Array.isArray(item?.availableColors)
+      ? item.availableColors
+      : [];
     if (flatColors.length > 0) {
       if (indexColor === null) {
         notify("من فضلك اختر لون اولا للمنتج", "warn");
@@ -110,7 +129,11 @@ const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSi
     }
 
     // Fallback: old behavior based on colors (new) or availableColors (legacy) without size
-    const flatColors = Array.isArray(item?.colors) ? item.colors : (Array.isArray(item?.availableColors) ? item.availableColors : []);
+    const flatColors = Array.isArray(item?.colors)
+      ? item.colors
+      : Array.isArray(item?.availableColors)
+      ? item.availableColors
+      : [];
     if (flatColors.length > 0) {
       if (indexColor === null) {
         notify("من فضلك اختر لون اولا للمنتج", "warn");
@@ -129,279 +152,581 @@ const ProductText = ({ selectedVariantIndex, setSelectedVariantIndex, selectedSi
   };
 
   return (
-    <div style={{ padding: '0' }}>
+    <div style={{ padding: "0" }}>
       {/* Stock Status */}
-      <div style={{ marginBottom: '8px' }}>
-        <span style={{
-          fontSize: '14px',
-          color: (selectedSize?.stock ?? item.quantity) > 0 ? '#007600' : '#B12704',
-          fontWeight: '500'
-        }}>
-          {(selectedSize?.stock ?? item.quantity) > 0 ? 'متوفر في المخزون' : 'غير متوفر حالياً'}
+      <div style={{ marginBottom: "8px" }}>
+        <span
+          style={{
+            fontSize: "14px",
+            color:
+              (selectedSize?.stock ?? item.quantity) > 0
+                ? "#007600"
+                : "#B12704",
+            fontWeight: "500",
+          }}
+        >
+          {(selectedSize?.stock ?? item.quantity) > 0
+            ? "متوفر في المخزون"
+            : "غير متوفر حالياً"}
         </span>
       </div>
 
       {/* Product Title & Rating */}
-      <div style={{ marginBottom: '16px' }}>
-        <h1 style={{
-          fontSize: '24px',
-          fontWeight: '400',
-          color: '#0f1111',
-          marginBottom: '8px',
-          lineHeight: '1.3'
-        }}>
+      <div style={{ marginBottom: "20px" }}>
+        <h1
+          style={{
+            fontSize: "24px",
+            fontWeight: "400",
+            color: "#0f1111",
+            marginBottom: "8px",
+            lineHeight: "1.3",
+          }}
+        >
           {item.title}
         </h1>
-        
+
         {/* Rating */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginRight: "8px",
+            }}
+          >
             {[...Array(5)].map((_, i) => (
-              <span key={i} style={{
-                color: i < Math.floor(item.ratingsAverage || 0) ? '#ff9900' : '#ddd',
-                fontSize: '14px'
-              }}>★</span>
+              <span
+                key={i}
+                style={{
+                  color:
+                    i < Math.floor(item.ratingsAverage || 0)
+                      ? "#ff9900"
+                      : "#ddd",
+                  fontSize: "14px",
+                }}
+              >
+                ★
+              </span>
             ))}
           </div>
-          <span style={{
-            fontSize: '14px',
-            color: '#007185',
-            textDecoration: 'none',
-            cursor: 'pointer'
-          }}>
+          <span
+            style={{
+              fontSize: "14px",
+              color: "#007185",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
             {item.ratingsQuantity || 0} تقييم
           </span>
         </div>
-        
+
         {/* Brand */}
-        <div style={{ fontSize: '14px', color: '#565959', marginBottom: '8px' }}>
-          الماركة: <span style={{ color: '#007185', cursor: 'pointer' }}>{brand?.name || 'غير محدد'}</span>
+        <div
+          style={{ fontSize: "14px", color: "#565959", marginBottom: "12px" }}
+        >
+          الماركة:{" "}
+          <span style={{ color: "#007185", cursor: "pointer" }}>
+            {brand?.name || "غير محدد"}
+          </span>
+        </div>
+
+        {/* Price - Moved up for better visibility */}
+        <div
+          style={{
+            marginBottom: "20px",
+            padding: "16px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e7e7e7",
+          }}
+        >
+          {item.priceAfterDiscount >= 1 &&
+          item.priceAfterDiscount < item.price ? (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                  marginBottom: "8px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "28px",
+                    fontWeight: "600",
+                    color: "#B12704",
+                  }}
+                >
+                  ${currentPrice}
+                </span>
+                <span
+                  style={{
+                    fontSize: "18px",
+                    color: "#565959",
+                    textDecoration: "line-through",
+                    fontWeight: "400",
+                  }}
+                >
+                  ${item.price}
+                </span>
+                {(() => {
+                  const discountPercent = Math.round(
+                    ((item.price - currentPrice) / item.price) * 100
+                  );
+                  const savings = item.price - currentPrice;
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          background: "#cc0c39",
+                          color: "#fff",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        خصم {discountPercent}%
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: "#007600",
+                          fontWeight: "600",
+                        }}
+                      >
+                        توفير ${savings.toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
+            </>
+          ) : (
+            <div
+              style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
+            >
+              <span
+                style={{
+                  fontSize: "28px",
+                  fontWeight: "600",
+                  color: "#B12704",
+                }}
+              >
+                ${currentPrice}
+              </span>
+            </div>
+          )}
+
+          {/* Free shipping notice */}
+          <div
+            style={{
+              fontSize: "14px",
+              color: "#007600",
+              marginTop: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontWeight: "500",
+            }}
+          >
+            <span>✓</span>
+            <span>شحن مجاني للطلبات أكثر من $50</span>
+          </div>
         </div>
       </div>
 
-
       {/* Colors & Sizes */}
-      <div style={{ marginBottom: '20px' }}>
-        {(variants.length > 0 || (item.availableColors && item.availableColors.length > 0)) && (
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#0f1111',
-              marginBottom: '8px'
-            }}>
-              اللون:
+      <div style={{ marginBottom: "20px" }}>
+        {(variants.length > 0 ||
+          (item.availableColors && item.availableColors.length > 0)) && (
+          <div style={{ marginBottom: "16px" }}>
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#0f1111",
+                marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <span>اللون:</span>
+              {selectedVariantIndex !== null &&
+                variants[selectedVariantIndex]?.color?.name && (
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "#565959",
+                      fontWeight: "400",
+                    }}
+                  >
+                    ({variants[selectedVariantIndex].color.name})
+                  </span>
+                )}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {variants.length > 0
-                ? variants.map((v, index) => (
-                    <div
-                      key={index}
-                      title={v?.color?.name || ""}
-                      onClick={() => onSelectVariant(index)}
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '4px',
-                        backgroundColor: v?.color?.hex || '#e2e8f0',
-                        border: selectedVariantIndex === index
-                          ? '2px solid #ff9900'
-                          : '1px solid #ddd',
-                        cursor: 'pointer',
-                        position: 'relative'
-                      }}
-                      className={`color-option ${selectedVariantIndex === index ? 'selected' : ''}`}
-                    >
-                      {selectedVariantIndex === index && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          color: '#fff',
-                          fontSize: '12px'
-                        }}>✓</div>
-                      )}
-                    </div>
-                  ))
-                : (Array.isArray(item?.colors) ? item.colors : (item.availableColors || [])).map((color, index) => (
-                    <div
-                      key={index}
-                      onClick={() => setIndexColor(index)}
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '4px',
-                        backgroundColor: color,
-                        border: indexColor === index
-                          ? '2px solid #ff9900'
-                          : '1px solid #ddd',
-                        cursor: 'pointer',
-                        position: 'relative'
-                      }}
-                      className={`color-option ${indexColor === index ? 'selected' : ''}`}
-                    >
-                      {indexColor === index && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          color: '#fff',
-                          fontSize: '12px'
-                        }}>✓</div>
-                      )}
-                    </div>
-                  ))}
+                ? variants.map((v, index) => {
+                    const isSelected = selectedVariantIndex === index;
+                    const colorName = v?.color?.name || "";
+                    const colorHex = v?.color?.hex || "#e2e8f0";
+                    return (
+                      <div
+                        key={index}
+                        title={colorName || `اللون ${index + 1}`}
+                        onClick={() => onSelectVariant(index)}
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50%",
+                          backgroundColor: colorHex,
+                          border: isSelected
+                            ? "3px solid #ff9900"
+                            : "2px solid #ddd",
+                          cursor: "pointer",
+                          position: "relative",
+                          boxShadow: isSelected
+                            ? "0 2px 8px rgba(255, 153, 0, 0.3)"
+                            : "0 1px 3px rgba(0,0,0,0.1)",
+                          transition: "all 0.2s ease",
+                        }}
+                        className={`color-option ${
+                          isSelected ? "selected" : ""
+                        }`}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "scale(1.1)";
+                          e.currentTarget.style.boxShadow =
+                            "0 2px 12px rgba(0,0,0,0.15)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.boxShadow =
+                              "0 1px 3px rgba(0,0,0,0.1)";
+                          }
+                        }}
+                      >
+                        {isSelected && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              color: "#fff",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                            }}
+                          >
+                            ✓
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                : (Array.isArray(item?.colors)
+                    ? item.colors
+                    : item.availableColors || []
+                  ).map((color, index) => {
+                    const isSelected = indexColor === index;
+                    return (
+                      <div
+                        key={index}
+                        title={`اللون ${index + 1}`}
+                        onClick={() => setIndexColor(index)}
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50%",
+                          backgroundColor: color,
+                          border: isSelected
+                            ? "3px solid #ff9900"
+                            : "2px solid #ddd",
+                          cursor: "pointer",
+                          position: "relative",
+                          boxShadow: isSelected
+                            ? "0 2px 8px rgba(255, 153, 0, 0.3)"
+                            : "0 1px 3px rgba(0,0,0,0.1)",
+                          transition: "all 0.2s ease",
+                        }}
+                        className={`color-option ${
+                          isSelected ? "selected" : ""
+                        }`}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "scale(1.1)";
+                          e.currentTarget.style.boxShadow =
+                            "0 2px 12px rgba(0,0,0,0.15)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.boxShadow =
+                              "0 1px 3px rgba(0,0,0,0.1)";
+                          }
+                        }}
+                      >
+                        {isSelected && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              color: "#fff",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                            }}
+                          >
+                            ✓
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
             </div>
           </div>
         )}
 
         {/* Sizes for selected variant */}
         {currentVariant?.sizes && currentVariant.sizes.length > 0 && (
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#0f1111',
-              marginBottom: '8px'
-            }}>
-              المقاس:
+          <div style={{ marginBottom: "16px" }}>
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#0f1111",
+                marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>المقاس:</span>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#007185",
+                  cursor: "pointer",
+                  fontWeight: "400",
+                }}
+              >
+                دليل المقاسات
+              </span>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {currentVariant.sizes.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSelectSize(s)}
-                  disabled={typeof s.stock === 'number' && s.stock <= 0}
-                  className="size-option"
-                  style={{
-                    padding: '8px 12px',
-                    border: selectedSize?.label === s.label ? '2px solid #ff9900' : '1px solid #ddd',
-                    background: selectedSize?.label === s.label ? '#fff3cd' : '#fff',
-                    color: '#0f1111',
-                    borderRadius: '4px',
-                    cursor: typeof s.stock === 'number' && s.stock <= 0 ? 'not-allowed' : 'pointer',
-                    opacity: typeof s.stock === 'number' && s.stock <= 0 ? 0.5 : 1,
-                    fontSize: '14px'
-                  }}
-                >
-                  {s.label}
-                </button>
-              ))}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))",
+                gap: "10px",
+              }}
+            >
+              {currentVariant.sizes.map((s, i) => {
+                const isSelected = selectedSize?.label === s.label;
+                const isOutOfStock =
+                  typeof s.stock === "number" && s.stock <= 0;
+                const isLowStock =
+                  typeof s.stock === "number" && s.stock > 0 && s.stock <= 5;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => !isOutOfStock && onSelectSize(s)}
+                    disabled={isOutOfStock}
+                    className="size-option"
+                    title={
+                      isOutOfStock
+                        ? "غير متوفر"
+                        : isLowStock
+                        ? `متوفر ${s.stock} فقط`
+                        : `متوفر ${s.stock}`
+                    }
+                    style={{
+                      padding: "10px 8px",
+                      border: isSelected
+                        ? "2px solid #ff9900"
+                        : "1px solid #ddd",
+                      background: isSelected
+                        ? "#fff3cd"
+                        : isOutOfStock
+                        ? "#f5f5f5"
+                        : isLowStock
+                        ? "#fff8e1"
+                        : "#fff",
+                      color: isOutOfStock ? "#999" : "#0f1111",
+                      borderRadius: "6px",
+                      cursor: isOutOfStock ? "not-allowed" : "pointer",
+                      opacity: isOutOfStock ? 0.5 : 1,
+                      fontSize: "14px",
+                      fontWeight: isSelected ? "600" : "400",
+                      position: "relative",
+                      transition: "all 0.2s ease",
+                      minHeight: "44px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "2px",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isOutOfStock && !isSelected) {
+                        e.currentTarget.style.borderColor = "#ff9900";
+                        e.currentTarget.style.background = "#fff8e1";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = "#ddd";
+                        e.currentTarget.style.background = isOutOfStock
+                          ? "#f5f5f5"
+                          : isLowStock
+                          ? "#fff8e1"
+                          : "#fff";
+                      }
+                    }}
+                  >
+                    <span>{s.label}</span>
+                    {isLowStock && !isOutOfStock && (
+                      <span style={{ fontSize: "10px", color: "#ff6f00" }}>
+                        قليل
+                      </span>
+                    )}
+                    {isOutOfStock && (
+                      <span style={{ fontSize: "10px", color: "#999" }}>
+                        نفذ
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
+            {selectedSize && (
+              <div
+                style={{
+                  fontSize: "13px",
+                  color:
+                    selectedSize.stock > 5
+                      ? "#007600"
+                      : selectedSize.stock > 0
+                      ? "#ff6f00"
+                      : "#B12704",
+                  marginTop: "8px",
+                  fontWeight: "500",
+                }}
+              >
+                {selectedSize.stock > 5
+                  ? `✓ متوفر (${selectedSize.stock} قطعة متبقية)`
+                  : selectedSize.stock > 0
+                  ? `⚠ متبقي ${selectedSize.stock} قطعة فقط`
+                  : "غير متوفر"}
+              </div>
+            )}
           </div>
         )}
 
-        <div style={{ fontSize: '14px', color: '#565959', marginBottom: '16px' }}>
-          الكمية المتاحة: <span style={{ color: '#007600', fontWeight: '500' }}>{selectedSize?.stock ?? item.quantity}</span>
-        </div>
-      </div>
-
-
-      {/* Price */}
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-          {item.priceAfterDiscount >= 1 ? (
-            <>
-              <span style={{
-                fontSize: '24px',
-                fontWeight: '400',
-                color: '#B12704'
-              }}>
-                ${currentPrice}
-              </span>
-              <span style={{
-                fontSize: '14px',
-                color: '#565959',
-                textDecoration: 'line-through'
-              }}>
-                ${item.price}
-              </span>
-            </>
-          ) : (
-            <span style={{
-              fontSize: '24px',
-              fontWeight: '400',
-              color: '#B12704'
-            }}>
-              ${currentPrice}
+        {(!currentVariant?.sizes || currentVariant.sizes.length === 0) && (
+          <div
+            style={{
+              fontSize: "14px",
+              color: "#565959",
+              marginBottom: "16px",
+              padding: "12px",
+              background: "#f8f9fa",
+              borderRadius: "6px",
+            }}
+          >
+            <span style={{ fontWeight: "500" }}>الكمية المتاحة: </span>
+            <span style={{ color: "#007600", fontWeight: "600" }}>
+              {selectedSize?.stock ?? item.quantity} قطعة
             </span>
-          )}
-        </div>
-        
-        {/* Free shipping notice */}
-        <div style={{ fontSize: '14px', color: '#007185', marginTop: '4px' }}>
-          شحن مجاني للطلبات أكثر من $50
-        </div>
+          </div>
+        )}
       </div>
+
       {/* Add to Cart */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: "20px" }}>
         <button
           onClick={onAddToCart}
           className="add-to-cart-btn"
           style={{
-            background: '#ff9900',
-            border: '1px solid #e47911',
-            borderRadius: '8px',
-            padding: '10px 20px',
-            color: '#0f1111',
-            fontSize: '14px',
-            fontWeight: '400',
-            cursor: 'pointer',
-            width: '100%',
-            marginBottom: '8px'
+            background: "#ff9900",
+            border: "1px solid #e47911",
+            borderRadius: "8px",
+            padding: "10px 20px",
+            color: "#0f1111",
+            fontSize: "14px",
+            fontWeight: "400",
+            cursor: "pointer",
+            width: "100%",
+            marginBottom: "8px",
           }}
         >
           أضف إلى السلة
         </button>
-        
-        <button 
+
+        <button
           onClick={onBuyNow}
           className="buy-now-btn"
           style={{
-            background: '#ffa41c',
-            border: '1px solid #ff8f00',
-            borderRadius: '8px',
-            padding: '10px 20px',
-            color: '#0f1111',
-            fontSize: '14px',
-            fontWeight: '400',
-            cursor: 'pointer',
-            width: '100%'
-          }}>
+            background: "#ffa41c",
+            border: "1px solid #ff8f00",
+            borderRadius: "8px",
+            padding: "10px 20px",
+            color: "#0f1111",
+            fontSize: "14px",
+            fontWeight: "400",
+            cursor: "pointer",
+            width: "100%",
+          }}
+        >
           اشتر الآن
         </button>
       </div>
-      
+
       {/* Additional Actions */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        <button 
+      <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+        <button
           className="action-btn"
           style={{
-            background: 'transparent',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            color: '#0f1111',
-            fontSize: '14px',
-            cursor: 'pointer',
-            flex: 1
-          }}>
+            background: "transparent",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            color: "#0f1111",
+            fontSize: "14px",
+            cursor: "pointer",
+            flex: 1,
+          }}
+        >
           ❤️ المفضلة
         </button>
-        <button 
+        <button
           className="action-btn"
           style={{
-            background: 'transparent',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            color: '#0f1111',
-            fontSize: '14px',
-            cursor: 'pointer',
-            flex: 1
-          }}>
+            background: "transparent",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            color: "#0f1111",
+            fontSize: "14px",
+            cursor: "pointer",
+            flex: 1,
+          }}
+        >
           📤 مشاركة
         </button>
       </div>

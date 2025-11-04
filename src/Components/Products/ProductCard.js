@@ -32,12 +32,10 @@ const ProductCard = ({ item, favProd }) => {
             ? "0 4px 8px rgba(0,0,0,0.1)"
             : "0 2px 4px rgba(0,0,0,0.05)",
           transition: "all 0.2s ease",
-          transform: isHovered
-            ? "translateY(-2px)"
-            : "translateY(0)",
+          transform: isHovered ? "translateY(-2px)" : "translateY(0)",
           position: "relative",
           overflow: "hidden",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         <Link to={`/products/${item._id}`} style={{ textDecoration: "none" }}>
@@ -50,7 +48,7 @@ const ProductCard = ({ item, favProd }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "200px"
+              height: "200px",
             }}
           >
             <Card.Img
@@ -69,7 +67,16 @@ const ProductCard = ({ item, favProd }) => {
             />
 
             {/* Badges */}
-            <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div
+              style={{
+                position: "absolute",
+                top: "8px",
+                left: "8px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
               {item.priceAfterDiscount && (
                 <div
                   style={{
@@ -81,10 +88,14 @@ const ProductCard = ({ item, favProd }) => {
                     fontWeight: "700",
                   }}
                 >
-                  -{Math.round(((item.price - item.priceAfterDiscount) / item.price) * 100)}%
+                  -
+                  {Math.round(
+                    ((item.price - item.priceAfterDiscount) / item.price) * 100
+                  )}
+                  %
                 </div>
               )}
-              
+
               {/* New badge - show if product is less than 14 days old */}
               {(() => {
                 const createdDate = new Date(item.createdAt);
@@ -125,7 +136,7 @@ const ProductCard = ({ item, favProd }) => {
                   borderRadius: "50%",
                   padding: "6px",
                   cursor: "pointer",
-                  border: "1px solid #ddd"
+                  border: "1px solid #ddd",
                 }}
               >
                 <img
@@ -161,16 +172,36 @@ const ProductCard = ({ item, favProd }) => {
           </div>
 
           {/* Rating */}
-          <div style={{ marginBottom: "8px", display: "flex", alignItems: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
+          <div
+            style={{
+              marginBottom: "8px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginLeft: "4px",
+              }}
+            >
               {[...Array(5)].map((_, i) => (
-                <span key={i} style={{
-                  color: i < Math.floor(item.ratingsAverage || 0) ? '#ff9900' : '#ddd',
-                  fontSize: '12px'
-                }}>★</span>
+                <span
+                  key={i}
+                  style={{
+                    color:
+                      i < Math.floor(item.ratingsAverage || 0)
+                        ? "#ff9900"
+                        : "#ddd",
+                    fontSize: "12px",
+                  }}
+                >
+                  ★
+                </span>
               ))}
             </div>
-            <span style={{ fontSize: '12px', color: '#007185' }}>
+            <span style={{ fontSize: "12px", color: "#007185" }}>
               ({item.ratingsQuantity || 0})
             </span>
           </div>
@@ -179,40 +210,50 @@ const ProductCard = ({ item, favProd }) => {
           <div style={{ marginBottom: "8px" }}>
             {item.priceAfterDiscount >= 1 ? (
               <div>
-                <span style={{
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  color: "#B12704"
-                }}>
+                <span
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "700",
+                    color: "#B12704",
+                  }}
+                >
                   ${item.priceAfterDiscount}
                 </span>
-                <span style={{
-                  fontSize: "14px",
-                  color: "#565959",
-                  textDecoration: "line-through",
-                  marginRight: "8px"
-                }}>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    color: "#565959",
+                    textDecoration: "line-through",
+                    marginRight: "8px",
+                  }}
+                >
                   ${item.price}
                 </span>
               </div>
             ) : (
-              <span style={{
-                fontSize: "18px",
-                fontWeight: "700",
-                color: "#B12704"
-              }}>
+              <span
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  color: "#B12704",
+                }}
+              >
                 ${item.price}
               </span>
             )}
           </div>
 
           {/* Shipping Info */}
-          <div style={{ fontSize: "12px", color: "#007185", marginBottom: "8px" }}>
+          <div
+            style={{ fontSize: "12px", color: "#007185", marginBottom: "8px" }}
+          >
             شحن مجاني
           </div>
 
           {/* Stock Status */}
-          <div style={{ fontSize: "12px", color: "#007600", fontWeight: "600" }}>
+          <div
+            style={{ fontSize: "12px", color: "#007600", fontWeight: "600" }}
+          >
             متوفر في المخزون
           </div>
         </Card.Body>

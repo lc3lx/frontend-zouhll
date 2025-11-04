@@ -1,29 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { FiMessageSquare, FiX, FiSend, FiShoppingCart, FiTag, FiBox } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
-import './ZuhalAI.css';
-import AIEngine from './AIEngine';
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { FiMessageSquare, FiX, FiSend } from "react-icons/fi";
+import "./ZuhalAI.css";
+import AIEngine from "./AIEngine";
 
 const ZuhalAI = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
-      type: 'bot',
-      text: 'مرحباً! أنا زحل AI 🤖 مساعدك الذكي في التسوق. كيف يمكنني مساعدتك اليوم؟',
-      timestamp: new Date()
-    }
+      type: "bot",
+      text: "مرحباً! أنا زحل AI 🤖 مساعدك الذكي في التسوق. كيف يمكنني مساعدتك اليوم؟",
+      timestamp: new Date(),
+    },
   ]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [flaskAIStatus, setFlaskAIStatus] = useState("checking"); // checking, available, unavailable
+  const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [quickActions, setQuickActions] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
   // جلب البيانات من Redux
-  const products = useSelector(state => state.allproducts.allProducts);
-  const categories = useSelector(state => state.allCategory.category);
-  const brands = useSelector(state => state.allBrand.brand);
+  const products = useSelector((state) => state.allproducts.allProducts);
+  const categories = useSelector((state) => state.allCategory.category);
+  const brands = useSelector((state) => state.allBrand.brand);
 
   // تهيئة محرك الذكاء الاصطناعي
   const aiEngine = new AIEngine(products, categories, brands);
@@ -39,95 +38,152 @@ const ZuhalAI = () => {
   }, [isOpen]);
 
   const scrollToBottom = () => {
-    messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
     const userMessage = {
-      type: 'user',
+      type: "user",
       text: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage("");
     setIsTyping(true);
-    setQuickActions(false);
 
     // محاولة استخدام خادم Flask أولاً ثم العودة للمحرك المحلي
     try {
-      const payload = { message: userMessage.text };
+      const payload = {
+        message: userMessage.text,
+        session_id: "zuhal_ai_" + Date.now(), // إضافة session ID للسياق
+        history: messages.slice(-6).map((msg) => ({
+          type: msg.type,
+          text: msg.text,
+        })),
+      };
 
       const tryEndpoints = async () => {
         const endpoints = [
-          'https://www.zuhall.com/api/ai/chat', // تطوير محلي Flask
-         
+          "http://localhost:3001/api/ai/chat", // Flask AI محلي
+          "https://www.zuhall.com/api/ai/chat", // Flask AI على السيرفر
         ];
+
         for (const url of endpoints) {
           try {
+            console.log(`محاولة الاتصال بـ: ${url}`);
+
+            // إضافة timeout للاتصال
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 ثواني timeout
+
             const res = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "User-Agent": "ZuhalAI-Frontend/1.0",
+              },
               body: JSON.stringify(payload),
+              signal: controller.signal,
             });
-            if (res.ok) return await res.json();
-          } catch (_) { /* جرب التالي */ }
+
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+              const data = await res.json();
+              console.log("✅ استجابة من Flask AI:", data);
+              return data;
+            } else {
+              console.log(
+                `❌ فشل الاتصال بـ ${url}: ${res.status} ${res.statusText}`
+              );
+              // إذا كان الخطأ 404 أو 400، جرب endpoint آخر
+              if (res.status === 404 || res.status === 400) {
+                console.log(`🔄 محاولة endpoint آخر...`);
+                continue;
+              }
+            }
+          } catch (error) {
+            if (error.name === "AbortError") {
+              console.log(`⏰ انتهت مهلة الاتصال بـ ${url}`);
+            } else {
+              console.log(`❌ خطأ في الاتصال بـ ${url}:`, error.message);
+            }
+          }
         }
         return null;
       };
 
       const serverRes = await tryEndpoints();
-      let response = serverRes && serverRes.text ? serverRes : await aiEngine.processMessage(inputMessage);
+      let response;
+
+      if (serverRes && serverRes.text) {
+        // استخدام استجابة Flask AI
+        response = {
+          text: serverRes.text,
+          products: serverRes.products || [],
+          categories: serverRes.categories || [],
+          brands: serverRes.brands || [],
+          suggestions: serverRes.suggestions || [],
+          source: "flask_ai", // إضافة مصدر الرد
+          context: serverRes.context || null,
+        };
+        console.log("✅ تم استخدام Flask AI بنجاح");
+        setFlaskAIStatus("available");
+      } else {
+        // العودة للمحرك المحلي
+        console.log("🔄 استخدام المحرك المحلي كـ fallback");
+        console.log("ℹ️ Flask AI غير متاح، استخدام المحرك المحلي");
+        setFlaskAIStatus("unavailable");
+        response = await aiEngine.processMessage(inputMessage);
+        response.source = "local_engine"; // إضافة مصدر الرد
+      }
 
       const botMessage = {
-        type: 'bot',
+        type: "bot",
         text: response.text,
         products: response.products,
         categories: response.categories,
         brands: response.brands,
         suggestions: response.suggestions,
-        timestamp: new Date()
+        source: response.source, // إضافة مصدر الرد
+        context: response.context,
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
-      if (response.suggestions && response.suggestions.length > 0) setQuickActions(true);
     } catch (err) {
       const response = await aiEngine.processMessage(inputMessage);
       const botMessage = {
-        type: 'bot',
+        type: "bot",
         text: response.text,
         products: response.products,
         categories: response.categories,
         brands: response.brands,
         suggestions: response.suggestions,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
-      if (response.suggestions && response.suggestions.length > 0) setQuickActions(true);
     }
   };
 
-  const handleQuickAction = (action) => {
-    setInputMessage(action);
-    handleSendMessage();
-  };
-
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString('ar-EG', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(date).toLocaleTimeString("ar-EG", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
     <>
       {/* Floating Button */}
-      <div 
-        className={`zuhal-ai-button ${isOpen ? 'hidden' : ''}`}
+      <div
+        className={`zuhal-ai-button ${isOpen ? "hidden" : ""}`}
         onClick={() => setIsOpen(true)}
       >
         <div className="zuhal-ai-button-icon">
@@ -138,7 +194,7 @@ const ZuhalAI = () => {
       </div>
 
       {/* Chat Window */}
-      <div className={`zuhal-ai-chat ${isOpen ? 'open' : ''}`}>
+      <div className={`zuhal-ai-chat ${isOpen ? "open" : ""}`}>
         {/* Header */}
         <div className="zuhal-ai-header">
           <div className="zuhal-ai-header-info">
@@ -151,12 +207,23 @@ const ZuhalAI = () => {
                 <span className="zuhal-ai-status-dot"></span>
                 متصل الآن
               </div>
+              {/* مؤشر حالة Flask AI */}
+              {flaskAIStatus === "available" && (
+                <div className="zuhal-ai-status-available">
+                  🤖 AI الذكي متاح
+                </div>
+              )}
+              {flaskAIStatus === "unavailable" && (
+                <div className="zuhal-ai-status-unavailable">⚡ وضع محلي</div>
+              )}
+              {flaskAIStatus === "checking" && (
+                <div className="zuhal-ai-status-checking">
+                  🔄 فحص الاتصال...
+                </div>
+              )}
             </div>
           </div>
-          <button 
-            className="zuhal-ai-close"
-            onClick={() => setIsOpen(false)}
-          >
+          <button className="zuhal-ai-close" onClick={() => setIsOpen(false)}>
             <FiX size={20} />
           </button>
         </div>
@@ -166,93 +233,26 @@ const ZuhalAI = () => {
           {messages.map((message, index) => (
             <div key={index} className={`zuhal-ai-message ${message.type}`}>
               <div className="zuhal-ai-message-content">
-                <div className="zuhal-ai-message-text">
-                  {message.text}
-                </div>
-                
-                {/* عرض المنتجات المقترحة */}
-                {message.products && message.products.length > 0 && (
-                  <div className="zuhal-ai-products">
-                    <div className="zuhal-ai-products-title">💎 منتجات مقترحة:</div>
-                    <div className="zuhal-ai-products-grid">
-                      {message.products.slice(0, 3).map((product, idx) => (
-                        <Link 
-                          key={idx} 
-                          to={`/products/${product._id}`}
-                          className="zuhal-ai-product-card"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <img src={product.imageCover} alt={product.title} />
-                          <div className="zuhal-ai-product-info">
-                            <div className="zuhal-ai-product-title">{product.title}</div>
-                            <div className="zuhal-ai-product-price">${product.price}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="zuhal-ai-message-text">{message.text}</div>
 
-                {/* عرض التصنيفات */}
-                {message.categories && message.categories.length > 0 && (
-                  <div className="zuhal-ai-categories">
-                    <div className="zuhal-ai-categories-title">📂 التصنيفات:</div>
-                    <div className="zuhal-ai-categories-list">
-                      {message.categories.map((category, idx) => (
-                        <Link
-                          key={idx}
-                          to={`/products/category/${category._id}`}
-                          className="zuhal-ai-category-chip"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <FiTag size={14} />
-                          {category.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* عرض الماركات */}
-                {message.brands && message.brands.length > 0 && (
-                  <div className="zuhal-ai-brands">
-                    <div className="zuhal-ai-brands-title">🏷️ الماركات:</div>
-                    <div className="zuhal-ai-brands-list">
-                      {message.brands.map((brand, idx) => (
-                        <Link
-                          key={idx}
-                          to={`/products/brand/${brand._id}`}
-                          className="zuhal-ai-brand-chip"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {brand.name}
-                        </Link>
-                      ))}
-                    </div>
+                {/* مؤشر مصدر الرد */}
+                {message.source && (
+                  <div className="zuhal-ai-message-source">
+                    {message.source === "flask_ai" ? (
+                      <span className="zuhal-ai-source-flask">
+                        🤖 زحل AI الذكي
+                      </span>
+                    ) : (
+                      <span className="zuhal-ai-source-local">
+                        ⚡ محرك محلي
+                      </span>
+                    )}
                   </div>
                 )}
 
                 <div className="zuhal-ai-message-time">
                   {formatTime(message.timestamp)}
                 </div>
-                
-                {/* عرض الاقتراحات الديناميكية */}
-                {message.suggestions && message.suggestions.length > 0 && index === messages.length - 1 && (
-                  <div className="zuhal-ai-dynamic-suggestions">
-                    <div className="zuhal-ai-suggestions-title">💡 اقتراحات سريعة:</div>
-                    <div className="zuhal-ai-suggestions-chips">
-                      {message.suggestions.slice(0, 3).map((suggestion, idx) => (
-                        <button
-                          key={idx}
-                          className="zuhal-ai-suggestion-chip"
-                          onClick={() => handleQuickAction(suggestion)}
-                        >
-                          {suggestion}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           ))}
@@ -263,27 +263,6 @@ const ZuhalAI = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-              </div>
-            </div>
-          )}
-
-          {/* Quick Actions */}
-          {quickActions && !isTyping && (
-            <div className="zuhal-ai-quick-actions">
-              <div className="zuhal-ai-quick-title">اختر سؤال سريع:</div>
-              <div className="zuhal-ai-quick-buttons">
-                <button onClick={() => handleQuickAction('ما هي أحدث المنتجات؟')}>
-                  <FiBox /> أحدث المنتجات
-                </button>
-                <button onClick={() => handleQuickAction('أريد منتجات بأفضل الأسعار')}>
-                  <FiShoppingCart /> أفضل العروض
-                </button>
-                <button onClick={() => handleQuickAction('ما هي التصنيفات المتاحة؟')}>
-                  <FiTag /> التصنيفات
-                </button>
-                <button onClick={() => handleQuickAction('أبحث عن هواتف ذكية')}>
-                  📱 هواتف ذكية
-                </button>
               </div>
             </div>
           )}
@@ -299,9 +278,9 @@ const ZuhalAI = () => {
             placeholder="اكتب رسالتك هنا..."
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
           />
-          <button 
+          <button
             className="zuhal-ai-send"
             onClick={handleSendMessage}
             disabled={!inputMessage.trim()}

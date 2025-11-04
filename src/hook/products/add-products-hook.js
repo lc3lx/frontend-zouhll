@@ -301,23 +301,57 @@ const AdminAddProductsHook = () => {
   const handelSubmit = async (e) => {
     e.preventDefault();
     const imgList = Object.values(images || {});
-    if (
-      !CatID ||
-      CatID === "0" ||
-      prodName === "" ||
-      prodDescription === "" ||
-      imgList.length <= 0 ||
-      priceBefore <= 0
-    ) {
-      notify("من فضلك اكمل البيانات", "warn");
+
+    // Validation with specific error messages
+    if (!CatID || CatID === "0") {
+      notify("من فضلك اختر التصنيف", "warn");
+      return;
+    }
+    if (prodName === "") {
+      notify("من فضلك أدخل اسم المنتج", "warn");
+      return;
+    }
+    if (prodDescription === "") {
+      notify("من فضلك أدخل وصف المنتج", "warn");
+      return;
+    }
+    if (imgList.length <= 0) {
+      notify("من فضلك أضف صورة واحدة على الأقل للمنتج", "warn");
+      return;
+    }
+    if (!priceBefore || priceBefore <= 0 || priceBefore === "السعر قبل الخصم") {
+      notify("من فضلك أدخل السعر قبل الخصم", "warn");
       return;
     }
 
     // Check images limit (10 images max total, first one is cover)
     // MultiImageInput already enforces max={10}, but we double-check here
     if (imgList.length > 10) {
-      notify("يمكنك إضافة حتى 10 صور للمنتج الرئيسي", "warn");
+      notify(
+        "يمكنك إضافة حتى 10 صور للمنتج الرئيسي (الصورة الأولى هي صورة الغلاف)",
+        "warn"
+      );
       return;
+    }
+
+    // Validate variants if any
+    if (Array.isArray(variants) && variants.length > 0) {
+      for (let i = 0; i < variants.length; i++) {
+        const v = variants[i];
+        const variantImages = Object.values(v.images || {});
+        if (variantImages.length === 0) {
+          notify(
+            `المتغير ${i + 1}: يجب إضافة صورة واحدة على الأقل لهذا المتغير`,
+            "warn"
+          );
+          return;
+        }
+        if (variantImages.length > 10) {
+          notify(`المتغير ${i + 1}: يمكنك إضافة حتى 10 صور لكل متغير`, "warn");
+          return;
+        }
+        // Color is optional, but if variant exists, it should have at least images
+      }
     }
 
     //convert base 64 image to file
@@ -435,42 +469,92 @@ const AdminAddProductsHook = () => {
       console.warn("Variant build error", err);
     }
 
-    setLoading(true);
-    await dispatch(createProduct(formData));
-    setLoading(false);
+    try {
+      setLoading(true);
+      await dispatch(createProduct(formData));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error creating product:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى";
+      notify(errorMessage, "error");
+    }
   };
 
   //get create meesage
   const product = useSelector((state) => state.allproducts.products);
 
   useEffect(() => {
-    if (loading === false && product && product.status === 201) {
-      // Only clear form data on successful submission
-      setImages({});
-      setProdName("");
-      setProdDescription("");
-      setPriceBefore("السعر قبل الخصم");
-      setPriceAftr("السعر بعد الخصم");
-      setQty("الكمية المتاحة");
-      setProductUrl("");
-      SetBrandID(0);
-      SetStoreID(0);
-      setSeletedSubID([]);
+    if (loading === false && product) {
+      if (product.status === 201) {
+        // Only clear form data on successful submission
+        setImages({});
+        setProdName("");
+        setProdDescription("");
+        setPriceBefore("السعر قبل الخصم");
+        setPriceAftr("السعر بعد الخصم");
+        setQty("الكمية المتاحة");
+        setProductUrl("");
+        SetBrandID(0);
+        SetStoreID(0);
+        setSeletedSubID([]);
 
-      // Reset new fields
-      setSeason("");
-      setFabricType("");
-      setDeliveryStartDate("");
-      setDeliveryEndDate("");
-      setDeliveryDays(0);
-      setCurrency("USD");
-      setSizes([]);
-      setVariants([]);
+        // Reset new fields
+        setSeason("");
+        setFabricType("");
+        setDeliveryStartDate("");
+        setDeliveryEndDate("");
+        setDeliveryDays(0);
+        setCurrency("USD");
+        setSizes([]);
+        setVariants([]);
 
-      notify("تم الاضافة بنجاح", "success");
-    } else if (loading === false && product && product.status !== 201) {
-      // Show error message but keep form data
-      notify("هناك مشكله", "error");
+        notify("تم إضافة المنتج بنجاح", "success");
+      } else if (product.status >= 400) {
+        // Extract detailed error message
+        let errorMessage = "حدث خطأ أثناء إضافة المنتج";
+
+        // Check for validation errors
+        if (product.data?.errors && Array.isArray(product.data.errors)) {
+          const errorMessages = product.data.errors.map((err) => {
+            if (err.msg) return err.msg;
+            if (err.message) return err.message;
+            return err;
+          });
+          errorMessage = errorMessages.join(" | ");
+        } else if (product.data?.message) {
+          errorMessage = product.data.message;
+        } else if (product.data?.error) {
+          errorMessage = product.data.error;
+        } else if (typeof product.data === "string") {
+          errorMessage = product.data;
+        }
+
+        // Show specific error messages based on status code
+        if (product.status === 400) {
+          errorMessage = `خطأ في البيانات: ${errorMessage}`;
+        } else if (product.status === 401) {
+          errorMessage = "غير مصرح لك بإضافة منتج. يرجى تسجيل الدخول مرة أخرى";
+        } else if (product.status === 403) {
+          errorMessage = "ليس لديك صلاحية لإضافة منتج";
+        } else if (product.status === 404) {
+          errorMessage = "الرابط غير موجود أو غير صحيح";
+        } else if (product.status === 409) {
+          errorMessage = `تعارض: ${errorMessage}`;
+        } else if (product.status === 413) {
+          errorMessage =
+            "حجم الصور كبير جداً. يرجى تصغير الصور والمحاولة مرة أخرى";
+        } else if (product.status === 422) {
+          errorMessage = `خطأ في التحقق من البيانات: ${errorMessage}`;
+        } else if (product.status >= 500) {
+          errorMessage = "خطأ في السيرفر. يرجى المحاولة لاحقاً";
+        }
+
+        notify(errorMessage, "error");
+      }
     }
   }, [loading, product]);
 

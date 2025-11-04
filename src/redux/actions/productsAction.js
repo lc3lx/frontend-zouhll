@@ -28,9 +28,23 @@ export const createProduct = (formatData) => async (dispatch) => {
       loading: true,
     });
   } catch (e) {
+    // Extract error details from response
+    // axios errors have response.data, response.status
+    const errorResponse = {
+      status: e?.response?.status || e?.status || 500,
+      data: e?.response?.data ||
+        e?.data || {
+          message: e?.message || "حدث خطأ غير متوقع",
+        },
+      // Keep original response for debugging
+      originalError: e,
+    };
+
+    // Dispatch as CREATE_PRODUCTS with error status for hook to handle
     dispatch({
-      type: GET_ERROR,
-      payload: "Error  " + e,
+      type: CREATE_PRODUCTS,
+      payload: errorResponse,
+      loading: false,
     });
   }
 };

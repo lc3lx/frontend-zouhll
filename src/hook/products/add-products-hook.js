@@ -81,10 +81,6 @@ const AdminAddProductsHook = () => {
   const [currency, setCurrency] = useState("USD");
   const [sizes, setSizes] = useState([]); // For products without color variants
 
-  // Color management state
-  const [newColorName, setNewColorName] = useState("");
-  const [newColorHex, setNewColorHex] = useState("#000000");
-
   // Variant builder state
   const [variants, setVariants] = useState([]);
   // عندما تتغير التصنيفات الفرعية، اجلب التصنيفات الثانوية المقابلة
@@ -125,7 +121,6 @@ const AdminAddProductsHook = () => {
     setVariants((prev) => [
       ...prev,
       {
-        colorName: "",
         colorHex: "#000000",
         price: "",
         sku: "",
@@ -223,14 +218,6 @@ const AdminAddProductsHook = () => {
     }
   };
 
-  const onChangeNewColorName = (event) => {
-    setNewColorName(event.target.value);
-  };
-
-  const onChangeNewColorHex = (event) => {
-    setNewColorHex(event.target.value);
-  };
-
   const onChangeCurrency = (event) => {
     setCurrency(event.target.value);
   };
@@ -245,22 +232,6 @@ const AdminAddProductsHook = () => {
   const removeSize = (index) => {
     setSizes(sizes.filter((_, i) => i !== index));
   };
-  const onChangeColor = (event) => {
-    event.persist();
-    setShowColor(!showColor);
-  };
-
-  //to show hide color picker
-  const [showColor, setShowColor] = useState(false);
-  //to store all pick color - now with name and hex
-  const [colors, setColors] = useState([]);
-
-  // Ensure colors is always an array
-  useEffect(() => {
-    if (!Array.isArray(colors)) {
-      setColors([]);
-    }
-  }, [colors]);
 
   // Calculate delivery days when dates change
   useEffect(() => {
@@ -278,29 +249,6 @@ const AdminAddProductsHook = () => {
       setDeliveryDays(0);
     }
   }, [deliveryStartDate, deliveryEndDate]);
-
-  // Add color with name and hex
-  const addColor = () => {
-    if (!newColorName.trim()) {
-      notify("الرجاء إدخال اسم اللون", "warn");
-      return;
-    }
-    setColors([...colors, { name: newColorName.trim(), hex: newColorHex }]);
-    setNewColorName("");
-    setNewColorHex("#000000");
-  };
-
-  const removeColor = (index) => {
-    setColors(colors.filter((_, i) => i !== index));
-  };
-
-  // Legacy color picker handler (for compatibility)
-  const handelChangeComplete = (color) => {
-    setNewColorHex(color.hex);
-    if (!newColorName) {
-      setNewColorName("لون");
-    }
-  };
 
   //when selet category store id
   const onSeletCategory = async (e) => {
@@ -402,12 +350,12 @@ const AdminAddProductsHook = () => {
     if (BrandID && BrandID !== "0") {
       formData.append("brand", BrandID);
     }
-    
+
     // Store is optional
     if (StoreID && StoreID !== "0") {
       formData.append("store", StoreID);
     }
-    
+
     if (productUrl) formData.append("productUrl", productUrl);
 
     // New fields
@@ -434,11 +382,8 @@ const AdminAddProductsHook = () => {
     formData.append("imageCover", imgCover);
     itemImages.forEach((item) => formData.append("images", item));
 
-    // Colors - convert to array of hex strings if objects
-    if (Array.isArray(colors) && colors.length) {
-      const colorArray = colors.map((c) => (typeof c === "string" ? c : c.hex));
-      formData.append("colors", JSON.stringify(colorArray));
-    }
+    // Colors - only extract from variants, not from separate colors array
+    // Colors are now only in variants, each variant has its own color
     const subIds = Array.isArray(seletedSubID)
       ? seletedSubID.map((s) => s._id)
       : [];
@@ -476,7 +421,7 @@ const AdminAddProductsHook = () => {
             stock: Number(s.stock || 0),
           }));
           const payload = {
-            color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
+            color: v.colorHex || "#000000",
             sizes: cleanSizes,
           };
           if (v.sku) payload.sku = v.sku;
@@ -501,7 +446,6 @@ const AdminAddProductsHook = () => {
   useEffect(() => {
     if (loading === false && product && product.status === 201) {
       // Only clear form data on successful submission
-      setColors([]);
       setImages({});
       setProdName("");
       setProdDescription("");
@@ -522,8 +466,6 @@ const AdminAddProductsHook = () => {
       setCurrency("USD");
       setSizes([]);
       setVariants([]);
-      setNewColorName("");
-      setNewColorHex("#000000");
 
       notify("تم الاضافة بنجاح", "success");
     } else if (loading === false && product && product.status !== 201) {
@@ -535,12 +477,10 @@ const AdminAddProductsHook = () => {
   return [
     onChangeDesName,
     onChangeQty,
-    onChangeColor,
     onChangePriceAfter,
     onChangePriceBefor,
     onChangeProdName,
     onChangeProductUrl,
-    showColor,
     category,
     brand,
     store,
@@ -550,13 +490,10 @@ const AdminAddProductsHook = () => {
     onSelect,
     onRemove,
     options,
-    handelChangeComplete,
-    removeColor,
     onSeletCategory,
     handelSubmit,
     onSeletBrand,
     onSeletStore,
-    colors,
     priceBefore,
     qty,
     prodDescription,
@@ -586,12 +523,7 @@ const AdminAddProductsHook = () => {
     onChangeCurrency,
     addSize,
     removeSize,
-    // Color management exports
-    newColorName,
-    newColorHex,
-    onChangeNewColorName,
-    onChangeNewColorHex,
-    addColor,
+    // Secondary categories
     secondaryCatID,
     onSelectSecondary,
     onRemoveSecondary,

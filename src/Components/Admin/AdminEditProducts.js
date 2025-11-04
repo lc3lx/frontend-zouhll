@@ -355,23 +355,31 @@ const AdminEditProducts = ({ productId }) => {
                 {variants.map((v, i) => (
                   <div key={i} className="border rounded p-3 my-3">
                     <div className="d-flex flex-wrap gap-2 align-items-center">
-                      <input
-                        type="text"
-                        className="input-form d-block px-3"
-                        placeholder="اسم اللون"
-                        value={v.colorName || ""}
-                        onChange={(e) =>
-                          setVariantField(i, "colorName", e.target.value)
-                        }
-                      />
-                      <input
-                        type="color"
-                        className="ms-2"
-                        value={v.colorHex || "#000000"}
-                        onChange={(e) =>
-                          setVariantField(i, "colorHex", e.target.value)
-                        }
-                      />
+                      <div>
+                        <label
+                          style={{
+                            fontSize: "12px",
+                            color: "#666",
+                            display: "block",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          اللون
+                        </label>
+                        <input
+                          type="color"
+                          className="form-control"
+                          value={v.colorHex || "#000000"}
+                          onChange={(e) =>
+                            setVariantField(i, "colorHex", e.target.value)
+                          }
+                          style={{
+                            height: "40px",
+                            cursor: "pointer",
+                            width: "80px",
+                          }}
+                        />
+                      </div>
                       <input
                         type="number"
                         className="input-form d-block px-3"

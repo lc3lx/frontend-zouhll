@@ -10,12 +10,10 @@ const AdminAddProducts = () => {
   const [
     onChangeDesName,
     onChangeQty,
-    onChangeColor,
     onChangePriceAfter,
     onChangePriceBefor,
     onChangeProdName,
     onChangeProductUrl,
-    showColor,
     category,
     brand,
     store,
@@ -25,13 +23,10 @@ const AdminAddProducts = () => {
     onSelect,
     onRemove,
     options,
-    handelChangeComplete,
-    removeColor,
     onSeletCategory,
     handelSubmit,
     onSeletBrand,
     onSeletStore,
-    colors,
     priceBefore,
     qty,
     prodDescription,
@@ -61,12 +56,7 @@ const AdminAddProducts = () => {
     onChangeCurrency,
     addSize,
     removeSize,
-    // Color management
-    newColorName,
-    newColorHex,
-    onChangeNewColorName,
-    onChangeNewColorHex,
-    addColor,
+    // Secondary categories
     secondaryCatID,
     onSelectSecondary,
     onRemoveSecondary,
@@ -361,71 +351,6 @@ const AdminAddProducts = () => {
                 })
               : null}
           </select>
-          <div className="text-form mt-3">الألوان المتاحة للمنتج</div>
-          <div className="mt-2">
-            <div className="d-flex gap-2 align-items-center flex-wrap mb-3">
-              <input
-                type="text"
-                className="input-form px-3"
-                placeholder="اسم اللون (مثل: أحمر)"
-                value={newColorName || ""}
-                onChange={onChangeNewColorName}
-                style={{ width: "150px" }}
-              />
-              <input
-                type="color"
-                value={newColorHex || "#000000"}
-                onChange={onChangeNewColorHex}
-                style={{
-                  width: "60px",
-                  height: "40px",
-                  cursor: "pointer",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px",
-                }}
-              />
-              <button
-                type="button"
-                onClick={addColor}
-                className="btn btn-sm btn-outline-success"
-              >
-                إضافة لون
-              </button>
-            </div>
-            {Array.isArray(colors) && colors.length > 0 && (
-              <div className="d-flex flex-wrap gap-2">
-                {colors.map((color, index) => (
-                  <div
-                    key={index}
-                    className="d-flex align-items-center gap-2 border rounded p-2"
-                    style={{ backgroundColor: "#f8f9fa" }}
-                  >
-                    <div
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        backgroundColor:
-                          typeof color === "object"
-                            ? color.hex || color
-                            : color,
-                        border: "1px solid #ddd",
-                        borderRadius: "4px",
-                      }}
-                    ></div>
-                    <span style={{ fontSize: "14px" }}>
-                      {typeof color === "object" ? color.name || "لون" : "لون"}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeColor(index)}
-                      className="btn-close"
-                      style={{ fontSize: "10px" }}
-                    ></button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Sizes without colors */}
           <div className="text-form mt-4">المقاسات (للمنتجات بدون ألوان)</div>
@@ -574,23 +499,9 @@ const AdminAddProducts = () => {
                     </div>
 
                     <div className="row g-2 mb-3">
-                      <div className="col-md-4">
+                      <div className="col-md-3">
                         <label style={{ fontSize: "12px", color: "#666" }}>
-                          اسم اللون
-                        </label>
-                        <input
-                          type="text"
-                          className="input-form d-block px-3"
-                          placeholder="مثل: أحمر"
-                          value={v.colorName || ""}
-                          onChange={(e) =>
-                            setVariantField(i, "colorName", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="col-md-2">
-                        <label style={{ fontSize: "12px", color: "#666" }}>
-                          كود اللون
+                          اللون
                         </label>
                         <input
                           type="color"

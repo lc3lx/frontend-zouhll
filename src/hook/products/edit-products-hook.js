@@ -72,7 +72,6 @@ const AdminEditProductsHook = (id) => {
     setVariants((prev) => [
       ...prev,
       {
-        colorName: "",
         colorHex: "#000000",
         price: "",
         sku: "",
@@ -186,8 +185,8 @@ const AdminEditProductsHook = (id) => {
       if (Array.isArray(item.data.variants)) {
         // initialize variants without pre-filling images (admin can re-upload per color)
         const init = item.data.variants.map((v) => ({
-          colorName: v?.color?.name || "",
-          colorHex: v?.color?.hex || "#000000",
+          colorHex:
+            typeof v?.color === "string" ? v.color : v?.color?.hex || "#000000",
           price: v?.price || "",
           sku: v?.sku || "",
           images: {},
@@ -457,7 +456,7 @@ const AdminEditProductsHook = (id) => {
             stock: Number(s.stock || 0),
           }));
           const payload = {
-            color: { name: v.colorName || "", hex: v.colorHex || "#000000" },
+            color: v.colorHex || "#000000",
             sizes: cleanSizes,
           };
           if (v.sku) payload.sku = v.sku;

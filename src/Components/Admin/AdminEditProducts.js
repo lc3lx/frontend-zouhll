@@ -354,31 +354,222 @@ const AdminEditProducts = ({ productId }) => {
               <div className="mt-3">
                 {variants.map((v, i) => (
                   <div key={i} className="border rounded p-3 my-3">
-                    <div className="d-flex flex-wrap gap-2 align-items-center">
+                    <div className="d-flex flex-column gap-2">
                       <div>
                         <label
                           style={{
                             fontSize: "12px",
                             color: "#666",
                             display: "block",
-                            marginBottom: "4px",
+                            marginBottom: "8px",
                           }}
                         >
                           اللون
                         </label>
-                        <input
-                          type="color"
-                          className="form-control"
-                          value={v.colorHex || "#000000"}
-                          onChange={(e) =>
-                            setVariantField(i, "colorHex", e.target.value)
-                          }
+
+                        {/* لوحة الألوان المحددة مسبقاً */}
+                        <div style={{ marginBottom: "12px" }}>
+                          <div
+                            style={{
+                              fontSize: "11px",
+                              color: "#999",
+                              marginBottom: "6px",
+                            }}
+                          >
+                            اختر من الألوان الشائعة:
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "8px",
+                              padding: "12px",
+                              border: "1px solid #ddd",
+                              borderRadius: "8px",
+                              backgroundColor: "#f8f9fa",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                              justifyContent: "flex-start",
+                            }}
+                          >
+                            {[
+                              // الألوان الأساسية
+                              "#000000",
+                              "#FFFFFF",
+                              "#FF0000",
+                              "#00FF00",
+                              "#0000FF",
+                              "#FFFF00",
+                              "#FF00FF",
+                              "#00FFFF",
+                              "#FFA500",
+                              "#800080",
+                              // ألوان إضافية
+                              "#FFC0CB",
+                              "#A52A2A",
+                              "#808080",
+                              "#008000",
+                              "#000080",
+                              "#FFD700",
+                              "#FF6347",
+                              "#40E0D0",
+                              "#EE82EE",
+                              "#90EE90",
+                              "#FF4500",
+                              "#FF1493",
+                              "#00CED1",
+                              "#FF69B4",
+                              "#32CD32",
+                              "#8B4513",
+                              "#FF8C00",
+                              "#2E8B57",
+                              "#4169E1",
+                              "#DC143C",
+                              // ألوان إضافية أكثر
+                              "#C0C0C0",
+                              "#FFD700",
+                              "#FF1493",
+                              "#00CED1",
+                              "#FF69B4",
+                              "#8A2BE2",
+                              "#A0522D",
+                              "#CD5C5C",
+                              "#4B0082",
+                              "#32CD32",
+                              "#FF7F50",
+                              "#6495ED",
+                              "#DC143C",
+                              "#00FA9A",
+                              "#FF00FF",
+                              "#B8860B",
+                              "#008B8B",
+                              "#556B2F",
+                              "#8B008B",
+                              "#9932CC",
+                            ].map((color) => (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() =>
+                                  setVariantField(i, "colorHex", color)
+                                }
+                                style={{
+                                  width: "36px",
+                                  height: "36px",
+                                  minWidth: "36px",
+                                  minHeight: "36px",
+                                  backgroundColor: color,
+                                  border:
+                                    v.colorHex === color
+                                      ? "3px solid #007bff"
+                                      : "2px solid #ddd",
+                                  borderRadius: "6px",
+                                  cursor: "pointer",
+                                  padding: 0,
+                                  boxShadow:
+                                    v.colorHex === color
+                                      ? "0 0 0 3px rgba(0,123,255,0.3)"
+                                      : "0 1px 3px rgba(0,0,0,0.1)",
+                                  transition: "all 0.2s",
+                                  flexShrink: 0,
+                                }}
+                                title={color}
+                                onMouseEnter={(e) => {
+                                  if (v.colorHex !== color) {
+                                    e.target.style.transform = "scale(1.1)";
+                                    e.target.style.boxShadow =
+                                      "0 2px 8px rgba(0,0,0,0.2)";
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (v.colorHex !== color) {
+                                    e.target.style.transform = "scale(1)";
+                                    e.target.style.boxShadow = "none";
+                                  }
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Color Picker + Preview */}
+                        <div
                           style={{
-                            height: "40px",
-                            cursor: "pointer",
-                            width: "80px",
+                            display: "flex",
+                            gap: "10px",
+                            alignItems: "center",
+                            flexWrap: "wrap",
                           }}
-                        />
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "8px",
+                              alignItems: "center",
+                            }}
+                          >
+                            <label
+                              style={{
+                                fontSize: "11px",
+                                color: "#666",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              أو اختر لون مخصص:
+                            </label>
+                            <input
+                              type="color"
+                              value={v.colorHex || "#000000"}
+                              onChange={(e) =>
+                                setVariantField(i, "colorHex", e.target.value)
+                              }
+                              style={{
+                                width: "50px",
+                                height: "40px",
+                                cursor: "pointer",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                padding: "2px",
+                              }}
+                            />
+                          </div>
+
+                          {/* عرض اللون المختار */}
+                          {v.colorHex && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "6px 12px",
+                                backgroundColor: "#f8f9fa",
+                                border: "1px solid #ddd",
+                                borderRadius: "6px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: "30px",
+                                  height: "30px",
+                                  backgroundColor: v.colorHex,
+                                  border: "2px solid #ddd",
+                                  borderRadius: "4px",
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  fontSize: "12px",
+                                  color: "#666",
+                                  fontFamily: "monospace",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {v.colorHex.toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <input
                         type="number"

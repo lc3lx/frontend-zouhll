@@ -281,6 +281,14 @@
   .product-features-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
+
+  /* Product Details Layout - Mobile */
+  .product-details-info {
+    border-left: none !important;
+    border-top: 1px solid #e7e7e7 !important;
+    margin-top: 20px !important;
+    padding-top: 20px !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -326,6 +334,12 @@
   .rating-distribution {
     min-width: 100% !important;
   }
+
+  /* Product Gallery - Mobile */
+  .product-gallery-main-image {
+    minheight: 250px !important;
+    maxheight: 400px !important;
+  }
 }
 
 @media (max-width: 576px) {
@@ -346,6 +360,17 @@
     padding: 6px 8px !important;
     font-size: 12px !important;
     min-height: 40px !important;
+  }
+
+  /* Product Gallery - Small Mobile */
+  .product-gallery-main-image {
+    minheight: 200px !important;
+    maxheight: 350px !important;
+  }
+
+  /* Product Card - Small Mobile */
+  .product-card-amazon {
+    minheight: 350px !important;
   }
 }
 

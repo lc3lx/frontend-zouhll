@@ -38,6 +38,7 @@ const HomePage = () => {
       >
         {/* 2. Categories Grid - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             marginBottom: "30px",
             background: "rgba(255, 255, 255, 0.95)",
@@ -57,6 +58,7 @@ const HomePage = () => {
 
         {/* 3. Featured Products - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             maxWidth: "1500px",
             margin: "30px auto",
@@ -90,6 +92,7 @@ const HomePage = () => {
 
         {/* 5. Best Sellers - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             maxWidth: "1500px",
             margin: "30px auto",
@@ -112,6 +115,7 @@ const HomePage = () => {
 
         {/* 5. Brands - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             background: "rgba(255, 255, 255, 0.95)",
             borderRadius: "20px",
@@ -130,6 +134,7 @@ const HomePage = () => {
 
         {/* 6. New Arrivals - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             maxWidth: "1500px",
             margin: "30px auto",
@@ -152,6 +157,7 @@ const HomePage = () => {
 
         {/* 7. Recommended Products - كارد عائم */}
         <div
+          className="homepage-section responsive-section"
           style={{
             maxWidth: "1500px",
             margin: "30px auto",
@@ -174,7 +180,7 @@ const HomePage = () => {
 
         {/* Special Offers Banner - كارد عائم */}
         <div
-          className="theme-bg-light theme-border-medium py-5 text-center"
+          className="theme-bg-light theme-border-medium py-5 text-center homepage-section responsive-section"
           style={{
             background:
               "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 25%, #ff9ff3 50%, #54a0ff 75%, #5f27cd 100%)",
@@ -191,7 +197,7 @@ const HomePage = () => {
         >
           <div className="container">
             <h2
-              className="theme-text-primary mb-3"
+              className="theme-text-primary mb-3 responsive-title"
               style={{
                 fontSize: "2.2rem",
                 fontWeight: "800",
@@ -202,7 +208,7 @@ const HomePage = () => {
               🔥 عروض حصرية لفترة محدودة
             </h2>
             <p
-              className="theme-text-secondary mb-4"
+              className="theme-text-secondary mb-4 responsive-text"
               style={{
                 fontSize: "1.2rem",
                 color: "#f8f9fa",
@@ -214,7 +220,7 @@ const HomePage = () => {
             </p>
             <Link
               to="/products"
-              className="theme-btn theme-btn-amazon"
+              className="theme-btn theme-btn-amazon responsive-btn"
               style={{
                 background: "linear-gradient(135deg, #ff9f43 0%, #ff6348 100%)",
                 border: "none",

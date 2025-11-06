@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Nav, Tab, Badge, Card } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
@@ -12,6 +12,22 @@ const ProductDetalis = () => {
   const [item, images, cat, brand, store] = ViewProductsDetalisHook(id);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+
+  // Set default variant (first color) when product loads
+  useEffect(() => {
+    if (item && item._id) {
+      const variants = Array.isArray(item?.variants) ? item.variants : [];
+      // Always set first variant as default if variants exist and nothing is selected
+      if (
+        variants.length > 0 &&
+        (selectedVariantIndex === null || selectedVariantIndex === undefined)
+      ) {
+        // Set first variant (default color) automatically
+        setSelectedVariantIndex(0);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?._id, item?.variants?.length]);
 
   // Check if product is loading
   const isLoading = !item || !item._id || Object.keys(item).length === 0;
@@ -49,14 +65,20 @@ const ProductDetalis = () => {
 
       {/* Main Product Section */}
       <Row className="g-0">
-        <Col lg="5" xl="5">
-          <div style={{ padding: "20px" }}>
+        <Col xs="12" sm="12" md="12" lg="5" xl="5">
+          <div style={{ padding: "10px", paddingTop: "20px" }}>
             <ProductGallery selectedVariantIndex={selectedVariantIndex} />
           </div>
         </Col>
 
-        <Col lg="7" xl="7">
-          <div style={{ padding: "20px", borderLeft: "1px solid #e7e7e7" }}>
+        <Col xs="12" sm="12" md="12" lg="7" xl="7">
+          <div
+            className="product-details-info"
+            style={{
+              padding: "10px",
+              paddingTop: "20px",
+            }}
+          >
             <ProductText
               selectedVariantIndex={selectedVariantIndex}
               setSelectedVariantIndex={setSelectedVariantIndex}
@@ -298,33 +320,35 @@ const ProductDetalis = () => {
                   </div>
                 </div>
 
-                {/* Product Description */}
-                <div style={{ marginBottom: "24px" }}>
-                  <h6
-                    style={{
-                      color: "#0f1111",
-                      fontWeight: "600",
-                      fontSize: "18px",
-                      marginBottom: "16px",
-                      paddingBottom: "12px",
-                      borderBottom: "2px solid #e7e7e7",
-                    }}
-                  >
-                    حول هذا المنتج
-                  </h6>
-                  <div
-                    style={{
-                      lineHeight: "1.8",
-                      color: "#0f1111",
-                      fontSize: "15px",
-                      marginBottom: "20px",
-                      whiteSpace: "pre-wrap",
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    {item?.description || "لا يوجد وصف متاح للمنتج حالياً."}
+                {/* Product Description - Only show if description exists */}
+                {item?.description && (
+                  <div style={{ marginBottom: "24px" }}>
+                    <h6
+                      style={{
+                        color: "#0f1111",
+                        fontWeight: "600",
+                        fontSize: "18px",
+                        marginBottom: "16px",
+                        paddingBottom: "12px",
+                        borderBottom: "2px solid #e7e7e7",
+                      }}
+                    >
+                      حول هذا المنتج
+                    </h6>
+                    <div
+                      style={{
+                        lineHeight: "1.8",
+                        color: "#0f1111",
+                        fontSize: "15px",
+                        marginBottom: "20px",
+                        whiteSpace: "pre-wrap",
+                        wordWrap: "break-word",
+                      }}
+                    >
+                      {item.description}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Detailed Features */}
                 <div
@@ -483,104 +507,226 @@ const ProductDetalis = () => {
                   }}
                 >
                   <tbody>
-                    <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          fontWeight: "600",
-                          color: "#0f1111",
-                          width: "30%",
-                        }}
-                      >
-                        الماركة
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          color: "#565959",
-                        }}
-                      >
-                        {brand?.name || "غير محدد"}
-                      </td>
-                    </tr>
-                    <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          fontWeight: "600",
-                          color: "#0f1111",
-                        }}
-                      >
-                        التصنيف
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          color: "#565959",
-                        }}
-                      >
-                        {cat?.name || "غير محدد"}
-                      </td>
-                    </tr>
-                    <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          fontWeight: "600",
-                          color: "#0f1111",
-                        }}
-                      >
-                        الكمية المتاحة
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          color: "#007600",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {item?.quantity || 0} قطعة متوفرة
-                      </td>
-                    </tr>
-                    <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          fontWeight: "600",
-                          color: "#0f1111",
-                        }}
-                      >
-                        التقييم
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          color: "#565959",
-                        }}
-                      >
-                        {item?.ratingsAverage || 0} من 5 (
-                        {item?.ratingsQuantity || 0} تقييم)
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          fontWeight: "600",
-                          color: "#0f1111",
-                        }}
-                      >
-                        المبيعات
-                      </td>
-                      <td
-                        style={{
-                          padding: "12px 0",
-                          color: "#565959",
-                        }}
-                      >
-                        {item?.sold || 0} قطعة مباعة
-                      </td>
-                    </tr>
+                    {brand?.name && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                            width: "30%",
+                          }}
+                        >
+                          الماركة
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {brand.name}
+                        </td>
+                      </tr>
+                    )}
+                    {cat?.name && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          التصنيف
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {cat.name}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.quantity !== undefined &&
+                      item?.quantity !== null && (
+                        <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                          <td
+                            style={{
+                              padding: "12px 0",
+                              fontWeight: "600",
+                              color: "#0f1111",
+                            }}
+                          >
+                            الكمية المتاحة
+                          </td>
+                          <td
+                            style={{
+                              padding: "12px 0",
+                              color: "#007600",
+                              fontWeight: "500",
+                            }}
+                          >
+                            {item.quantity} قطعة متوفرة
+                          </td>
+                        </tr>
+                      )}
+                    {(item?.ratingsAverage || item?.ratingsQuantity) && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          التقييم
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.ratingsAverage || 0} من 5
+                          {item.ratingsQuantity > 0 && (
+                            <> ({item.ratingsQuantity} تقييم)</>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.sold !== undefined && item?.sold !== null && (
+                      <tr>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          المبيعات
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.sold} قطعة مباعة
+                        </td>
+                      </tr>
+                    )}
+                    {item?.season && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          الفصل
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.season === "summer" && "صيف"}
+                          {item.season === "autumn" && "خريف"}
+                          {item.season === "spring" && "ربيع"}
+                          {item.season === "winter" && "شتاء"}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.fabricType && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          نوع القماش
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.fabricType}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.currency && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          العملة
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.currency === "USD" && "دولار أمريكي (USD)"}
+                          {item.currency === "SYP" && "ليرة سورية (SYP)"}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.deliveryTime && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          مدة التوصيل
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.deliveryTime}
+                        </td>
+                      </tr>
+                    )}
+                    {item?.deliveryDays && (
+                      <tr style={{ borderBottom: "1px solid #e7e7e7" }}>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            fontWeight: "600",
+                            color: "#0f1111",
+                          }}
+                        >
+                          عدد أيام التوصيل
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 0",
+                            color: "#565959",
+                          }}
+                        >
+                          {item.deliveryDays} يوم
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

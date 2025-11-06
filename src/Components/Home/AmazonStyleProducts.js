@@ -125,7 +125,7 @@ const AmazonStyleProducts = ({
 
         <Row className="g-3">
           {displayProducts.slice(0, 8).map((product) => (
-            <Col key={product._id} xl={3} lg={4} md={6} sm={6} xs={12}>
+            <Col key={product._id} xl={3} lg={4} md={6} sm={6} xs={6}>
               <Card
                 className="h-100 amazon-product-card"
                 style={{

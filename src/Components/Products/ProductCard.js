@@ -17,14 +17,15 @@ const ProductCard = ({ item, favProd }) => {
   const productImage = getProductImage(item);
 
   return (
-    <Col xs="6" sm="6" md="4" lg="3" className="d-flex fade-in">
+    <Col xs="6" sm="6" md="4" lg="3" xl="3" className="d-flex fade-in">
       <Card
         className="product-card-amazon my-2"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{
           width: "100%",
-          height: "400px",
+          height: "auto",
+          minHeight: "380px",
           borderRadius: "8px",
           border: "1px solid #ddd",
           backgroundColor: "#fff",
@@ -36,6 +37,8 @@ const ProductCard = ({ item, favProd }) => {
           position: "relative",
           overflow: "hidden",
           cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Link to={`/products/${item._id}`} style={{ textDecoration: "none" }}>
@@ -48,12 +51,15 @@ const ProductCard = ({ item, favProd }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "200px",
+              height: "180px",
+              minHeight: "150px",
+              width: "100%",
             }}
           >
             <Card.Img
               style={{
-                height: "180px",
+                height: "auto",
+                maxHeight: "180px",
                 width: "auto",
                 maxWidth: "100%",
                 objectFit: "contain",
@@ -152,7 +158,14 @@ const ProductCard = ({ item, favProd }) => {
           </div>
         </Link>
 
-        <Card.Body style={{ padding: "12px" }}>
+        <Card.Body
+          style={{
+            padding: "12px",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           {/* Product Title */}
           <div
             style={{

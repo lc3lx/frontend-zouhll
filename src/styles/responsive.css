@@ -1,0 +1,915 @@
+/* ============================================
+   Responsive Styles for Mobile Devices
+   ============================================ */
+
+/* Global Mobile Styles */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+/* Homepage Sections Responsive */
+.responsive-section {
+  transition: all 0.3s ease;
+}
+
+.responsive-title {
+  transition: all 0.3s ease;
+}
+
+.responsive-text {
+  transition: all 0.3s ease;
+}
+
+.responsive-btn {
+  transition: all 0.3s ease;
+}
+
+/* Tablet and Below (992px) */
+@media (max-width: 992px) {
+  /* Navbar Responsive */
+  .navbar-brand {
+    font-size: 1.5rem !important;
+    margin-left: 10px !important;
+  }
+
+  .navbar .flex-grow-1 {
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+  }
+
+  .navbar .d-flex.align-items-center {
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+
+  /* HomePage Responsive */
+  .amazon-homepage > div > div {
+    padding: 20px !important;
+    margin: 15px auto !important;
+    border-radius: 15px !important;
+  }
+
+  /* Footer Responsive */
+  .modern-footer .row {
+    text-align: center;
+  }
+
+  .modern-footer .col-lg-4,
+  .modern-footer .col-lg-3,
+  .modern-footer .col-lg-2 {
+    margin-bottom: 30px;
+  }
+}
+
+/* Mobile (768px) */
+@media (max-width: 768px) {
+  /* Navbar Mobile */
+  .responsive-navbar {
+    padding: 8px 0 !important;
+  }
+
+  .navbar-brand-responsive {
+    font-size: 1.3rem !important;
+    margin-left: 5px !important;
+  }
+
+  .search-bar-responsive {
+    order: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+  }
+
+  .navbar-icons-responsive {
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .navbar-icons-responsive > * {
+    font-size: 0.8rem !important;
+    padding: 5px !important;
+  }
+
+  /* Search Bar Mobile */
+  .navbar .input-group {
+    width: 100% !important;
+  }
+
+  .search-input-responsive {
+    font-size: 0.9rem !important;
+    padding: 8px !important;
+  }
+
+  .search-button-responsive {
+    padding: 8px 10px !important;
+  }
+
+  /* HomePage Mobile */
+  .homepage-section {
+    padding: 15px !important;
+    margin: 10px auto !important;
+    border-radius: 12px !important;
+  }
+
+  .responsive-title {
+    font-size: 1.5rem !important;
+  }
+
+  .responsive-text {
+    font-size: 1rem !important;
+  }
+
+  .responsive-btn {
+    padding: 12px 30px !important;
+    font-size: 1rem !important;
+  }
+
+  /* Footer Mobile */
+  .responsive-footer {
+    padding: 20px 0 !important;
+  }
+
+  .responsive-footer .py-5 {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .responsive-footer h5,
+  .responsive-footer h6 {
+    font-size: 18px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .responsive-footer .col-lg-4,
+  .responsive-footer .col-lg-3,
+  .responsive-footer .col-lg-2,
+  .responsive-footer .col-md-6 {
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  .responsive-footer .social-icon {
+    padding: 10px !important;
+  }
+
+  .responsive-footer .d-flex.gap-2 {
+    justify-content: center;
+  }
+
+  /* Product Cards Mobile */
+  .product-card-amazon {
+    min-height: 350px !important;
+    margin-bottom: 15px;
+  }
+
+  /* Homepage Grid Mobile */
+  .amazon-product-card,
+  .amazon-category-card,
+  .amazon-brand-card {
+    height: 100% !important;
+    min-height: 280px !important;
+  }
+
+  .amazon-product-card .card-img,
+  .amazon-category-card .card-img {
+    height: 150px !important;
+    object-fit: cover !important;
+  }
+
+  .amazon-brand-card .card-body {
+    padding: 15px !important;
+  }
+
+  .amazon-brand-card img {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  /* Product Details Mobile */
+  .product-details-container {
+    padding: 10px !important;
+  }
+
+  .product-title {
+    font-size: 20px !important;
+  }
+
+  .product-price {
+    font-size: 24px !important;
+  }
+
+  /* Buttons Mobile */
+  .btn {
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+  }
+
+  /* Tables Mobile */
+  table {
+    font-size: 12px !important;
+  }
+
+  table td,
+  table th {
+    padding: 8px 4px !important;
+  }
+}
+
+/* Small Mobile (576px) */
+@media (max-width: 576px) {
+  /* Navbar Small Mobile */
+  .responsive-navbar {
+    padding: 5px 0 !important;
+  }
+
+  .navbar-brand-responsive {
+    font-size: 1.1rem !important;
+    margin-left: 0 !important;
+  }
+
+  .navbar-icons-responsive {
+    flex-direction: column;
+    gap: 5px !important;
+  }
+
+  .navbar-icons-responsive > * {
+    font-size: 0.75rem !important;
+    padding: 3px !important;
+    text-align: center;
+  }
+
+  /* Search Bar Small Mobile */
+  .search-input-responsive {
+    font-size: 0.85rem !important;
+    padding: 6px !important;
+  }
+
+  .search-button-responsive {
+    padding: 6px 8px !important;
+  }
+
+  /* HomePage Small Mobile */
+  .homepage-section {
+    padding: 10px !important;
+    margin: 8px auto !important;
+    border-radius: 10px !important;
+  }
+
+  .responsive-title {
+    font-size: 1.3rem !important;
+  }
+
+  .responsive-text {
+    font-size: 0.9rem !important;
+  }
+
+  .responsive-btn {
+    padding: 10px 25px !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Footer Small Mobile */
+  .responsive-footer {
+    padding: 15px 0 !important;
+  }
+
+  .responsive-footer h5,
+  .responsive-footer h6 {
+    font-size: 16px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .responsive-footer p,
+  .responsive-footer a,
+  .responsive-footer span {
+    font-size: 12px !important;
+  }
+
+  .responsive-footer .social-icon {
+    padding: 8px !important;
+  }
+
+  .responsive-footer .social-icon img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /* Product Cards Small Mobile */
+  .product-card-amazon {
+    min-height: 320px !important;
+  }
+
+  /* Homepage Grid Small Mobile */
+  .amazon-product-card,
+  .amazon-category-card,
+  .amazon-brand-card {
+    min-height: 260px !important;
+  }
+
+  .amazon-product-card .card-img,
+  .amazon-category-card .card-img {
+    height: 120px !important;
+  }
+
+  .amazon-product-card .card-body,
+  .amazon-category-card .card-body {
+    padding: 10px !important;
+  }
+
+  .amazon-product-card .card-title,
+  .amazon-category-card .card-title {
+    font-size: 0.9rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .amazon-brand-card .card-body {
+    padding: 12px !important;
+  }
+
+  .amazon-brand-card img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .amazon-brand-card .card-title {
+    font-size: 1rem !important;
+  }
+
+  /* Product Details Small Mobile */
+  .product-title {
+    font-size: 18px !important;
+  }
+
+  .product-price {
+    font-size: 22px !important;
+  }
+
+  /* Buttons Small Mobile */
+  .btn {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+  }
+
+  /* Tables Small Mobile */
+  table {
+    font-size: 11px !important;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  table td,
+  table th {
+    padding: 6px 3px !important;
+  }
+
+  /* Cards Small Mobile */
+  .card {
+    margin-bottom: 10px;
+  }
+
+  .card-body {
+    padding: 10px !important;
+  }
+}
+
+/* Extra Small Mobile (480px) */
+@media (max-width: 480px) {
+  /* Navbar Extra Small */
+  .navbar-brand {
+    font-size: 1rem !important;
+  }
+
+  .navbar .d-flex.align-items-center > * {
+    font-size: 0.7rem !important;
+  }
+
+  /* HomePage Extra Small */
+  .amazon-homepage h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .amazon-homepage p {
+    font-size: 0.85rem !important;
+  }
+
+  /* Product Cards Extra Small */
+  .product-card-amazon {
+    min-height: 300px !important;
+  }
+
+  /* Product Details Extra Small */
+  .product-title {
+    font-size: 16px !important;
+  }
+
+  .product-price {
+    font-size: 20px !important;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .navbar {
+    padding: 5px 0 !important;
+  }
+
+  .amazon-homepage > div > div {
+    padding: 12px !important;
+  }
+}
+
+/* ============================================
+   Admin Panel Responsive Styles
+   ============================================ */
+
+/* Admin Sidebar Toggle Button */
+.admin-sidebar-toggle-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar-toggle-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.admin-sidebar-toggle-btn i {
+  font-size: 16px;
+}
+
+/* Admin Sidebar Responsive */
+@media (max-width: 992px) {
+  .admin-sidebar-col {
+    margin-bottom: 20px;
+    order: 1 !important; /* Sidebar appears first on mobile */
+  }
+
+  .admin-content-col {
+    order: 2 !important; /* Content appears after sidebar on mobile */
+    width: 100% !important;
+  }
+
+  .admin-sidebar-wrapper {
+    position: relative !important;
+    top: 0 !important;
+  }
+
+  .admin-sidebar-responsive {
+    height: auto !important;
+  }
+
+  .admin-sidebar-content {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  .admin-sidebar-content.sidebar-open {
+    max-height: 1000px;
+    padding: 10px 0;
+  }
+
+  .admin-sidebar-content.sidebar-closed {
+    max-height: 0;
+    padding: 0;
+  }
+
+  .admin-side-text {
+    font-size: 12px !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    white-space: nowrap;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+  }
+
+  .admin-side-text:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Admin Sidebar Mobile */
+  .admin-sidebar-col {
+    margin-bottom: 15px;
+    order: 1 !important; /* Sidebar appears first on mobile */
+  }
+
+  .admin-content-col {
+    order: 2 !important; /* Content appears after sidebar on mobile */
+  }
+
+  .admin-sidebar-wrapper {
+    padding: 12px !important;
+  }
+
+  .admin-sidebar-responsive {
+    height: auto !important;
+  }
+
+  .admin-sidebar-content {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .admin-side-text {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+    background: #f8f9fa !important;
+  }
+
+  .admin-sidebar-toggle-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  /* Admin Content Mobile */
+  .admin-content-col {
+    padding: 0 !important;
+  }
+
+  /* Admin Products Card Mobile */
+  .admin-all-products-card {
+    margin-bottom: 15px !important;
+  }
+
+  .admin-all-products-card > div {
+    height: auto !important;
+    min-height: 300px !important;
+  }
+
+  .admin-all-products-card img {
+    height: 150px !important;
+  }
+
+  .admin-all-products-card > div > div:last-child {
+    padding: 10px !important;
+  }
+
+  /* Admin Tables Mobile */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    font-size: 12px !important;
+    min-width: 600px;
+  }
+
+  table th,
+  table td {
+    padding: 8px 4px !important;
+    white-space: nowrap;
+  }
+
+  /* Admin Forms Mobile */
+  .admin-form-container {
+    padding: 15px !important;
+  }
+
+  .admin-form-group {
+    margin-bottom: 15px !important;
+  }
+
+  .admin-form-label {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .admin-form-input {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+
+  .admin-form-textarea {
+    font-size: 14px !important;
+    padding: 10px !important;
+    min-height: 100px !important;
+  }
+
+  /* Admin Buttons Mobile */
+  .admin-btn {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+
+  .admin-btn-group {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .admin-btn-group .btn {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Admin Tabs Mobile */
+  .nav-tabs {
+    flex-wrap: wrap !important;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Admin Search Bar Mobile */
+  .admin-search-container {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .admin-search-input {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .admin-search-input-wrapper {
+    min-width: auto !important;
+    width: 100% !important;
+  }
+
+  .admin-add-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Admin Sidebar Small Mobile */
+  .admin-sidebar-col {
+    order: 1 !important; /* Sidebar appears first on mobile */
+    margin-bottom: 12px !important;
+  }
+
+  .admin-content-col {
+    order: 2 !important; /* Content appears after sidebar on mobile */
+  }
+
+  .admin-sidebar-wrapper {
+    padding: 10px !important;
+  }
+
+  .admin-sidebar-content {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .admin-side-text {
+    font-size: 10px !important;
+    padding: 8px 6px !important;
+  }
+
+  .admin-sidebar-toggle-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .admin-sidebar-toggle-btn span {
+    font-size: 11px;
+  }
+
+  /* Admin Content Small Mobile */
+  .admin-content-col {
+    padding: 0 !important;
+  }
+
+  /* Admin Products Card Small Mobile */
+  .admin-all-products-card {
+    margin-bottom: 12px !important;
+  }
+
+  /* Admin Tables Small Mobile */
+  table {
+    font-size: 11px !important;
+    min-width: 500px;
+  }
+
+  table th,
+  table td {
+    padding: 6px 3px !important;
+  }
+
+  /* Admin Forms Small Mobile */
+  .admin-form-container {
+    padding: 12px !important;
+  }
+
+  .admin-form-group {
+    margin-bottom: 12px !important;
+  }
+
+  .admin-form-label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .admin-form-input {
+    font-size: 13px !important;
+    padding: 8px !important;
+  }
+
+  .admin-form-textarea {
+    font-size: 13px !important;
+    padding: 8px !important;
+    min-height: 80px !important;
+  }
+
+  /* Admin Buttons Small Mobile */
+  .admin-btn {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+
+  /* Admin Tabs Small Mobile */
+  .nav-tabs .nav-link {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Admin Search Bar Small Mobile */
+  .admin-search-container {
+    gap: 8px !important;
+  }
+
+  .admin-search-input {
+    font-size: 13px !important;
+    padding: 10px 14px 10px 35px !important;
+  }
+
+  .admin-add-btn {
+    font-size: 13px !important;
+    padding: 10px 16px !important;
+  }
+
+  /* Admin Page Title Small Mobile */
+  .amazon-page-title h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .amazon-page-title p {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Admin Add/Edit Products Responsive */
+@media (max-width: 768px) {
+  .admin-add-products-container,
+  .admin-edit-products-container {
+    padding: 15px !important;
+  }
+
+  .admin-page-title-responsive {
+    font-size: 18px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .admin-variant-section {
+    padding: 12px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .admin-variant-header {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .admin-image-upload {
+    margin-bottom: 15px !important;
+  }
+
+  .admin-form-row {
+    flex-direction: column !important;
+  }
+
+  .admin-form-col {
+    width: 100% !important;
+    margin-bottom: 15px !important;
+  }
+
+  .input-form,
+  .input-form-area,
+  .select {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+
+  .text-form {
+    font-size: 14px !important;
+  }
+
+  .admin-content-text {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-add-products-container,
+  .admin-edit-products-container {
+    padding: 12px !important;
+  }
+
+  .admin-page-title-responsive {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .admin-variant-section {
+    padding: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .admin-variant-header {
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .admin-image-upload {
+    margin-bottom: 12px !important;
+  }
+
+  .input-form,
+  .input-form-area,
+  .select {
+    font-size: 13px !important;
+    padding: 8px !important;
+  }
+
+  .text-form {
+    font-size: 13px !important;
+  }
+
+  .admin-content-text {
+    font-size: 16px !important;
+  }
+
+  .btn-save,
+  .btn-a {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .navbar,
+  .modern-footer,
+  .btn,
+  .social-icon,
+  .admin-sidebar-col {
+    display: none !important;
+  }
+
+  .amazon-homepage > div > div {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .admin-content-col {
+    width: 100% !important;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .product-card-amazon img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}

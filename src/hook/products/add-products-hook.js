@@ -300,7 +300,6 @@ const AdminAddProductsHook = () => {
   //to save data
   const handelSubmit = async (e) => {
     e.preventDefault();
-    const imgList = Object.values(images || {});
 
     // Validation with specific error messages
     if (!CatID || CatID === "0") {
@@ -315,55 +314,50 @@ const AdminAddProductsHook = () => {
       notify("من فضلك أدخل وصف المنتج", "warn");
       return;
     }
-    if (imgList.length <= 0) {
-      notify("من فضلك أضف صورة واحدة على الأقل للمنتج", "warn");
-      return;
-    }
     if (!priceBefore || priceBefore <= 0 || priceBefore === "السعر قبل الخصم") {
       notify("من فضلك أدخل السعر قبل الخصم", "warn");
       return;
     }
 
-    // Check images limit (10 images max total, first one is cover)
-    // MultiImageInput already enforces max={10}, but we double-check here
-    if (imgList.length > 10) {
-      notify(
-        "يمكنك إضافة حتى 10 صور للمنتج الرئيسي (الصورة الأولى هي صورة الغلاف)",
-        "warn"
-      );
+    // Validate variants - must have at least one variant with images
+    if (!Array.isArray(variants) || variants.length === 0) {
+      notify("يجب إضافة لون واحد على الأقل مع صوره", "warn");
       return;
     }
 
-    // Validate variants if any
-    if (Array.isArray(variants) && variants.length > 0) {
-      for (let i = 0; i < variants.length; i++) {
-        const v = variants[i];
-        const variantImages = Object.values(v.images || {});
-        if (variantImages.length === 0) {
-          notify(
-            `المتغير ${i + 1}: يجب إضافة صورة واحدة على الأقل لهذا المتغير`,
-            "warn"
-          );
-          return;
-        }
-        if (variantImages.length > 10) {
-          notify(`المتغير ${i + 1}: يمكنك إضافة حتى 10 صور لكل متغير`, "warn");
-          return;
-        }
-        // Color is optional, but if variant exists, it should have at least images
+    // Validate each variant has images
+    for (let i = 0; i < variants.length; i++) {
+      const v = variants[i];
+      const variantImages = Object.values(v.images || {});
+      if (variantImages.length === 0) {
+        notify(
+          `اللون ${i + 1} (${
+            i === 0 ? "الافتراضي" : ""
+          }): يجب إضافة صورة واحدة على الأقل لهذا اللون`,
+          "warn"
+        );
+        return;
+      }
+      if (variantImages.length > 10) {
+        notify(`اللون ${i + 1}: يمكنك إضافة حتى 10 صور لكل لون`, "warn");
+        return;
       }
     }
 
-    //convert base 64 image to file
-    // First image is the cover, rest are additional images
-    const imgCover = dataURLtoFile(imgList[0], Math.random() + ".png");
-    //convert remaining images (skip first image as cover)
-    const itemImages =
-      imgList.length > 1
-        ? imgList
-            .slice(1)
-            .map((src) => dataURLtoFile(src, Math.random() + ".png"))
-        : [];
+    // Use first image from first variant (default color) as cover
+    // استخدام أول صورة من أول لون (الافتراضي) كصورة الغلاف
+    const firstVariant = variants[0];
+    const firstVariantImages = Object.values(firstVariant.images || {});
+    if (firstVariantImages.length === 0) {
+      notify("يجب إضافة صورة واحدة على الأقل للون الافتراضي", "warn");
+      return;
+    }
+    const imgCover = dataURLtoFile(
+      firstVariantImages[0],
+      Math.random() + ".png"
+    );
+
+    // No general images - all images are in variants
 
     const formData = new FormData();
     formData.append("title", prodName);
@@ -412,9 +406,9 @@ const AdminAddProductsHook = () => {
       formData.append("sizes", JSON.stringify(sizes));
     }
 
-    // append images synchronously
+    // append cover image (from first variant)
     formData.append("imageCover", imgCover);
-    itemImages.forEach((item) => formData.append("images", item));
+    // No general images - all images are in variants
 
     // Colors - only extract from variants, not from separate colors array
     // Colors are now only in variants, each variant has its own color

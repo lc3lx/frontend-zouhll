@@ -78,12 +78,27 @@ function useFetch(key, fetcher, options = {}) {
   // Execute fetch with retry logic
   const executeFetch = useCallback(
     async (isRetry = false) => {
-      if (!enabled || !key || !fetcher) return;
+      console.log("=== executeFetch ===");
+      console.log("enabled:", enabled);
+      console.log("key:", key);
+      console.log("fetcher:", fetcher);
+      console.log("isRetry:", isRetry);
+
+      if (!enabled || !key || !fetcher) {
+        console.log("=== executeFetch: Early return ===");
+        console.log("!enabled:", !enabled);
+        console.log("!key:", !key);
+        console.log("!fetcher:", !fetcher);
+        return;
+      }
 
       // Check cache first (skip cache on retry)
       if (!isRetry) {
         const cachedData = getCache(key);
+        console.log("=== Cache Check ===");
+        console.log("cachedData:", cachedData);
         if (cachedData) {
+          console.log("=== Using Cached Data ===");
           setData(cachedData);
           setLoading(false);
           setError(null);
@@ -91,6 +106,8 @@ function useFetch(key, fetcher, options = {}) {
           return;
         }
       }
+
+      console.log("=== Making API Request ===");
 
       // Cleanup previous request
       cleanup();
@@ -103,7 +120,10 @@ function useFetch(key, fetcher, options = {}) {
       setError(null);
 
       try {
+        console.log("=== Calling Fetcher ===");
         const result = await fetcher(signal);
+        console.log("=== Fetcher Result ===");
+        console.log("result:", result);
 
         // Check if request was aborted
         if (signal.aborted) return;
@@ -164,6 +184,13 @@ function useFetch(key, fetcher, options = {}) {
 
   // Effect to trigger fetch when dependencies change
   useEffect(() => {
+    console.log("=== useFetch useEffect ===");
+    console.log("executeFetch:", executeFetch);
+    console.log("deps:", deps);
+    console.log("enabled:", enabled);
+    console.log("key:", key);
+    console.log("fetcher:", fetcher);
+
     executeFetch();
 
     // Cleanup on unmount or dependency change

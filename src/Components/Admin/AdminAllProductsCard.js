@@ -18,7 +18,7 @@ const AdminAllProductsCard = ({ item, onEditClick }) => {
   };
 
   return (
-    <Col xs="12" sm="6" md="6" lg="4" className="mb-3">
+    <Col xs="12" sm="6" md="6" lg="4" className="mb-3 admin-all-products-card">
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title>

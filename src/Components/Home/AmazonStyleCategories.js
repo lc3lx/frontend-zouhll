@@ -59,7 +59,7 @@ const AmazonStyleCategories = () => {
           <Row className="g-3">
             {/* Loading skeleton */}
             {Array.from({ length: 8 }).map((_, index) => (
-              <Col key={index} lg={3} md={4} sm={6} xs={12}>
+              <Col key={index} lg={3} md={4} sm={6} xs={6}>
                 <Card
                   style={{
                     border: "1px solid #ddd",
@@ -191,7 +191,7 @@ const AmazonStyleCategories = () => {
         <Row className="g-3">
           {categories.length > 0 ? (
             categories.slice(0, 8).map((cat, index) => (
-              <Col key={cat._id} lg={3} md={4} sm={6} xs={12}>
+              <Col key={cat._id} lg={3} md={4} sm={6} xs={6}>
                 <Card
                   className="h-100 amazon-category-card"
                   style={{

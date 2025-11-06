@@ -48,6 +48,7 @@ const AdminAllProducts = ({ products }) => {
         <Tab eventKey="list" title="قائمة المنتجات">
           {/* Search and Add Product Bar */}
           <div
+            className="admin-search-container"
             style={{
               background: "#fff",
               border: "1px solid #ddd",
@@ -57,6 +58,7 @@ const AdminAllProducts = ({ products }) => {
             }}
           >
             <div
+              className="admin-search-bar-wrapper"
               style={{
                 display: "flex",
                 gap: "12px",
@@ -66,6 +68,7 @@ const AdminAllProducts = ({ products }) => {
             >
               {/* Search */}
               <div
+                className="admin-search-input-wrapper"
                 style={{ position: "relative", flex: "1", minWidth: "250px" }}
               >
                 <FiSearch
@@ -83,7 +86,7 @@ const AdminAllProducts = ({ products }) => {
                   placeholder="البحث في المنتجات (الاسم، التصنيف، الماركة)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="amazon-sort-select"
+                  className="amazon-sort-select admin-search-input"
                   style={{
                     width: "100%",
                     padding: "12px 16px 12px 40px",
@@ -95,6 +98,7 @@ const AdminAllProducts = ({ products }) => {
               {/* Add Product Button */}
               <button
                 onClick={handleAddNew}
+                className="admin-add-btn"
                 style={{
                   background: "#ff9900",
                   border: "1px solid #e47911",

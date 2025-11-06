@@ -53,6 +53,14 @@ async function apiRequest(method, path, options = {}) {
   const url = buildUrl(`${BASE_URL}${path}`, params);
   const headers = { ...getAuthHeaders(), ...customHeaders };
 
+  console.log("=== apiRequest ===");
+  console.log("method:", method);
+  console.log("path:", path);
+  console.log("BASE_URL:", BASE_URL);
+  console.log("url:", url);
+  console.log("params:", params);
+  console.log("signal:", signal);
+
   const config = {
     method,
     headers,
@@ -71,7 +79,14 @@ async function apiRequest(method, path, options = {}) {
   }
 
   try {
+    console.log("=== Fetching URL ===");
+    console.log("url:", url);
+    console.log("config:", config);
     const response = await fetch(url, config);
+    console.log("=== Response ===");
+    console.log("response.ok:", response.ok);
+    console.log("response.status:", response.status);
+    console.log("response.statusText:", response.statusText);
 
     if (!response.ok) {
       const errorData = await handleApiError(null, response);
@@ -81,8 +96,15 @@ async function apiRequest(method, path, options = {}) {
       throw error;
     }
 
-    return await response.json();
+    const jsonData = await response.json();
+    console.log("=== Response JSON ===");
+    console.log("jsonData:", jsonData);
+    return jsonData;
   } catch (error) {
+    console.log("=== API Request Error ===");
+    console.log("error:", error);
+    console.log("error.name:", error.name);
+    console.log("error.message:", error.message);
     if (error.name === "AbortError") {
       throw new Error("Request was cancelled");
     }

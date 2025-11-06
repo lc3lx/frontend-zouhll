@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import "./styles/theme.css";
 import "./styles/navigation.css";
+import "./styles/responsive.css";
 import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import store from "./redux/store";

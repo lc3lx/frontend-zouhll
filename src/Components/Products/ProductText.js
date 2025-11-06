@@ -26,7 +26,10 @@ const ProductText = ({
   );
   const currentVariant = useMemo(
     () =>
-      variants.length > 0 && selectedVariantIndex !== null
+      variants.length > 0 &&
+      selectedVariantIndex !== null &&
+      selectedVariantIndex !== undefined &&
+      variants[selectedVariantIndex]
         ? variants[selectedVariantIndex]
         : null,
     [variants, selectedVariantIndex]
@@ -174,6 +177,7 @@ const ProductText = ({
       {/* Product Title & Rating */}
       <div style={{ marginBottom: "20px" }}>
         <h1
+          className="product-title"
           style={{
             fontSize: "24px",
             fontWeight: "400",
@@ -185,43 +189,51 @@ const ProductText = ({
           {item.title}
         </h1>
 
-        {/* Rating */}
-        <div
-          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
-        >
+        {/* Rating - Only show if ratings exist */}
+        {(item.ratingsAverage || item.ratingsQuantity) && (
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              marginRight: "8px",
+              marginBottom: "8px",
             }}
           >
-            {[...Array(5)].map((_, i) => (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "8px",
+              }}
+            >
+              {[...Array(5)].map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    color:
+                      i < Math.floor(item.ratingsAverage || 0)
+                        ? "#ff9900"
+                        : "#ddd",
+                    fontSize: "14px",
+                  }}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            {item.ratingsQuantity > 0 && (
               <span
-                key={i}
                 style={{
-                  color:
-                    i < Math.floor(item.ratingsAverage || 0)
-                      ? "#ff9900"
-                      : "#ddd",
                   fontSize: "14px",
+                  color: "#007185",
+                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
               >
-                ★
+                {item.ratingsQuantity} تقييم
               </span>
-            ))}
+            )}
           </div>
-          <span
-            style={{
-              fontSize: "14px",
-              color: "#007185",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-          >
-            {item.ratingsQuantity || 0} تقييم
-          </span>
-        </div>
+        )}
 
         {/* Brand and Store */}
         <div
@@ -300,6 +312,7 @@ const ProductText = ({
                 }}
               >
                 <span
+                  className="product-price"
                   style={{
                     fontSize: "28px",
                     fontWeight: "600",
@@ -363,6 +376,7 @@ const ProductText = ({
               style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
             >
               <span
+                className="product-price"
                 style={{
                   fontSize: "28px",
                   fontWeight: "600",
@@ -374,21 +388,28 @@ const ProductText = ({
             </div>
           )}
 
-          {/* Free shipping notice */}
-          <div
-            style={{
-              fontSize: "14px",
-              color: "#007600",
-              marginTop: "12px",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontWeight: "500",
-            }}
-          >
-            <span>✓</span>
-            <span>شحن مجاني للطلبات أكثر من $50</span>
-          </div>
+          {/* Free shipping notice - Only show if delivery info exists */}
+          {(item.deliveryTime || item.deliveryDays) && (
+            <div
+              style={{
+                fontSize: "14px",
+                color: "#007600",
+                marginTop: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontWeight: "500",
+              }}
+            >
+              <span>✓</span>
+              <span>
+                {item.deliveryTime ||
+                  (item.deliveryDays
+                    ? `مدة التوصيل: ${item.deliveryDays} يوم`
+                    : "شحن مجاني للطلبات أكثر من $50")}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -682,23 +703,25 @@ const ProductText = ({
           </div>
         )}
 
-        {(!currentVariant?.sizes || currentVariant.sizes.length === 0) && (
-          <div
-            style={{
-              fontSize: "14px",
-              color: "#565959",
-              marginBottom: "16px",
-              padding: "12px",
-              background: "#f8f9fa",
-              borderRadius: "6px",
-            }}
-          >
-            <span style={{ fontWeight: "500" }}>الكمية المتاحة: </span>
-            <span style={{ color: "#007600", fontWeight: "600" }}>
-              {selectedSize?.stock ?? item.quantity} قطعة
-            </span>
-          </div>
-        )}
+        {(!currentVariant?.sizes || currentVariant.sizes.length === 0) &&
+          item?.quantity !== undefined &&
+          item?.quantity !== null && (
+            <div
+              style={{
+                fontSize: "14px",
+                color: "#565959",
+                marginBottom: "16px",
+                padding: "12px",
+                background: "#f8f9fa",
+                borderRadius: "6px",
+              }}
+            >
+              <span style={{ fontWeight: "500" }}>الكمية المتاحة: </span>
+              <span style={{ color: "#007600", fontWeight: "600" }}>
+                {selectedSize?.stock ?? item.quantity} قطعة
+              </span>
+            </div>
+          )}
       </div>
 
       {/* Add to Cart */}

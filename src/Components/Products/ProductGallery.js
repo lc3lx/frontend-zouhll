@@ -15,18 +15,22 @@ const ProductGallery = ({ selectedVariantIndex }) => {
 
   const galleryItems = useMemo(() => {
     const variants = Array.isArray(item?.variants) ? item.variants : [];
+    // Check if we have variants and a selected variant (including index 0)
     if (
       variants.length > 0 &&
       selectedVariantIndex !== null &&
+      selectedVariantIndex !== undefined &&
       variants[selectedVariantIndex] &&
       Array.isArray(variants[selectedVariantIndex].images) &&
       variants[selectedVariantIndex].images.length > 0
     ) {
+      // Use images from selected variant
       return variants[selectedVariantIndex].images.map((img) => ({
         original: getImageUrl(img),
         thumbnail: getImageUrl(img),
       }));
     }
+    // Fallback to general images if no variants or no variant selected
     return images.map((img) => ({
       original: img.original,
       thumbnail: img.original,
@@ -44,14 +48,16 @@ const ProductGallery = ({ selectedVariantIndex }) => {
     >
       {/* Main Image Display */}
       <div
+        className="product-gallery-main-image"
         style={{
           position: "relative",
           background: "#f8f9fa",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "450px",
+          minHeight: "300px",
           maxHeight: "550px",
+          height: "auto",
           overflow: "hidden",
           borderRadius: "8px 8px 0 0",
         }}

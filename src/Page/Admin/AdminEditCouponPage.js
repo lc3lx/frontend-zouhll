@@ -1,22 +1,33 @@
-import React from 'react'
-import { Container, Row, Col } from 'react-bootstrap'
-import AdminAddCoupon from '../../Components/Admin/AdminAddCoupon'
-import AdminSideBar from '../../Components/Admin/AdminSideBar'
-import AdminEditCoupon from '../../Components/Admin/AdminEditCoupon'
+import React from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import AdminAddCoupon from "../../Components/Admin/AdminAddCoupon";
+import AdminSideBar from "../../Components/Admin/AdminSideBar";
+import AdminEditCoupon from "../../Components/Admin/AdminEditCoupon";
 const AdminEditCouponPage = () => {
-    return (
-        <Container >
-            <Row className='py-3'>
-                <Col sm="3" xs="2" md="2">
-                    <AdminSideBar />
-                </Col>
+  return (
+    <Container fluid style={{ maxWidth: "1500px", padding: "16px" }}>
+      <Row className="py-3 g-3">
+        <Col xs="12" sm="12" md="4" lg="3" className="admin-sidebar-col">
+          <div
+            className="admin-sidebar-wrapper"
+            style={{
+              background: "#fff",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              padding: "16px",
+              position: "sticky",
+              top: "16px",
+            }}
+          >
+            <AdminSideBar />
+          </div>
+        </Col>
+        <Col xs="12" sm="12" md="8" lg="9" className="admin-content-col">
+          <AdminEditCoupon />
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
-                <Col sm="9" xs="10" md="10">
-                    <AdminEditCoupon />
-                </Col>
-            </Row>
-        </Container>
-    )
-}
-
-export default AdminEditCouponPage
+export default AdminEditCouponPage;

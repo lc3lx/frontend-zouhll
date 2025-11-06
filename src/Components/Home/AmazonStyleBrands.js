@@ -51,7 +51,7 @@ const AmazonStyleBrands = () => {
           {loading ? (
             // Loading skeleton
             Array.from({ length: 8 }).map((_, index) => (
-              <Col key={index} xl={3} lg={4} md={6} sm={6} xs={12}>
+              <Col key={index} xl={3} lg={4} md={6} sm={6} xs={6}>
                 <Card
                   style={{
                     border: "1px solid #ddd",
@@ -103,7 +103,7 @@ const AmazonStyleBrands = () => {
             ))
           ) : brand.data && brand.data.length > 0 ? (
             brand.data.slice(0, 8).map((brandItem, index) => (
-              <Col key={brandItem._id} xl={3} lg={4} md={6} sm={6} xs={12}>
+              <Col key={brandItem._id} xl={3} lg={4} md={6} sm={6} xs={6}>
                 <Card
                   className="h-100 amazon-brand-card"
                   style={{

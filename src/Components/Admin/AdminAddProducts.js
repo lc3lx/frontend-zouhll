@@ -65,24 +65,45 @@ const AdminAddProducts = () => {
 
   return (
     <div
+      className="admin-add-products-container"
       style={{ backgroundColor: "#fff", padding: "20px", minHeight: "100vh" }}
     >
-      <Row className="justify-content-start ">
-        <div className="admin-content-text pb-4"> اضافه منتج جديد</div>
-        <Col sm="8">
-          <div className="text-form pb-2"> صور للمنتج</div>
-
-          <MultiImageInput
-            images={images || {}}
-            setImages={(imgs) => {
-              if (setImages && typeof setImages === "function") {
-                setImages(imgs);
-              }
+      <Row className="justify-content-start g-3">
+        <div className="admin-content-text pb-4 admin-page-title-responsive">
+          {" "}
+          اضافه منتج جديد
+        </div>
+        <Col xs="12" sm="12" md="12" lg="8">
+          <div
+            style={{
+              padding: "16px",
+              background: "#fff9e6",
+              borderRadius: "8px",
+              border: "1px solid #ff9900",
+              marginBottom: "20px",
             }}
-            theme={"light"}
-            allowCrop={false}
-            max={10}
-          />
+          >
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#0f1111",
+                marginBottom: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <span>💡</span>
+              <span>ملاحظة مهمة</span>
+            </div>
+            <div style={{ fontSize: "13px", color: "#666", lineHeight: "1.6" }}>
+              يجب إضافة صور مرتبطة بألوان فقط. أول لون يتم إضافته هو اللون
+              الافتراضي الذي سيتم عرضه للمنتج.
+              <br />
+              <strong>يجب إضافة لون واحد على الأقل مع صوره.</strong>
+            </div>
+          </div>
 
           <input
             value={prodName}
@@ -414,9 +435,26 @@ const AdminAddProducts = () => {
           </div>
 
           {/* Variants Builder */}
-          <div className="text-form mt-4">
-            {" "}
-            متغيرات المنتج (ألوان/صور/قياسات)
+          <div
+            className="text-form mt-4"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>متغيرات المنتج (ألوان/صور/قياسات)</span>
+            {variants && variants.length > 0 && (
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  fontWeight: "normal",
+                }}
+              >
+                (أول لون هو الافتراضي)
+              </span>
+            )}
           </div>
 
           {/* Variants Helper Guide */}
@@ -479,354 +517,398 @@ const AdminAddProducts = () => {
             </button>
             {Array.isArray(variants) && variants.length > 0 && (
               <div className="mt-3">
-                {variants.map((v, i) => (
-                  <div
-                    key={i}
-                    className="border rounded p-3 my-3"
-                    style={{ backgroundColor: "#fafafa" }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <h6 className="mb-0" style={{ color: "#1565c0" }}>
-                        متغير {i + 1}
-                      </h6>
-                      <button
-                        type="button"
-                        onClick={() => removeVariant(i)}
-                        className="btn btn-sm btn-outline-danger"
-                      >
-                        حذف
-                      </button>
-                    </div>
-
-                    <div className="row g-2 mb-3">
-                      <div className="col-md-12">
-                        <label
-                          style={{
-                            fontSize: "12px",
-                            color: "#666",
-                            marginBottom: "8px",
-                            display: "block",
-                          }}
-                        >
-                          اللون
-                        </label>
-
-                        {/* لوحة الألوان المحددة مسبقاً */}
-                        <div style={{ marginBottom: "12px" }}>
-                          <div
-                            style={{
-                              fontSize: "11px",
-                              color: "#999",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            اختر من الألوان الشائعة:
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexWrap: "wrap",
-                              gap: "8px",
-                              padding: "12px",
-                              border: "1px solid #ddd",
-                              borderRadius: "8px",
-                              backgroundColor: "#f8f9fa",
-                              maxHeight: "200px",
-                              overflowY: "auto",
-                              justifyContent: "flex-start",
-                            }}
-                          >
-                            {[
-                              // الألوان الأساسية
-                              "#000000",
-                              "#FFFFFF",
-                              "#FF0000",
-                              "#00FF00",
-                              "#0000FF",
-                              "#FFFF00",
-                              "#FF00FF",
-                              "#00FFFF",
-                              "#FFA500",
-                              "#800080",
-                              // ألوان إضافية
-                              "#FFC0CB",
-                              "#A52A2A",
-                              "#808080",
-                              "#008000",
-                              "#000080",
-                              "#FFD700",
-                              "#FF6347",
-                              "#40E0D0",
-                              "#EE82EE",
-                              "#90EE90",
-                              "#FF4500",
-                              "#FF1493",
-                              "#00CED1",
-                              "#FF69B4",
-                              "#32CD32",
-                              "#8B4513",
-                              "#FF8C00",
-                              "#2E8B57",
-                              "#4169E1",
-                              "#DC143C",
-                              // ألوان إضافية أكثر
-                              "#C0C0C0",
-                              "#FFD700",
-                              "#FF1493",
-                              "#00CED1",
-                              "#FF69B4",
-                              "#8A2BE2",
-                              "#A0522D",
-                              "#CD5C5C",
-                              "#4B0082",
-                              "#32CD32",
-                              "#FF7F50",
-                              "#6495ED",
-                              "#DC143C",
-                              "#00FA9A",
-                              "#FF00FF",
-                              "#B8860B",
-                              "#008B8B",
-                              "#556B2F",
-                              "#8B008B",
-                              "#9932CC",
-                            ].map((color) => (
-                              <button
-                                key={color}
-                                type="button"
-                                onClick={() =>
-                                  setVariantField(i, "colorHex", color)
-                                }
-                                style={{
-                                  width: "36px",
-                                  height: "36px",
-                                  minWidth: "36px",
-                                  minHeight: "36px",
-                                  backgroundColor: color,
-                                  border:
-                                    v.colorHex === color
-                                      ? "3px solid #007bff"
-                                      : "2px solid #ddd",
-                                  borderRadius: "6px",
-                                  cursor: "pointer",
-                                  padding: 0,
-                                  boxShadow:
-                                    v.colorHex === color
-                                      ? "0 0 0 3px rgba(0,123,255,0.3)"
-                                      : "0 1px 3px rgba(0,0,0,0.1)",
-                                  transition: "all 0.2s",
-                                  flexShrink: 0,
-                                }}
-                                title={color}
-                                onMouseEnter={(e) => {
-                                  if (v.colorHex !== color) {
-                                    e.target.style.transform = "scale(1.1)";
-                                    e.target.style.boxShadow =
-                                      "0 2px 8px rgba(0,0,0,0.2)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (v.colorHex !== color) {
-                                    e.target.style.transform = "scale(1)";
-                                    e.target.style.boxShadow = "none";
-                                  }
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Color Picker + Preview */}
+                {variants.map((v, i) => {
+                  const isDefault = i === 0;
+                  return (
+                    <div
+                      key={i}
+                      className="border rounded p-3 my-3"
+                      style={{
+                        backgroundColor: isDefault ? "#fff9e6" : "#fafafa",
+                        border: isDefault
+                          ? "2px solid #ff9900"
+                          : "1px solid #ddd",
+                        position: "relative",
+                      }}
+                    >
+                      {isDefault && (
                         <div
                           style={{
-                            display: "flex",
-                            gap: "10px",
-                            alignItems: "center",
-                            flexWrap: "wrap",
+                            position: "absolute",
+                            top: "8px",
+                            left: "8px",
+                            background: "#ff9900",
+                            color: "#fff",
+                            padding: "2px 8px",
+                            borderRadius: "4px",
+                            fontSize: "11px",
+                            fontWeight: "bold",
                           }}
                         >
-                          <div
+                          افتراضي
+                        </div>
+                      )}
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h6
+                          className="mb-0"
+                          style={{ color: isDefault ? "#ff9900" : "#1565c0" }}
+                        >
+                          {isDefault ? "اللون الافتراضي" : `لون ${i + 1}`}
+                        </h6>
+                        <button
+                          type="button"
+                          onClick={() => removeVariant(i)}
+                          className="btn btn-sm btn-outline-danger"
+                        >
+                          حذف
+                        </button>
+                      </div>
+
+                      <div className="row g-2 mb-3">
+                        <div className="col-md-12">
+                          <label
                             style={{
-                              display: "flex",
-                              gap: "8px",
-                              alignItems: "center",
+                              fontSize: "12px",
+                              color: "#666",
+                              marginBottom: "8px",
+                              display: "block",
                             }}
                           >
-                            <label
+                            اللون
+                          </label>
+
+                          {/* لوحة الألوان المحددة مسبقاً */}
+                          <div style={{ marginBottom: "12px" }}>
+                            <div
                               style={{
                                 fontSize: "11px",
-                                color: "#666",
-                                whiteSpace: "nowrap",
+                                color: "#999",
+                                marginBottom: "6px",
                               }}
                             >
-                              أو اختر لون مخصص:
-                            </label>
-                            <input
-                              type="color"
-                              value={v.colorHex || "#000000"}
-                              onChange={(e) =>
-                                setVariantField(i, "colorHex", e.target.value)
-                              }
-                              style={{
-                                width: "50px",
-                                height: "40px",
-                                cursor: "pointer",
-                                border: "1px solid #ddd",
-                                borderRadius: "4px",
-                                padding: "2px",
-                              }}
-                            />
-                          </div>
-
-                          {/* عرض اللون المختار */}
-                          {v.colorHex && (
+                              اختر من الألوان الشائعة:
+                            </div>
                             <div
                               style={{
                                 display: "flex",
-                                alignItems: "center",
+                                flexWrap: "wrap",
                                 gap: "8px",
-                                padding: "6px 12px",
-                                backgroundColor: "#f8f9fa",
+                                padding: "12px",
                                 border: "1px solid #ddd",
-                                borderRadius: "6px",
+                                borderRadius: "8px",
+                                backgroundColor: "#f8f9fa",
+                                maxHeight: "200px",
+                                overflowY: "auto",
+                                justifyContent: "flex-start",
                               }}
                             >
-                              <div
+                              {[
+                                // الألوان الأساسية
+                                "#000000",
+                                "#FFFFFF",
+                                "#FF0000",
+                                "#00FF00",
+                                "#0000FF",
+                                "#FFFF00",
+                                "#FF00FF",
+                                "#00FFFF",
+                                "#FFA500",
+                                "#800080",
+                                // ألوان إضافية
+                                "#FFC0CB",
+                                "#A52A2A",
+                                "#808080",
+                                "#008000",
+                                "#000080",
+                                "#FFD700",
+                                "#FF6347",
+                                "#40E0D0",
+                                "#EE82EE",
+                                "#90EE90",
+                                "#FF4500",
+                                "#FF1493",
+                                "#00CED1",
+                                "#FF69B4",
+                                "#32CD32",
+                                "#8B4513",
+                                "#FF8C00",
+                                "#2E8B57",
+                                "#4169E1",
+                                "#DC143C",
+                                // ألوان إضافية أكثر
+                                "#C0C0C0",
+                                "#FFD700",
+                                "#FF1493",
+                                "#00CED1",
+                                "#FF69B4",
+                                "#8A2BE2",
+                                "#A0522D",
+                                "#CD5C5C",
+                                "#4B0082",
+                                "#32CD32",
+                                "#FF7F50",
+                                "#6495ED",
+                                "#DC143C",
+                                "#00FA9A",
+                                "#FF00FF",
+                                "#B8860B",
+                                "#008B8B",
+                                "#556B2F",
+                                "#8B008B",
+                                "#9932CC",
+                              ].map((color) => (
+                                <button
+                                  key={color}
+                                  type="button"
+                                  onClick={() =>
+                                    setVariantField(i, "colorHex", color)
+                                  }
+                                  style={{
+                                    width: "36px",
+                                    height: "36px",
+                                    minWidth: "36px",
+                                    minHeight: "36px",
+                                    backgroundColor: color,
+                                    border:
+                                      v.colorHex === color
+                                        ? "3px solid #007bff"
+                                        : "2px solid #ddd",
+                                    borderRadius: "6px",
+                                    cursor: "pointer",
+                                    padding: 0,
+                                    boxShadow:
+                                      v.colorHex === color
+                                        ? "0 0 0 3px rgba(0,123,255,0.3)"
+                                        : "0 1px 3px rgba(0,0,0,0.1)",
+                                    transition: "all 0.2s",
+                                    flexShrink: 0,
+                                  }}
+                                  title={color}
+                                  onMouseEnter={(e) => {
+                                    if (v.colorHex !== color) {
+                                      e.target.style.transform = "scale(1.1)";
+                                      e.target.style.boxShadow =
+                                        "0 2px 8px rgba(0,0,0,0.2)";
+                                    }
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    if (v.colorHex !== color) {
+                                      e.target.style.transform = "scale(1)";
+                                      e.target.style.boxShadow = "none";
+                                    }
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Color Picker + Preview */}
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "10px",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "8px",
+                                alignItems: "center",
+                              }}
+                            >
+                              <label
                                 style={{
-                                  width: "30px",
-                                  height: "30px",
-                                  backgroundColor: v.colorHex,
-                                  border: "2px solid #ddd",
-                                  borderRadius: "4px",
-                                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                }}
-                              />
-                              <span
-                                style={{
-                                  fontSize: "12px",
+                                  fontSize: "11px",
                                   color: "#666",
-                                  fontFamily: "monospace",
-                                  fontWeight: "500",
+                                  whiteSpace: "nowrap",
                                 }}
                               >
-                                {v.colorHex.toUpperCase()}
-                              </span>
+                                أو اختر لون مخصص:
+                              </label>
+                              <input
+                                type="color"
+                                value={v.colorHex || "#000000"}
+                                onChange={(e) =>
+                                  setVariantField(i, "colorHex", e.target.value)
+                                }
+                                style={{
+                                  width: "50px",
+                                  height: "40px",
+                                  cursor: "pointer",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "4px",
+                                  padding: "2px",
+                                }}
+                              />
                             </div>
-                          )}
+
+                            {/* عرض اللون المختار */}
+                            {v.colorHex && (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  padding: "6px 12px",
+                                  backgroundColor: "#f8f9fa",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "6px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    backgroundColor: v.colorHex,
+                                    border: "2px solid #ddd",
+                                    borderRadius: "4px",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                  }}
+                                />
+                                <span
+                                  style={{
+                                    fontSize: "12px",
+                                    color: "#666",
+                                    fontFamily: "monospace",
+                                    fontWeight: "500",
+                                  }}
+                                >
+                                  {v.colorHex.toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* السعر و SKU في صف منفصل */}
-                    <div className="row g-2 mb-3">
-                      <div className="col-md-6">
-                        <label style={{ fontSize: "12px", color: "#666" }}>
-                          السعر (اختياري)
-                        </label>
-                        <input
-                          type="number"
-                          className="input-form d-block px-3"
-                          placeholder="السعر"
-                          value={v.price || ""}
-                          onChange={(e) =>
-                            setVariantField(i, "price", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="col-md-6">
-                        <label style={{ fontSize: "12px", color: "#666" }}>
-                          SKU (اختياري)
-                        </label>
-                        <input
-                          type="text"
-                          className="input-form d-block px-3"
-                          placeholder="SKU"
-                          value={v.sku || ""}
-                          onChange={(e) =>
-                            setVariantField(i, "sku", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="text-form pb-2 mt-3">
-                      صور هذا اللون (حتى 10 صور)
-                    </div>
-                    <MultiImageInput
-                      images={v.images || {}}
-                      setImages={(imgs) => setVariantImages(i, imgs)}
-                      theme={"light"}
-                      allowCrop={false}
-                      max={10}
-                    />
-
-                    <div className="mt-3">
-                      <label className="text-form pb-2">
-                        المقاسات والمخزون
-                      </label>
-                      <div className="d-flex gap-2 align-items-end">
-                        <div style={{ flex: 1 }}>
-                          <input
-                            type="text"
-                            className="input-form d-block px-3"
-                            placeholder="قياس (مثل S, M, L)"
-                            value={v.newSizeLabel || ""}
-                            onChange={(e) =>
-                              setVariantField(i, "newSizeLabel", e.target.value)
-                            }
-                          />
-                        </div>
-                        <div style={{ flex: 1 }}>
+                      {/* السعر و SKU في صف منفصل */}
+                      <div className="row g-2 mb-3">
+                        <div className="col-md-6">
+                          <label style={{ fontSize: "12px", color: "#666" }}>
+                            السعر (اختياري)
+                          </label>
                           <input
                             type="number"
                             className="input-form d-block px-3"
-                            placeholder="المخزون"
-                            value={v.newSizeStock || ""}
+                            placeholder="السعر"
+                            value={v.price || ""}
                             onChange={(e) =>
-                              setVariantField(i, "newSizeStock", e.target.value)
+                              setVariantField(i, "price", e.target.value)
                             }
-                            min="0"
                           />
                         </div>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-success"
-                          onClick={() => {
-                            if (v.newSizeLabel) {
-                              addVariantSize(i, v.newSizeLabel, v.newSizeStock);
-                              setVariantField(i, "newSizeLabel", "");
-                              setVariantField(i, "newSizeStock", "");
+                        <div className="col-md-6">
+                          <label style={{ fontSize: "12px", color: "#666" }}>
+                            SKU (اختياري)
+                          </label>
+                          <input
+                            type="text"
+                            className="input-form d-block px-3"
+                            placeholder="SKU"
+                            value={v.sku || ""}
+                            onChange={(e) =>
+                              setVariantField(i, "sku", e.target.value)
                             }
-                          }}
-                        >
-                          إضافة
-                        </button>
-                      </div>
-                      {v.sizes && v.sizes.length > 0 && (
-                        <div className="mt-2 d-flex flex-wrap gap-2">
-                          {v.sizes.map((s, si) => (
-                            <span
-                              key={si}
-                              className="badge bg-light text-dark border d-flex align-items-center gap-2"
-                              style={{ fontSize: "13px", padding: "8px 12px" }}
-                            >
-                              <strong>{s.label}</strong>
-                              <span style={{ color: "#666" }}>
-                                المخزون: {Number(s.stock) || 0}
-                              </span>
-                              <button
-                                type="button"
-                                className="btn-close"
-                                style={{ fontSize: "8px" }}
-                                onClick={() => removeVariantSize(i, si)}
-                              ></button>
-                            </span>
-                          ))}
+                          />
                         </div>
-                      )}
+                      </div>
+
+                      <div className="text-form pb-2 mt-3">
+                        صور هذا اللون (حتى 10 صور)
+                      </div>
+                      <MultiImageInput
+                        images={v.images || {}}
+                        setImages={(imgs) => setVariantImages(i, imgs)}
+                        theme={"light"}
+                        allowCrop={false}
+                        max={10}
+                      />
+
+                      <div className="mt-3">
+                        <label className="text-form pb-2">
+                          المقاسات والمخزون
+                        </label>
+                        <div className="d-flex gap-2 align-items-end">
+                          <div style={{ flex: 1 }}>
+                            <input
+                              type="text"
+                              className="input-form d-block px-3"
+                              placeholder="قياس (مثل S, M, L)"
+                              value={v.newSizeLabel || ""}
+                              onChange={(e) =>
+                                setVariantField(
+                                  i,
+                                  "newSizeLabel",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <input
+                              type="number"
+                              className="input-form d-block px-3"
+                              placeholder="المخزون"
+                              value={v.newSizeStock || ""}
+                              onChange={(e) =>
+                                setVariantField(
+                                  i,
+                                  "newSizeStock",
+                                  e.target.value
+                                )
+                              }
+                              min="0"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-success"
+                            onClick={() => {
+                              if (v.newSizeLabel) {
+                                addVariantSize(
+                                  i,
+                                  v.newSizeLabel,
+                                  v.newSizeStock
+                                );
+                                setVariantField(i, "newSizeLabel", "");
+                                setVariantField(i, "newSizeStock", "");
+                              }
+                            }}
+                          >
+                            إضافة
+                          </button>
+                        </div>
+                        {v.sizes && v.sizes.length > 0 && (
+                          <div className="mt-2 d-flex flex-wrap gap-2">
+                            {v.sizes.map((s, si) => (
+                              <span
+                                key={si}
+                                className="badge bg-light text-dark border d-flex align-items-center gap-2"
+                                style={{
+                                  fontSize: "13px",
+                                  padding: "8px 12px",
+                                }}
+                              >
+                                <strong>{s.label}</strong>
+                                <span style={{ color: "#666" }}>
+                                  المخزون: {Number(s.stock) || 0}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn-close"
+                                  style={{ fontSize: "8px" }}
+                                  onClick={() => removeVariantSize(i, si)}
+                                ></button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

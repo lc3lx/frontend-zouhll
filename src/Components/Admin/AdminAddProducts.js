@@ -61,6 +61,9 @@ const AdminAddProducts = () => {
     onSelectSecondary,
     onRemoveSecondary,
     secondaryOptions,
+    // Cover image
+    imageCover,
+    setImageCover,
   ] = AdminAddProductsHook();
 
   return (
@@ -219,6 +222,113 @@ const AdminAddProducts = () => {
             value={productUrl}
             onChange={onChangeProductUrl}
           />
+
+          {/* Cover Image - Separate field */}
+          <div className="mt-3">
+            <label className="text-form pb-2" style={{ display: "block" }}>
+              صورة الغلاف للمنتج <span style={{ color: "red" }}>*</span>
+            </label>
+            <div
+              style={{
+                border: "2px dashed #ddd",
+                borderRadius: "8px",
+                padding: "20px",
+                textAlign: "center",
+                background: "#f9f9f9",
+                cursor: "pointer",
+                transition: "all 0.3s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#007bff";
+                e.currentTarget.style.background = "#f0f8ff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#ddd";
+                e.currentTarget.style.background = "#f9f9f9";
+              }}
+            >
+              {imageCover ? (
+                <div>
+                  <img
+                    src={
+                      typeof imageCover === "string"
+                        ? imageCover
+                        : URL.createObjectURL(imageCover)
+                    }
+                    alt="Cover"
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "300px",
+                      borderRadius: "8px",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setImageCover(null)}
+                      className="btn btn-sm btn-danger"
+                      style={{ marginRight: "10px" }}
+                    >
+                      حذف الصورة
+                    </button>
+                    <label
+                      className="btn btn-sm btn-primary"
+                      style={{ cursor: "pointer" }}
+                    >
+                      تغيير الصورة
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setImageCover(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <label style={{ cursor: "pointer", display: "block" }}>
+                  <div style={{ fontSize: "48px", marginBottom: "10px" }}>
+                    📷
+                  </div>
+                  <div style={{ color: "#666", marginBottom: "10px" }}>
+                    اضغط لرفع صورة الغلاف
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#999" }}>
+                    PNG, JPG, GIF حتى 5MB
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                          alert("حجم الصورة يجب أن يكون أقل من 5MB");
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setImageCover(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
 
           {/* New fields */}
           <select

@@ -58,6 +58,8 @@ const AdminAddProductsHook = () => {
 
   //values images products
   const [images, setImages] = useState({});
+  // Cover image state - separate from variant images
+  const [imageCover, setImageCover] = useState(null);
   //values state
   const [prodName, setProdName] = useState("");
   const [prodDescription, setProdDescription] = useState("");
@@ -344,18 +346,23 @@ const AdminAddProductsHook = () => {
       }
     }
 
-    // Use first image from first variant (default color) as cover
-    // استخدام أول صورة من أول لون (الافتراضي) كصورة الغلاف
-    const firstVariant = variants[0];
-    const firstVariantImages = Object.values(firstVariant.images || {});
-    if (firstVariantImages.length === 0) {
-      notify("يجب إضافة صورة واحدة على الأقل للون الافتراضي", "warn");
+    // Validate and use separate imageCover field
+    // التحقق من صورة الغلاف المنفصلة
+    if (!imageCover) {
+      notify("يجب إضافة صورة الغلاف للمنتج", "warn");
       return;
     }
-    const imgCover = dataURLtoFile(
-      firstVariantImages[0],
-      Math.random() + ".png"
-    );
+
+    // Convert imageCover to File if it's a base64 string
+    let imgCover;
+    if (typeof imageCover === "string") {
+      imgCover = dataURLtoFile(imageCover, Math.random() + ".png");
+    } else if (imageCover instanceof File) {
+      imgCover = imageCover;
+    } else {
+      notify("صورة الغلاف غير صحيحة", "warn");
+      return;
+    }
 
     // No general images - all images are in variants
 
@@ -406,9 +413,8 @@ const AdminAddProductsHook = () => {
       formData.append("sizes", JSON.stringify(sizes));
     }
 
-    // append cover image (from first variant)
+    // append cover image (separate field)
     formData.append("imageCover", imgCover);
-    // No general images - all images are in variants
 
     // Colors - only extract from variants, not from separate colors array
     // Colors are now only in variants, each variant has its own color
@@ -606,6 +612,9 @@ const AdminAddProductsHook = () => {
     onSelectSecondary,
     onRemoveSecondary,
     secondaryOptions,
+    // Cover image
+    imageCover,
+    setImageCover,
   ];
 };
 

@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import { getAllBrand } from "./../../redux/actions/brandAction";
 import { getAllStore } from "./../../redux/actions/storeAction";
+import { getSizesByCategory } from "../../redux/actions/sizeAction";
+import { getColorsByCategory } from "../../redux/actions/colorAction";
 import { useGetData as getData } from "../../hooks/useGetData";
 
 const AdminAddProductsHook = () => {
@@ -81,7 +83,18 @@ const AdminAddProductsHook = () => {
   const [deliveryEndDate, setDeliveryEndDate] = useState("");
   const [deliveryDays, setDeliveryDays] = useState(0);
   const [currency, setCurrency] = useState("USD");
-  const [sizes, setSizes] = useState([]); // For products without color variants
+
+  // Available sizes for selected category
+  const [availableSizes, setAvailableSizes] = useState([]);
+  const sizesByCategory = useSelector(
+    (state) => state.allSizes.sizesByCategory
+  );
+
+  // Available colors for selected category
+  const [availableColors, setAvailableColors] = useState([]);
+  const colorsByCategory = useSelector(
+    (state) => state.allColors.colorsByCategory
+  );
 
   // Variant builder state
   const [variants, setVariants] = useState([]);
@@ -118,18 +131,74 @@ const AdminAddProductsHook = () => {
     run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(seletedSubID)]);
+
+  // جلب المقاسات والألوان المتاحة عند تغيير التصنيف الرئيسي
+  useEffect(() => {
+    if (CatID && CatID !== "0") {
+      dispatch(getSizesByCategory(CatID));
+      dispatch(getColorsByCategory(CatID));
+    } else {
+      setAvailableSizes([]);
+      setAvailableColors([]);
+    }
+  }, [CatID, dispatch]);
+
+  // تحديث availableSizes عند جلب المقاسات
+  useEffect(() => {
+    if (sizesByCategory?.data) {
+      setAvailableSizes(sizesByCategory.data);
+    }
+  }, [sizesByCategory]);
+
+  // تحديث availableColors عند جلب الألوان
+  useEffect(() => {
+    if (colorsByCategory?.data) {
+      setAvailableColors(colorsByCategory.data);
+    }
+  }, [colorsByCategory]);
+  // إضافة variant من لون جاهز
+  const addVariantFromColor = (colorId) => {
+    const selectedColor = availableColors.find((c) => c._id === colorId);
+    if (!selectedColor) return;
+
+    setVariants((prev) => {
+      // التحقق من عدم تكرار اللون
+      const colorExists = prev.some((v) => v.colorId === colorId);
+      if (colorExists) {
+        notify("هذا اللون موجود بالفعل", "warn");
+        return prev;
+      }
+
+      const firstVariant = prev.length > 0 ? prev[0] : null;
+      const newVariant = {
+        colorId: selectedColor._id,
+        colorHex: selectedColor.hex,
+        colorName: selectedColor.name,
+        price: firstVariant?.price || "",
+        sku: firstVariant?.sku || "",
+        images: {},
+        sizes: firstVariant?.sizes ? [...firstVariant.sizes] : [],
+      };
+      notify(`تم إضافة اللون ${selectedColor.name}`, "success");
+      return [...prev, newVariant];
+    });
+  };
+
   // helpers to manage variants
   const addVariant = () => {
-    setVariants((prev) => [
-      ...prev,
-      {
+    setVariants((prev) => {
+      // If there's a first variant, copy its sizes, price, and sku
+      // إذا كان هناك أول لون، انسخ قياساته وسعره و SKU
+      const firstVariant = prev.length > 0 ? prev[0] : null;
+      const newVariant = {
         colorHex: "#000000",
-        price: "",
-        sku: "",
+        price: firstVariant?.price || "",
+        sku: firstVariant?.sku || "",
         images: {}, // MultiImageInput-like structure
-        sizes: [], // [{label, stock}]
-      },
-    ]);
+        sizes: firstVariant?.sizes ? [...firstVariant.sizes] : [], // Copy sizes array
+      };
+      return [...prev, newVariant];
+    });
   };
   const removeVariant = (index) => {
     setVariants((prev) => prev.filter((_, i) => i !== index));
@@ -150,6 +219,64 @@ const AdminAddProductsHook = () => {
         i === index ? { ...v, sizes: [...(v.sizes || []), s] } : v
       )
     );
+  };
+
+  // إضافة مقاس من القائمة الجاهزة
+  const addVariantSizeFromList = (vIndex, sizeId, stock) => {
+    const selectedSize = availableSizes.find((s) => s._id === sizeId);
+    if (!selectedSize) return;
+
+    // التحقق من عدم تكرار المقاس
+    const variant = variants[vIndex];
+    const sizeExists = variant?.sizes?.some((s) => s.sizeId === sizeId);
+    if (sizeExists) {
+      notify("هذا المقاس موجود بالفعل", "warn");
+      return;
+    }
+
+    const newSize = {
+      sizeId: selectedSize._id,
+      label: selectedSize.name,
+      stock: Number(stock || 0),
+    };
+
+    setVariants((prev) =>
+      prev.map((v, i) =>
+        i === vIndex ? { ...v, sizes: [...(v.sizes || []), newSize] } : v
+      )
+    );
+  };
+
+  // إضافة جميع المقاسات المتاحة للون معين
+  const addAllAvailableSizes = (vIndex) => {
+    if (availableSizes.length === 0) {
+      notify("لا توجد مقاسات متاحة لهذا التصنيف", "warn");
+      return;
+    }
+
+    const variant = variants[vIndex];
+    const existingSizeIds = (variant?.sizes || [])
+      .map((s) => s.sizeId)
+      .filter(Boolean);
+    const sizesToAdd = availableSizes
+      .filter((s) => !existingSizeIds.includes(s._id))
+      .map((s) => ({
+        sizeId: s._id,
+        label: s.name,
+        stock: 0,
+      }));
+
+    if (sizesToAdd.length === 0) {
+      notify("جميع المقاسات موجودة بالفعل", "info");
+      return;
+    }
+
+    setVariants((prev) =>
+      prev.map((v, i) =>
+        i === vIndex ? { ...v, sizes: [...(v.sizes || []), ...sizesToAdd] } : v
+      )
+    );
+    notify(`تم إضافة ${sizesToAdd.length} مقاس`, "success");
   };
   const removeVariantSize = (vIndex, sIndex) => {
     setVariants((prev) =>
@@ -222,17 +349,6 @@ const AdminAddProductsHook = () => {
 
   const onChangeCurrency = (event) => {
     setCurrency(event.target.value);
-  };
-
-  // Size management for products without color variants
-  const addSize = (label, stock) => {
-    if (!label) return;
-    const newSize = { label, stock: Number(stock || 0) };
-    setSizes([...sizes, newSize]);
-  };
-
-  const removeSize = (index) => {
-    setSizes(sizes.filter((_, i) => i !== index));
   };
 
   // Calculate delivery days when dates change
@@ -408,11 +524,6 @@ const AdminAddProductsHook = () => {
 
     formData.append("currency", currency);
 
-    // Add sizes for products without color variants
-    if (sizes.length > 0) {
-      formData.append("sizes", JSON.stringify(sizes));
-    }
-
     // append cover image (separate field)
     formData.append("imageCover", imgCover);
 
@@ -509,7 +620,6 @@ const AdminAddProductsHook = () => {
         setDeliveryEndDate("");
         setDeliveryDays(0);
         setCurrency("USD");
-        setSizes([]);
         setVariants([]);
 
         notify("تم إضافة المنتج بنجاح", "success");
@@ -598,15 +708,12 @@ const AdminAddProductsHook = () => {
     deliveryEndDate,
     deliveryDays,
     currency,
-    sizes,
     onChangeSeason,
     onChangeFabricType,
     onChangeDeliveryStartDate,
     onChangeDeliveryEndDate,
     onChangeDeliveryDays,
     onChangeCurrency,
-    addSize,
-    removeSize,
     // Secondary categories
     secondaryCatID,
     onSelectSecondary,
@@ -615,6 +722,13 @@ const AdminAddProductsHook = () => {
     // Cover image
     imageCover,
     setImageCover,
+    // Sizes
+    availableSizes,
+    addVariantSizeFromList,
+    addAllAvailableSizes,
+    // Colors
+    availableColors,
+    addVariantFromColor,
   ];
 };
 

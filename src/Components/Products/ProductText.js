@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { Row, Col } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import ViewProductsDetalisHook from "./../../hook/products/view-products-detalis-hook";
 import { useDispatch } from "react-redux";
@@ -16,7 +15,7 @@ const ProductText = ({
 }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, images, cat, brand, store] = ViewProductsDetalisHook(id);
+  const [item, , , brand, store] = ViewProductsDetalisHook(id);
   const dispatch = useDispatch();
   const [indexColor, setIndexColor] = useState(null);
 
@@ -64,8 +63,8 @@ const ProductText = ({
         return;
       }
       const v = currentVariant;
-      if (v?.sizes && v.sizes.length > 0) {
-        if (!selectedSize) {
+      if (v?.sizes && Array.isArray(v.sizes) && v.sizes.length > 0) {
+        if (!selectedSize || !selectedSize.label) {
           notify("من فضلك اختر القياس", "warn");
           return;
         }
@@ -76,7 +75,9 @@ const ProductText = ({
       }
       const colorValue = v?.color?.name || v?.color?.hex || "";
       const body = { productId: id, color: colorValue };
-      if (selectedSize?.label) body.size = selectedSize.label;
+      if (selectedSize?.label) {
+        body.size = selectedSize.label;
+      }
       await dispatch(addProductToCart(body));
       notify("تمت إضافة المنتج للعربة", "success");
       return;
@@ -109,8 +110,8 @@ const ProductText = ({
         return;
       }
       const v = currentVariant;
-      if (v?.sizes && v.sizes.length > 0) {
-        if (!selectedSize) {
+      if (v?.sizes && Array.isArray(v.sizes) && v.sizes.length > 0) {
+        if (!selectedSize || !selectedSize.label) {
           notify("من فضلك اختر القياس", "warn");
           return;
         }
@@ -121,7 +122,9 @@ const ProductText = ({
       }
       const colorValue = v?.color?.name || v?.color?.hex || "";
       const body = { productId: id, color: colorValue };
-      if (selectedSize?.label) body.size = selectedSize.label;
+      if (selectedSize?.label) {
+        body.size = selectedSize.label;
+      }
       await dispatch(addProductToCart(body));
       notify("تم إضافة المنتج للسلة، جاري التوجه للدفع...", "success");
       // Navigate to cart page after adding to cart
@@ -448,10 +451,42 @@ const ProductText = ({
                 ? variants.map((v, index) => {
                     const isSelected = selectedVariantIndex === index;
                     const colorName = v?.color?.name || "";
-                    const colorHex = v?.color?.hex || "#e2e8f0";
+                    // Generate unique color for each variant if hex is not provided
+                    // توليد لون فريد لكل variant إذا لم يتم توفير hex
+                    let colorHex = v?.color?.hex;
+                    if (
+                      !colorHex ||
+                      colorHex === "#e2e8f0" ||
+                      colorHex === ""
+                    ) {
+                      // Generate a unique color based on index
+                      const colors = [
+                        "#FF6B6B",
+                        "#4ECDC4",
+                        "#45B7D1",
+                        "#FFA07A",
+                        "#98D8C8",
+                        "#F7DC6F",
+                        "#BB8FCE",
+                        "#85C1E2",
+                        "#F8B739",
+                        "#52BE80",
+                        "#E74C3C",
+                        "#3498DB",
+                        "#9B59B6",
+                        "#1ABC9C",
+                        "#F39C12",
+                        "#E67E22",
+                        "#95A5A6",
+                        "#34495E",
+                        "#16A085",
+                        "#27AE60",
+                      ];
+                      colorHex = colors[index % colors.length];
+                    }
                     return (
                       <div
-                        key={index}
+                        key={`variant-${index}-${colorHex}`}
                         title={colorName || `اللون ${index + 1}`}
                         onClick={() => onSelectVariant(index)}
                         style={{
@@ -569,139 +604,145 @@ const ProductText = ({
         )}
 
         {/* Sizes for selected variant */}
-        {currentVariant?.sizes && currentVariant.sizes.length > 0 && (
-          <div style={{ marginBottom: "16px" }}>
-            <div
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#0f1111",
-                marginBottom: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <span>المقاس:</span>
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: "#007185",
-                  cursor: "pointer",
-                  fontWeight: "400",
-                }}
-              >
-                دليل المقاسات
-              </span>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))",
-                gap: "10px",
-              }}
-            >
-              {currentVariant.sizes.map((s, i) => {
-                const isSelected = selectedSize?.label === s.label;
-                const isOutOfStock =
-                  typeof s.stock === "number" && s.stock <= 0;
-                const isLowStock =
-                  typeof s.stock === "number" && s.stock > 0 && s.stock <= 5;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => !isOutOfStock && onSelectSize(s)}
-                    disabled={isOutOfStock}
-                    className="size-option"
-                    title={
-                      isOutOfStock
-                        ? "غير متوفر"
-                        : isLowStock
-                        ? `متوفر ${s.stock} فقط`
-                        : `متوفر ${s.stock}`
-                    }
-                    style={{
-                      padding: "10px 8px",
-                      border: isSelected
-                        ? "2px solid #ff9900"
-                        : "1px solid #ddd",
-                      background: isSelected
-                        ? "#fff3cd"
-                        : isOutOfStock
-                        ? "#f5f5f5"
-                        : isLowStock
-                        ? "#fff8e1"
-                        : "#fff",
-                      color: isOutOfStock ? "#999" : "#0f1111",
-                      borderRadius: "6px",
-                      cursor: isOutOfStock ? "not-allowed" : "pointer",
-                      opacity: isOutOfStock ? 0.5 : 1,
-                      fontSize: "14px",
-                      fontWeight: isSelected ? "600" : "400",
-                      position: "relative",
-                      transition: "all 0.2s ease",
-                      minHeight: "44px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "2px",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isOutOfStock && !isSelected) {
-                        e.currentTarget.style.borderColor = "#ff9900";
-                        e.currentTarget.style.background = "#fff8e1";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.borderColor = "#ddd";
-                        e.currentTarget.style.background = isOutOfStock
-                          ? "#f5f5f5"
-                          : isLowStock
-                          ? "#fff8e1"
-                          : "#fff";
-                      }
-                    }}
-                  >
-                    <span>{s.label}</span>
-                    {isLowStock && !isOutOfStock && (
-                      <span style={{ fontSize: "10px", color: "#ff6f00" }}>
-                        قليل
-                      </span>
-                    )}
-                    {isOutOfStock && (
-                      <span style={{ fontSize: "10px", color: "#999" }}>
-                        نفذ
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            {selectedSize && (
+        {currentVariant?.sizes &&
+          Array.isArray(currentVariant.sizes) &&
+          currentVariant.sizes.length > 0 && (
+            <div style={{ marginBottom: "16px" }}>
               <div
                 style={{
-                  fontSize: "13px",
-                  color:
-                    selectedSize.stock > 5
-                      ? "#007600"
-                      : selectedSize.stock > 0
-                      ? "#ff6f00"
-                      : "#B12704",
-                  marginTop: "8px",
-                  fontWeight: "500",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#0f1111",
+                  marginBottom: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                {selectedSize.stock > 5
-                  ? `✓ متوفر (${selectedSize.stock} قطعة متبقية)`
-                  : selectedSize.stock > 0
-                  ? `⚠ متبقي ${selectedSize.stock} قطعة فقط`
-                  : "غير متوفر"}
+                <span>المقاس:</span>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "#007185",
+                    cursor: "pointer",
+                    fontWeight: "400",
+                  }}
+                >
+                  دليل المقاسات
+                </span>
               </div>
-            )}
-          </div>
-        )}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {currentVariant.sizes
+                  .filter((s) => s && s.label) // Filter out invalid sizes
+                  .map((s, i) => {
+                    const isSelected = selectedSize?.label === s.label;
+                    const isOutOfStock =
+                      typeof s.stock === "number" && s.stock <= 0;
+                    const isLowStock =
+                      typeof s.stock === "number" &&
+                      s.stock > 0 &&
+                      s.stock <= 5;
+                    return (
+                      <button
+                        key={`size-${i}-${s.label || i}`}
+                        onClick={() => !isOutOfStock && onSelectSize(s)}
+                        disabled={isOutOfStock}
+                        className="size-option"
+                        title={
+                          isOutOfStock
+                            ? "غير متوفر"
+                            : isLowStock
+                            ? `متوفر ${s.stock} فقط`
+                            : `متوفر ${s.stock || 0}`
+                        }
+                        style={{
+                          padding: "10px 8px",
+                          border: isSelected
+                            ? "2px solid #ff9900"
+                            : "1px solid #ddd",
+                          background: isSelected
+                            ? "#fff3cd"
+                            : isOutOfStock
+                            ? "#f5f5f5"
+                            : isLowStock
+                            ? "#fff8e1"
+                            : "#fff",
+                          color: isOutOfStock ? "#999" : "#0f1111",
+                          borderRadius: "6px",
+                          cursor: isOutOfStock ? "not-allowed" : "pointer",
+                          opacity: isOutOfStock ? 0.5 : 1,
+                          fontSize: "14px",
+                          fontWeight: isSelected ? "600" : "400",
+                          position: "relative",
+                          transition: "all 0.2s ease",
+                          minHeight: "44px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "2px",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isOutOfStock && !isSelected) {
+                            e.currentTarget.style.borderColor = "#ff9900";
+                            e.currentTarget.style.background = "#fff8e1";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.borderColor = "#ddd";
+                            e.currentTarget.style.background = isOutOfStock
+                              ? "#f5f5f5"
+                              : isLowStock
+                              ? "#fff8e1"
+                              : "#fff";
+                          }
+                        }}
+                      >
+                        <span>{s.label || `مقاس ${i + 1}`}</span>
+                        {isLowStock && !isOutOfStock && (
+                          <span style={{ fontSize: "10px", color: "#ff6f00" }}>
+                            قليل
+                          </span>
+                        )}
+                        {isOutOfStock && (
+                          <span style={{ fontSize: "10px", color: "#999" }}>
+                            نفذ
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+              {selectedSize && (
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color:
+                      (selectedSize.stock || 0) > 5
+                        ? "#007600"
+                        : (selectedSize.stock || 0) > 0
+                        ? "#ff6f00"
+                        : "#B12704",
+                    marginTop: "8px",
+                    fontWeight: "500",
+                  }}
+                >
+                  {(selectedSize.stock || 0) > 5
+                    ? `✓ متوفر (${selectedSize.stock} قطعة متبقية)`
+                    : (selectedSize.stock || 0) > 0
+                    ? `⚠ متبقي ${selectedSize.stock} قطعة فقط`
+                    : "غير متوفر"}
+                </div>
+              )}
+            </div>
+          )}
 
         {(!currentVariant?.sizes || currentVariant.sizes.length === 0) &&
           item?.quantity !== undefined &&

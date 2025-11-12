@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ViewProductsDetalisHook from "./../../hook/products/view-products-detalis-hook";
@@ -12,6 +12,11 @@ const ProductGallery = ({ selectedVariantIndex }) => {
   const [zoomStyle, setZoomStyle] = useState({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isZooming, setIsZooming] = useState(false);
+
+  // Reset selected image index when variant changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [selectedVariantIndex]);
 
   const galleryItems = useMemo(() => {
     const variants = Array.isArray(item?.variants) ? item.variants : [];

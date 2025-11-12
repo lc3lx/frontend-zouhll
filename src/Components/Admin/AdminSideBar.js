@@ -72,19 +72,35 @@ const AdminSideBar = () => {
         </Link>
 
         <Link
-          to="/admin/all-offers"
-          style={{ textDecoration: "none" }}
-          onClick={() => setIsOpen(false)}
-        >
-          <div className="admin-side-text">إدارة العروض</div>
-        </Link>
-
-        <Link
           to="/admin/all-secondary-categories"
           style={{ textDecoration: "none" }}
           onClick={() => setIsOpen(false)}
         >
           <div className="admin-side-text">إدارة التصنيفات الثانوية</div>
+        </Link>
+
+        <Link
+          to="/admin/allsizes"
+          style={{ textDecoration: "none" }}
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="admin-side-text">إدارة المقاسات</div>
+        </Link>
+
+        <Link
+          to="/admin/allcolors"
+          style={{ textDecoration: "none" }}
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="admin-side-text">إدارة الألوان</div>
+        </Link>
+
+        <Link
+          to="/admin/all-offers"
+          style={{ textDecoration: "none" }}
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="admin-side-text">إدارة العروض</div>
         </Link>
         <Link
           to="/admin/addcoupon"

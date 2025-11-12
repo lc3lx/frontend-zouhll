@@ -17,6 +17,8 @@ import walletReducer from "./walletReducer";
 import rechargeCodeReducer from "./rechargeCodeReducer";
 import exchangeRateReducer from "./exchangeRateReducer";
 import offerReducer from "./offerReducer";
+import sizeReducer from "./sizeReducer";
+import colorReducer from "./colorReducer";
 export default combineReducers({
   allCategory: categoryReducer,
   allBrand: brandReducer,
@@ -36,4 +38,6 @@ export default combineReducers({
   rechargeCodeReducer: rechargeCodeReducer,
   exchangeRateReducer: exchangeRateReducer,
   offers: offerReducer,
+  allSizes: sizeReducer,
+  allColors: colorReducer,
 });

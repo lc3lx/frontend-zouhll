@@ -29,6 +29,8 @@ import AdminEditCategoryPage from "./Page/Admin/AdminEditCategoryPage";
 import AdminEditBrandPage from "./Page/Admin/AdminEditBrandPage";
 import AdminAllCategoriesPage from "./Page/Admin/AdminAllCategoriesPage";
 import AdminAllBrandsPage from "./Page/Admin/AdminAllBrandsPage";
+import AdminAllSizesPage from "./Page/Admin/AdminAllSizesPage";
+import AdminAllColorsPage from "./Page/Admin/AdminAllColorsPage";
 import AdminAllStoresPage from "./Page/Admin/AdminAllStoresPage";
 import AdminRechargeCodes from "./Page/Admin/AdminRechargeCodes";
 import AdminAddExchangeRatePage from "./Page/Admin/AdminAddExchangeRatePage";
@@ -206,6 +208,8 @@ function App() {
             />
             <Route path="/admin/allbrands" element={<AdminAllBrandsPage />} />
             <Route path="/admin/allstores" element={<AdminAllStoresPage />} />
+            <Route path="/admin/allsizes" element={<AdminAllSizesPage />} />
+            <Route path="/admin/allcolors" element={<AdminAllColorsPage />} />
             <Route
               path="/admin/addsubcategory"
               element={<AdminAddSubCategoryPage />}

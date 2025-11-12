@@ -47,15 +47,12 @@ const AdminAddProducts = () => {
     deliveryEndDate,
     deliveryDays,
     currency,
-    sizes,
     onChangeSeason,
     onChangeFabricType,
     onChangeDeliveryStartDate,
     onChangeDeliveryEndDate,
     onChangeDeliveryDays,
     onChangeCurrency,
-    addSize,
-    removeSize,
     // Secondary categories
     secondaryCatID,
     onSelectSecondary,
@@ -64,6 +61,13 @@ const AdminAddProducts = () => {
     // Cover image
     imageCover,
     setImageCover,
+    // Sizes
+    availableSizes,
+    addVariantSizeFromList,
+    addAllAvailableSizes,
+    // Colors
+    availableColors,
+    addVariantFromColor,
   ] = AdminAddProductsHook();
 
   return (
@@ -483,67 +487,6 @@ const AdminAddProducts = () => {
               : null}
           </select>
 
-          {/* Sizes without colors */}
-          <div className="text-form mt-4">المقاسات (للمنتجات بدون ألوان)</div>
-          <div className="mt-2">
-            <div className="d-flex gap-2 align-items-end">
-              <div style={{ flex: 1 }}>
-                <input
-                  type="text"
-                  className="input-form d-block px-3"
-                  placeholder="قياس (مثل S, M, L)"
-                  id="newSizeLabel"
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <input
-                  type="number"
-                  className="input-form d-block px-3"
-                  placeholder="المخزون"
-                  id="newSizeStock"
-                  min="0"
-                />
-              </div>
-              <button
-                type="button"
-                className="btn btn-sm btn-success"
-                onClick={() => {
-                  const label = document.getElementById("newSizeLabel").value;
-                  const stock = document.getElementById("newSizeStock").value;
-                  if (label) {
-                    addSize(label, stock);
-                    document.getElementById("newSizeLabel").value = "";
-                    document.getElementById("newSizeStock").value = "";
-                  }
-                }}
-              >
-                إضافة
-              </button>
-            </div>
-            {sizes && sizes.length > 0 && (
-              <div className="mt-2 d-flex flex-wrap gap-2">
-                {sizes.map((s, i) => (
-                  <span
-                    key={i}
-                    className="badge bg-light text-dark border d-flex align-items-center gap-2"
-                    style={{ fontSize: "13px", padding: "8px 12px" }}
-                  >
-                    <strong>{s.label}</strong>
-                    <span style={{ color: "#666" }}>
-                      المخزون: {Number(s.stock) || 0}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      style={{ fontSize: "8px" }}
-                      onClick={() => removeSize(i)}
-                    ></button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Variants Builder */}
           <div
             className="text-form mt-4"
@@ -614,17 +557,69 @@ const AdminAddProducts = () => {
           </div>
 
           <div className="mt-2">
-            <button
-              type="button"
-              onClick={addVariant}
-              className="btn btn-outline-primary"
-              style={{
-                fontWeight: "500",
-                padding: "8px 16px",
-              }}
-            >
-              + إضافة لون/متغير
-            </button>
+            {/* إضافة من القائمة الجاهزة */}
+            {availableColors && availableColors.length > 0 && (
+              <div
+                className="mb-3 p-2"
+                style={{ background: "#e3f2fd", borderRadius: "4px" }}
+              >
+                <small className="text-muted d-block mb-2">
+                  الألوان الجاهزة للتصنيف المحدد:
+                </small>
+                <div className="d-flex gap-2 align-items-end flex-wrap">
+                  <div style={{ flex: 1, minWidth: "200px" }}>
+                    <select
+                      className="input-form d-block px-3"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addVariantFromColor(e.target.value);
+                          e.target.value = "";
+                        }
+                      }}
+                    >
+                      <option value="">اختر لون من القائمة</option>
+                      {availableColors
+                        .filter(
+                          (color) =>
+                            !variants.some((v) => v.colorId === color._id)
+                        )
+                        .map((color) => (
+                          <option key={color._id} value={color._id}>
+                            {color.name} ({color.hex})
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary"
+                    disabled={true}
+                    style={{ opacity: 0.6 }}
+                  >
+                    سيتم الإضافة تلقائياً
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* إضافة يدوي */}
+            <div className="mb-2">
+              <small className="text-muted d-block mb-2">
+                أو أضف لون يدوي:
+              </small>
+              <button
+                type="button"
+                onClick={addVariant}
+                className="btn btn-outline-primary"
+                style={{
+                  fontWeight: "500",
+                  padding: "8px 16px",
+                }}
+              >
+                + إضافة لون/متغير يدوي
+              </button>
+            </div>
             {Array.isArray(variants) && variants.length > 0 && (
               <div className="mt-3">
                 {variants.map((v, i) => {
@@ -664,6 +659,14 @@ const AdminAddProducts = () => {
                           style={{ color: isDefault ? "#ff9900" : "#1565c0" }}
                         >
                           {isDefault ? "اللون الافتراضي" : `لون ${i + 1}`}
+                          {v.colorName && (
+                            <span
+                              className="ms-2"
+                              style={{ fontSize: "14px", fontWeight: "normal" }}
+                            >
+                              ({v.colorName})
+                            </span>
+                          )}
                         </h6>
                         <button
                           type="button"
@@ -745,30 +748,23 @@ const AdminAddProducts = () => {
                                 "#2E8B57",
                                 "#4169E1",
                                 "#DC143C",
-                                // ألوان إضافية أكثر
+                                // ألوان إضافية أكثر (بدون تكرار)
                                 "#C0C0C0",
-                                "#FFD700",
-                                "#FF1493",
-                                "#00CED1",
-                                "#FF69B4",
                                 "#8A2BE2",
                                 "#A0522D",
                                 "#CD5C5C",
                                 "#4B0082",
-                                "#32CD32",
                                 "#FF7F50",
                                 "#6495ED",
-                                "#DC143C",
                                 "#00FA9A",
-                                "#FF00FF",
                                 "#B8860B",
                                 "#008B8B",
                                 "#556B2F",
                                 "#8B008B",
                                 "#9932CC",
-                              ].map((color) => (
+                              ].map((color, colorIndex) => (
                                 <button
-                                  key={color}
+                                  key={`${i}-color-${colorIndex}-${color}`}
                                   type="button"
                                   onClick={() =>
                                     setVariantField(i, "colorHex", color)
@@ -937,82 +933,151 @@ const AdminAddProducts = () => {
                       />
 
                       <div className="mt-3">
-                        <label className="text-form pb-2">
-                          المقاسات والمخزون
-                        </label>
-                        <div className="d-flex gap-2 align-items-end">
-                          <div style={{ flex: 1 }}>
-                            <input
-                              type="text"
-                              className="input-form d-block px-3"
-                              placeholder="قياس (مثل S, M, L)"
-                              value={v.newSizeLabel || ""}
-                              onChange={(e) =>
-                                setVariantField(
-                                  i,
-                                  "newSizeLabel",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <input
-                              type="number"
-                              className="input-form d-block px-3"
-                              placeholder="المخزون"
-                              value={v.newSizeStock || ""}
-                              onChange={(e) =>
-                                setVariantField(
-                                  i,
-                                  "newSizeStock",
-                                  e.target.value
-                                )
-                              }
-                              min="0"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-success"
-                            onClick={() => {
-                              if (v.newSizeLabel) {
-                                addVariantSize(
-                                  i,
-                                  v.newSizeLabel,
-                                  v.newSizeStock
-                                );
-                                setVariantField(i, "newSizeLabel", "");
-                                setVariantField(i, "newSizeStock", "");
-                              }
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <label className="text-form pb-2">
+                            المقاسات والمخزون
+                          </label>
+                          {availableSizes && availableSizes.length > 0 && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => addAllAvailableSizes(i)}
+                              title="إضافة جميع المقاسات المتاحة"
+                            >
+                              إضافة جميع المقاسات
+                            </button>
+                          )}
+                        </div>
+
+                        {/* إضافة من القائمة الجاهزة */}
+                        {availableSizes && availableSizes.length > 0 ? (
+                          <div
+                            className="mb-3 p-2"
+                            style={{
+                              background: "#e3f2fd",
+                              borderRadius: "4px",
                             }}
                           >
-                            إضافة
-                          </button>
-                        </div>
-                        {v.sizes && v.sizes.length > 0 && (
-                          <div className="mt-2 d-flex flex-wrap gap-2">
-                            {v.sizes.map((s, si) => (
-                              <span
-                                key={si}
-                                className="badge bg-light text-dark border d-flex align-items-center gap-2"
-                                style={{
-                                  fontSize: "13px",
-                                  padding: "8px 12px",
-                                }}
+                            <small className="text-muted d-block mb-2">
+                              المقاسات الجاهزة للتصنيف المحدد:
+                            </small>
+                            <div className="d-flex gap-2 align-items-end flex-wrap">
+                              <div style={{ flex: 1, minWidth: "200px" }}>
+                                <select
+                                  className="input-form d-block px-3"
+                                  value=""
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      const selectedSize = availableSizes.find(
+                                        (s) => s._id === e.target.value
+                                      );
+                                      if (selectedSize) {
+                                        addVariantSizeFromList(
+                                          i,
+                                          selectedSize._id,
+                                          0
+                                        );
+                                      }
+                                      e.target.value = "";
+                                    }
+                                  }}
+                                >
+                                  <option value="">اختر مقاس من القائمة</option>
+                                  {availableSizes
+                                    .filter(
+                                      (size) =>
+                                        !v.sizes?.some(
+                                          (s) => s.sizeId === size._id
+                                        )
+                                    )
+                                    .map((size) => (
+                                      <option key={size._id} value={size._id}>
+                                        {size.name} ({size.type})
+                                      </option>
+                                    ))}
+                                </select>
+                              </div>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-primary"
+                                disabled={true}
+                                style={{ opacity: 0.6 }}
                               >
-                                <strong>{s.label}</strong>
-                                <span style={{ color: "#666" }}>
-                                  المخزون: {Number(s.stock) || 0}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="btn-close"
-                                  style={{ fontSize: "8px" }}
-                                  onClick={() => removeVariantSize(i, si)}
-                                ></button>
-                              </span>
-                            ))}
+                                سيتم الإضافة تلقائياً
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className="mb-3 p-2"
+                            style={{
+                              background: "#fff3cd",
+                              borderRadius: "4px",
+                            }}
+                          >
+                            <small className="text-muted">
+                              لا توجد مقاسات جاهزة لهذا التصنيف. يمكنك إضافة
+                              مقاسات من صفحة إدارة المقاسات.
+                            </small>
+                          </div>
+                        )}
+                        {v.sizes && v.sizes.length > 0 && (
+                          <div className="mt-2">
+                            <small className="text-muted d-block mb-2">
+                              المقاسات المضافة:
+                            </small>
+                            <div className="d-flex flex-wrap gap-2">
+                              {v.sizes.map((s, si) => (
+                                <div
+                                  key={si}
+                                  className="badge bg-light text-dark border"
+                                  style={{
+                                    padding: "8px 12px",
+                                    fontSize: "14px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                  }}
+                                >
+                                  <span>{s.label}</span>
+                                  <input
+                                    type="number"
+                                    value={Number(s.stock) || 0}
+                                    onChange={(e) => {
+                                      const newStock =
+                                        Number(e.target.value) || 0;
+                                      // Update the specific size stock in the variant
+                                      const updatedSizes = v.sizes.map(
+                                        (size, sizeIdx) =>
+                                          sizeIdx === si
+                                            ? { ...size, stock: newStock }
+                                            : size
+                                      );
+                                      setVariantField(i, "sizes", updatedSizes);
+                                    }}
+                                    min="0"
+                                    style={{
+                                      width: "60px",
+                                      padding: "2px 4px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "4px",
+                                      textAlign: "center",
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => removeVariantSize(i, si)}
+                                    style={{
+                                      padding: "2px 6px",
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
